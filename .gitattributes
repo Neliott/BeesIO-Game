@@ -1,5 +1,4 @@
 ## Customs ##
-*.xlsm filter=lfs diff=lfs merge=lfs -text
 
 ## Unity ##
 *.cs diff=csharp text
