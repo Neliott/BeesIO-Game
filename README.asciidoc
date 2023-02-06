@@ -1,20 +1,23 @@
-=  BeesIO-Game
-Bienvenue sur ce projet qui est la partie cliente du jeu BeesIO réalisée sur Unity afin d'être disponible sur une page web.
+= BeesIO-Game
+Welcome to this project which is the client part of the BeesIO game made on Unity. The final goal is to make a '.io' style, massively multiplayer game available through a web page. For now, multiplayer has not been implemented yet. So there is only the client part of the game working locally with robots simulating the player.
 
-== Liens rapides
-https://github.com/EliottJaquierCPNV/BeesIO-Game/blob/develop/Documentation/Journal%20de%20travail.xlsm[Emplacement du journal de travail]
+== Getting started
 
-== Mise en route
+Prerequisite: 
 
-Prérequis : 
-
-- Unity 2021.3.18f1 (LTS) avec le module de build pour WebGL
+- Unity 2021.3.18f1 (LTS) with the build module for WebGL
 - Visual Studio 2019 Community
 - Git LFS
 
-Autres logiciels utilisés (pour la documentation) :
+Other software used (for documentation):
 
-- AsciiDocFx (latest)
-- Astah community
-- SourceTree
-- DrawIO
+- AsciiDocFx (ASCIIDOC Edition)
+- Astah community (UML diagrams)
+- DrawIO (Other diagrams)
+
+== Collaborate
+=== Naming conventions
+The conventions are based on those available on https://learn.microsoft.com/fr-fr/dotnet/csharp/fundamentals/coding-style/coding-conventions[this page]
+
+* Use of PascalCase for public elements (classes, methods, fields or a properties) and files
+* Use of camelCase with the prefix '_' for private elements
