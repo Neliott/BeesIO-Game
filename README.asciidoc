@@ -21,3 +21,7 @@ The conventions are based on those available on https://learn.microsoft.com/fr-f
 
 * Use of PascalCase for public elements (classes, methods, fields or a properties) and files
 * Use of camelCase with the prefix '_' for private elements
+
+=== Class diagram
+Use of the UML for class diagrams and sequence diagrams. The associations of the diagrams were created following the logic available 
+https://www.visual-paradigm.com/guide/uml-unified-modeling-language/uml-aggregation-vs-composition/[here]
