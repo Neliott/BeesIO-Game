@@ -15,6 +15,17 @@ public class HexaGrid : MonoBehaviour
     [SerializeField]
     Transform _hexInstancesParent;
 
+#if UNITY_EDITOR
+    public void SetHextilePrefab(GameObject hextilePrefab)
+    {
+        _hextilePrefab = hextilePrefab;
+    }
+    public void SetInstancesParent(Transform instancesParent)
+    {
+        _hexInstancesParent = instancesParent;
+    }
+#endif
+
     /// <summary>
     /// Store all the hextile prefab instances renderer
     /// </summary>
