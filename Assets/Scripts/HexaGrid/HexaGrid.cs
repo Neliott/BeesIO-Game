@@ -28,7 +28,6 @@ public class HexaGrid : MonoBehaviour
     /// <remarks>This method is very CPU (GetComponent) and RAM (Instanciation) intensive. Use it carefully (can take 1 full second to execute).</remarks>
     public void Generate()
     {
-        if (_hexatilesInstances != null) Clear();
         _hexatilesInstances = new Renderer[MAP_WIDTH][];
         Quaternion quaternionRotation = Quaternion.Euler(-90, 0, 0);
 
@@ -54,18 +53,11 @@ public class HexaGrid : MonoBehaviour
     }
 
     /// <summary>
-    /// Destroy all the hextiles
+    /// Set the hextiles to the default state
     /// </summary>
     public void Clear()
     {
-        for (int x = 0; x < _hexatilesInstances.Length; x++)
-        {
-            for (int y = 0; y < _hexatilesInstances[x].Length; y++)
-            {
-                Destroy(_hexatilesInstances[x][y]);
-            }
-        }
-        _hexatilesInstances = null;
+        throw new NotImplementedException();
     }
 
     /// <summary>
