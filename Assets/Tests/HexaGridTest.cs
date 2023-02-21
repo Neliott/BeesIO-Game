@@ -22,6 +22,7 @@ public class HexaGridTest
         //Then
         Assert.Pass();
     }
+
     [Test]
     public void HexaGrid_SpacesTransformationTwoWays_Equals()
     {
@@ -36,14 +37,123 @@ public class HexaGridTest
         Assert.AreEqual(expectedHexIndex, actualIndex);
     }
 
-    // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-    // `yield return null;` to skip a frame.
-    [UnityTest]
-    public IEnumerator HexaGridTestWithEnumeratorPasses()
+    [Test]
+    public void HexaGrid_WordPositionToHexIndexes_Center_Equals()
     {
-        // Use the Assert class to test conditions.
-        // Use yield to skip a frame.
-        yield return null;
+        //Given
+        HexaGrid hexaGrid = CreateHexGridInstance();
+        hexaGrid.Generate();
+        Vector2 expectedWorldPosition = new Vector2(0f, 0f);
+        Vector2Int expectedIndexes = new Vector2Int(HexaGrid.MAP_WIDTH / 2, HexaGrid.MAP_HEIGHT / 2);
+        //When
+        Vector2Int actualIndexes = hexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
+        //Then
+        Assert.AreEqual(expectedIndexes, actualIndexes);
+    }
+    [Test]
+    public void HexaGrid_WordPositionToHexIndexes_ShiftedX_Equals()
+    {
+        //Given
+        HexaGrid hexaGrid = CreateHexGridInstance();
+        hexaGrid.Generate();
+        Vector2 expectedWorldPosition = new Vector2(HexaGrid.SPACING_WIDTH, 0f);
+        Vector2Int expectedIndexes = new Vector2Int((HexaGrid.MAP_WIDTH / 2)+1, HexaGrid.MAP_HEIGHT / 2);
+        //When
+        Vector2Int actualIndexes = hexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
+        //Then
+        Assert.AreEqual(expectedIndexes, actualIndexes);
+    }
+    [Test]
+    public void HexaGrid_WordPositionToHexIndexes_ShiftedY_Equals()
+    {
+        //Given
+        HexaGrid hexaGrid = CreateHexGridInstance();
+        hexaGrid.Generate();
+        Vector2 expectedWorldPosition = new Vector2(0f, HexaGrid.SPACING_HEIGHT);
+        Vector2Int expectedIndexes = new Vector2Int(HexaGrid.MAP_WIDTH / 2, (HexaGrid.MAP_HEIGHT / 2) + 1);
+        //When
+        Vector2Int actualIndexes = hexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
+        //Then
+        Assert.AreEqual(expectedIndexes, actualIndexes);
+    }
+    [Test]
+    public void HexaGrid_WordPositionToHexIndexes_ShiftedXY_Equals()
+    {
+        //Given
+        HexaGrid hexaGrid = CreateHexGridInstance();
+        hexaGrid.Generate();
+        Vector2 expectedWorldPosition = new Vector2(HexaGrid.SPACING_WIDTH, HexaGrid.SPACING_HEIGHT);
+        Vector2Int expectedIndexes = new Vector2Int((HexaGrid.MAP_WIDTH / 2) + 2, (HexaGrid.MAP_HEIGHT / 2) + 1);
+        //When
+        Vector2Int actualIndexes = hexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
+        //Then
+        Assert.AreEqual(expectedIndexes, actualIndexes);
+    }
+    [Test]
+    public void HexaGrid_WordPositionToHexIndexes_ShiftedXYRound_Equals()
+    {
+        //Given
+        HexaGrid hexaGrid = CreateHexGridInstance();
+        hexaGrid.Generate();
+        Vector2 expectedWorldPosition = new Vector2(HexaGrid.SPACING_WIDTH / 2.5f, HexaGrid.SPACING_HEIGHT / 2.5f);
+        Vector2Int expectedIndexes = new Vector2Int(HexaGrid.MAP_WIDTH / 2, HexaGrid.MAP_HEIGHT / 2);
+        //When
+        Vector2Int actualIndexes = hexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
+        //Then
+        Assert.AreEqual(expectedIndexes, actualIndexes);
+    }
+
+    [Test]
+    public void HexaGrid_HexIndexesToWorldPosition_Center_Equals()
+    {
+        //Given
+        HexaGrid hexaGrid = CreateHexGridInstance();
+        hexaGrid.Generate();
+        Vector2 expectedWorldPosition = new Vector2(0f, 0f);
+        Vector2Int expectedIndexes = new Vector2Int(HexaGrid.MAP_WIDTH / 2, HexaGrid.MAP_HEIGHT / 2);
+        //When
+        Vector2 actualWorldPosition = hexaGrid.HexIndexesToWorldPosition(expectedIndexes);
+        //Then
+        Assert.AreEqual(expectedWorldPosition, actualWorldPosition);
+    }
+    [Test]
+    public void HexaGrid_HexIndexesToWorldPosition_ShiftedX_Equals()
+    {
+        //Given
+        HexaGrid hexaGrid = CreateHexGridInstance();
+        hexaGrid.Generate();
+        Vector2 expectedWorldPosition = new Vector2(HexaGrid.SPACING_WIDTH, 0f);
+        Vector2Int expectedIndexes = new Vector2Int((HexaGrid.MAP_WIDTH / 2) + 1, HexaGrid.MAP_HEIGHT / 2);
+        //When
+        Vector2 actualWorldPosition = hexaGrid.HexIndexesToWorldPosition(expectedIndexes);
+        //Then
+        Assert.AreEqual(expectedWorldPosition, actualWorldPosition);
+    }
+    [Test]
+    public void HexaGrid_HexIndexesToWorldPosition_ShiftedY_Equals()
+    {
+        //Given
+        HexaGrid hexaGrid = CreateHexGridInstance();
+        hexaGrid.Generate();
+        Vector2 expectedWorldPosition = new Vector2(-HexaGrid.SPACING_WIDTH/2, HexaGrid.SPACING_HEIGHT);
+        Vector2Int expectedIndexes = new Vector2Int(HexaGrid.MAP_WIDTH / 2, (HexaGrid.MAP_HEIGHT / 2) + 1);
+        //When
+        Vector2 actualWorldPosition = hexaGrid.HexIndexesToWorldPosition(expectedIndexes);
+        //Then
+        Assert.AreEqual(expectedWorldPosition, actualWorldPosition);
+    }
+    [Test]
+    public void HexaGrid_HexIndexesToWorldPosition_ShiftedXY_Equals()
+    {
+        //Given
+        HexaGrid hexaGrid = CreateHexGridInstance();
+        hexaGrid.Generate();
+        Vector2 expectedWorldPosition = new Vector2(HexaGrid.SPACING_WIDTH*1.5f, HexaGrid.SPACING_HEIGHT);
+        Vector2Int expectedIndexes = new Vector2Int((HexaGrid.MAP_WIDTH / 2) + 2, (HexaGrid.MAP_HEIGHT / 2)+1);
+        //When
+        Vector2 actualWorldPosition = hexaGrid.HexIndexesToWorldPosition(expectedIndexes);
+        //Then
+        Assert.AreEqual(expectedWorldPosition, actualWorldPosition);
     }
 
     HexaGrid CreateHexGridInstance()

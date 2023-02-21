@@ -5,10 +5,10 @@ using System;
 
 public class HexaGrid : MonoBehaviour
 {
-    const int MAP_WIDTH = 200;
-    const int MAP_HEIGHT = 200;
-    const float SPACING_WIDTH = 2f;
-    const float SPACING_HEIGHT = 1.75f;
+    public const int MAP_WIDTH = 200;
+    public const int MAP_HEIGHT = 200;
+    public const float SPACING_WIDTH = 2f;
+    public const float SPACING_HEIGHT = 1.75f;
 
     [SerializeField]
     GameObject _hextilePrefab;
