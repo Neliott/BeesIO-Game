@@ -36,7 +36,7 @@ public class PlayersManager : MonoBehaviour
         if (_controlledPlayer != null) return;
         GameObject newControlledPlayer = Instantiate(_controlledPlayerPrefab);
         _controlledPlayer = newControlledPlayer.GetComponent<InputPlayer>();
-        _controlledPlayer.Setup();
+        _controlledPlayer.Setup("Me");
         _playerTracker.TrackedObject = _controlledPlayer.transform;
         _players.Add(_controlledPlayer);
     }

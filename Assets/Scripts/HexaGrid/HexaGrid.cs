@@ -34,7 +34,17 @@ public class HexaGrid : MonoBehaviour
     /// <summary>
     /// Used to cache material for GPU Instancing 
     /// </summary>
-    Dictionary<Color, Material> _cachedMaterials;
+    Dictionary<Color, Material> _cachedMaterials = new Dictionary<Color, Material>();
+
+    /// <summary>
+    /// All the hexagones owned by bases
+    /// </summary>
+    Dictionary<Base, List<Vector2Int>> _hexagonsProperties = new Dictionary<Base, List<Vector2Int>>();
+
+    /// <summary>
+    /// The default color used for background
+    /// </summary>
+    Color _defaultColor = new Color(60, 60, 60);
 
     /// <summary>
     /// Generate a new grid of hextiles. 
@@ -133,6 +143,57 @@ public class HexaGrid : MonoBehaviour
             }
         }
         return allPositions;
+    }
+
+    /// <summary>
+    /// Set a given hexagon owner
+    /// </summary>
+    /// <param name="position">The index of the hexagon</param>
+    /// <param name="property">The new owner or null for remove owner</param>
+    public void SetHexagonProperty(Vector2Int position, Base property)
+    {
+        Base lastOwner = GetPropertyOfHexIndex(position);
+        if(lastOwner != null)
+        {
+            _hexagonsProperties[lastOwner].Remove(position);
+            ChangeHexColor(position, _defaultColor);
+            lastOwner.OnHexagonOwnedListChanged();
+        }
+        if (property == null) return;
+        if (!_hexagonsProperties.ContainsKey(property))
+        {
+            _hexagonsProperties[property] = new List<Vector2Int>();
+        }
+        _hexagonsProperties[property].Add(position);
+        ChangeHexColor(position, property.Color);
+        property.OnHexagonOwnedListChanged();
+    }
+
+    /// <summary>
+    /// Get the list of hexagons owned by the base
+    /// </summary>
+    /// <param name="givenBase">The owner of hexagons</param>
+    /// <returns>The list or null</returns>
+    public List<Vector2Int> GetHexagonsOfBase(Base givenBase)
+    {
+        return _hexagonsProperties[givenBase];
+    }
+
+    /// <summary>
+    /// Try to get the base for the given hexagon index
+    /// </summary>
+    /// <param name="index">The index of hexagon</param>
+    /// <returns>The base if owned or null</returns>
+    public Base GetPropertyOfHexIndex(Vector2Int index)
+    {
+        foreach (KeyValuePair<Base, List<Vector2Int>> basePositions in _hexagonsProperties)
+        {
+            foreach (Vector2Int position in basePositions.Value)
+            {
+                if (position == index) return basePositions.Key;
+            }
+        }
+        return null;
     }
 
     /// <summary>
