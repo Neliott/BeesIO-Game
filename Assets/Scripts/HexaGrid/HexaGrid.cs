@@ -5,15 +5,26 @@ using System;
 
 public class HexaGrid : MonoBehaviour
 {
-    const int MAP_WIDTH = 200;
-    const int MAP_HEIGHT = 200;
-    const float SPACING_WIDTH = 2f;
-    const float SPACING_HEIGHT = 1.75f;
+    public const int MAP_WIDTH = 200;
+    public const int MAP_HEIGHT = 200;
+    public const float SPACING_WIDTH = 2f;
+    public const float SPACING_HEIGHT = 1.75f;
 
     [SerializeField]
     GameObject _hextilePrefab;
     [SerializeField]
     Transform _hexInstancesParent;
+
+#if UNITY_EDITOR
+    public void SetHextilePrefab(GameObject hextilePrefab)
+    {
+        _hextilePrefab = hextilePrefab;
+    }
+    public void SetInstancesParent(Transform instancesParent)
+    {
+        _hexInstancesParent = instancesParent;
+    }
+#endif
 
     /// <summary>
     /// Store all the hextile prefab instances renderer
@@ -28,7 +39,6 @@ public class HexaGrid : MonoBehaviour
     /// <remarks>This method is very CPU (GetComponent) and RAM (Instanciation) intensive. Use it carefully (can take 1 full second to execute).</remarks>
     public void Generate()
     {
-        if (_hexatilesInstances != null) Clear();
         _hexatilesInstances = new Renderer[MAP_WIDTH][];
         Quaternion quaternionRotation = Quaternion.Euler(-90, 0, 0);
 
@@ -54,18 +64,11 @@ public class HexaGrid : MonoBehaviour
     }
 
     /// <summary>
-    /// Destroy all the hextiles
+    /// Set the hextiles to the default state
     /// </summary>
     public void Clear()
     {
-        for (int x = 0; x < _hexatilesInstances.Length; x++)
-        {
-            for (int y = 0; y < _hexatilesInstances[x].Length; y++)
-            {
-                Destroy(_hexatilesInstances[x][y]);
-            }
-        }
-        _hexatilesInstances = null;
+        throw new NotImplementedException();
     }
 
     /// <summary>
