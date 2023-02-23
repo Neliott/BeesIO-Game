@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+[RequireComponent(typeof(HexaGrid))]
+[RequireComponent(typeof(PlayersManager))]
 public class GameManager : MonoBehaviour
 {
     /// <summary>
@@ -15,12 +17,15 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public HexaGrid HexaGrid { get => _hexaGrid; }
 
-    [SerializeField]
     HexaGrid _hexaGrid;
+    PlayersManager _players;
 
+    /// <summary>
+    /// Start or Restart a new game
+    /// </summary>
     public void RestartGame()
     {
-        _hexaGrid.Generate();
+        _players.SpawnControlledPlayer();
     }
 
     public void GameOver()
@@ -31,6 +36,9 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        _hexaGrid = GetComponent<HexaGrid>();
+        _players = GetComponent<PlayersManager>();
+        _hexaGrid.Generate();
     }
 
     private void Start()
