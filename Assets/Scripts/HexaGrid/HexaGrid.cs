@@ -32,6 +32,11 @@ public class HexaGrid : MonoBehaviour
     Renderer[][] _hexatilesInstances;
 
     /// <summary>
+    /// Used to cache material for GPU Instancing 
+    /// </summary>
+    Dictionary<Color, Material> _cachedMaterials;
+
+    /// <summary>
     /// Generate a new grid of hextiles. 
     /// Instantiate and place every hextiles.
     /// This method was based on this video : https://www.youtube.com/watch?v=EPaSmQ2vtek (Only the 'Creating Layout' section)
@@ -128,6 +133,29 @@ public class HexaGrid : MonoBehaviour
             }
         }
         return allPositions;
+    }
+
+    /// <summary>
+    /// Change a hex color (based on the hex position)
+    /// </summary>
+    /// <param name="hexIndex">The hextile index</param>
+    /// <param name="color">Color to change</param>
+    void ChangeHexColor(Vector2Int hexIndex, Color color)
+    {
+        if (!(hexIndex.x >= 0 && hexIndex.x < MAP_WIDTH && hexIndex.y >= 0 && hexIndex.y < MAP_HEIGHT)) return;
+
+        //Using the same material for the same color
+        Material cachedMaterial;
+        if (_cachedMaterials.TryGetValue(color, out cachedMaterial) == false)
+        {
+            //Creating a new instance of the material when changing his color
+            _hexatilesInstances[hexIndex.x][hexIndex.y].material.color = color;
+            _cachedMaterials.Add(color, _hexatilesInstances[hexIndex.x][hexIndex.y].material);
+        }
+        else
+        {
+            _hexatilesInstances[hexIndex.x][hexIndex.y].material = cachedMaterial;
+        }
     }
 
     /// <summary>
