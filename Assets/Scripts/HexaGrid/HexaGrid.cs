@@ -14,6 +14,8 @@ public class HexaGrid : MonoBehaviour
     GameObject _hextilePrefab;
     [SerializeField]
     Transform _hexInstancesParent;
+    [SerializeField]
+    Material _defaultMaterial;
 
 #if UNITY_EDITOR
     public void SetHextilePrefab(GameObject hextilePrefab)
@@ -40,11 +42,6 @@ public class HexaGrid : MonoBehaviour
     /// All the hexagones owned by bases
     /// </summary>
     Dictionary<Base, List<Vector2Int>> _hexagonsProperties = new Dictionary<Base, List<Vector2Int>>();
-
-    /// <summary>
-    /// The default color used for background
-    /// </summary>
-    Color _defaultColor = new Color(60, 60, 60);
 
     /// <summary>
     /// Generate a new grid of hextiles. 
@@ -156,7 +153,7 @@ public class HexaGrid : MonoBehaviour
         if(lastOwner != null)
         {
             _hexagonsProperties[lastOwner].Remove(position);
-            ChangeHexColor(position, _defaultColor);
+            _hexatilesInstances[position.x][position.y].material = _defaultMaterial;
             lastOwner.OnHexagonOwnedListChanged();
         }
         if (property == null) return;

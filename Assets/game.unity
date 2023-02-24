@@ -313,6 +313,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _hextilePrefab: {fileID: 7320781458769816114, guid: 5e6eb218d48c8ce4e914c88c76ecf0c4, type: 3}
   _hexInstancesParent: {fileID: 1391219898}
+  _defaultMaterial: {fileID: 2100000, guid: c93711e6a40ba4741beb79d14e9dacd7, type: 2}
 --- !u!114 &2136466682
 MonoBehaviour:
   m_ObjectHideFlags: 0
