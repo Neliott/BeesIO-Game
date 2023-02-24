@@ -5,17 +5,32 @@ using System;
 
 public class HexaGrid : MonoBehaviour
 {
+    /// <summary>
+    /// The number of tiles on the X Axis
+    /// </summary>
     public const int MAP_WIDTH = 200;
+    /// <summary>
+    /// The number of tiles on the Y Axis
+    /// </summary>
     public const int MAP_HEIGHT = 200;
+    /// <summary>
+    /// The spacing between two tiles on X axis
+    /// </summary>
     public const float SPACING_WIDTH = 2f;
+    /// <summary>
+    /// The spacing between two tiles on Y axis
+    /// </summary>
     public const float SPACING_HEIGHT = 1.75f;
 
     [SerializeField]
     GameObject _hextilePrefab;
     [SerializeField]
     Transform _hexInstancesParent;
+    [SerializeField]
+    Material _defaultMaterial;
 
 #if UNITY_EDITOR
+    //Used for unit tests only
     public void SetHextilePrefab(GameObject hextilePrefab)
     {
         _hextilePrefab = hextilePrefab;
@@ -34,7 +49,12 @@ public class HexaGrid : MonoBehaviour
     /// <summary>
     /// Used to cache material for GPU Instancing 
     /// </summary>
-    Dictionary<Color, Material> _cachedMaterials;
+    Dictionary<Color, Material> _cachedMaterials = new Dictionary<Color, Material>();
+
+    /// <summary>
+    /// All the hexagones owned by bases
+    /// </summary>
+    Dictionary<Base, List<Vector2Int>> _hexagonsProperties = new Dictionary<Base, List<Vector2Int>>();
 
     /// <summary>
     /// Generate a new grid of hextiles. 
@@ -69,11 +89,19 @@ public class HexaGrid : MonoBehaviour
     }
 
     /// <summary>
-    /// Set the hextiles to the default state
+    /// Set all the hextiles to the default state (reset all parameters without regenerating)
     /// </summary>
     public void Clear()
     {
-        throw new NotImplementedException();
+        foreach (KeyValuePair<Base,List<Vector2Int>> baseHexPositions in _hexagonsProperties)
+        {
+            foreach (Vector2Int index in baseHexPositions.Value)
+            {
+                _hexatilesInstances[index.x][index.y].material = _defaultMaterial;
+            }
+        }
+        _hexagonsProperties.Clear();
+        _cachedMaterials.Clear();
     }
 
     /// <summary>
@@ -133,6 +161,57 @@ public class HexaGrid : MonoBehaviour
             }
         }
         return allPositions;
+    }
+
+    /// <summary>
+    /// Set a given hexagon owner
+    /// </summary>
+    /// <param name="position">The index of the hexagon</param>
+    /// <param name="property">The new owner or null for remove owner</param>
+    public void SetHexagonProperty(Vector2Int position, Base property)
+    {
+        Base lastOwner = GetPropertyOfHexIndex(position);
+        if(lastOwner != null)
+        {
+            _hexagonsProperties[lastOwner].Remove(position);
+            _hexatilesInstances[position.x][position.y].material = _defaultMaterial;
+            lastOwner.OnHexagonOwnedListChanged();
+        }
+        if (property == null) return;
+        if (!_hexagonsProperties.ContainsKey(property))
+        {
+            _hexagonsProperties[property] = new List<Vector2Int>();
+        }
+        _hexagonsProperties[property].Add(position);
+        ChangeHexColor(position, property.Color);
+        property.OnHexagonOwnedListChanged();
+    }
+
+    /// <summary>
+    /// Get the list of hexagons owned by the base
+    /// </summary>
+    /// <param name="givenBase">The owner of hexagons</param>
+    /// <returns>The list or null</returns>
+    public List<Vector2Int> GetHexagonsOfBase(Base givenBase)
+    {
+        return _hexagonsProperties[givenBase];
+    }
+
+    /// <summary>
+    /// Try to get the base for the given hexagon index
+    /// </summary>
+    /// <param name="index">The index of hexagon</param>
+    /// <returns>The base if owned or null</returns>
+    public Base GetPropertyOfHexIndex(Vector2Int index)
+    {
+        foreach (KeyValuePair<Base, List<Vector2Int>> basePositions in _hexagonsProperties)
+        {
+            foreach (Vector2Int position in basePositions.Value)
+            {
+                if (position == index) return basePositions.Key;
+            }
+        }
+        return null;
     }
 
     /// <summary>

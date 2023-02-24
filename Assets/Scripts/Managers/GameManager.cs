@@ -25,12 +25,16 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void RestartGame()
     {
+        _hexaGrid.Clear();
         _players.SpawnControlledPlayer();
     }
 
+    /// <summary>
+    /// Called when player's base is destroyed and the player is destroy
+    /// </summary>
     public void GameOver()
     {
-        throw new NotImplementedException();
+        Debug.Log("GameOver!");
     }
 
     private void Awake()
