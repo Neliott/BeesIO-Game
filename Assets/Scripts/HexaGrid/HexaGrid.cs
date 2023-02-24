@@ -89,11 +89,19 @@ public class HexaGrid : MonoBehaviour
     }
 
     /// <summary>
-    /// Set the hextiles to the default state
+    /// Set all the hextiles to the default state (reset all parameters without regenerating)
     /// </summary>
     public void Clear()
     {
-        throw new NotImplementedException();
+        foreach (KeyValuePair<Base,List<Vector2Int>> baseHexPositions in _hexagonsProperties)
+        {
+            foreach (Vector2Int index in baseHexPositions.Value)
+            {
+                _hexatilesInstances[index.x][index.y].material = _defaultMaterial;
+            }
+        }
+        _hexagonsProperties.Clear();
+        _cachedMaterials.Clear();
     }
 
     /// <summary>

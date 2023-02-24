@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void RestartGame()
     {
+        _hexaGrid.Clear();
         _players.SpawnControlledPlayer();
     }
 
