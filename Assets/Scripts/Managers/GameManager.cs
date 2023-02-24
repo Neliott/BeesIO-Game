@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        throw new NotImplementedException();
+        Debug.LogError("Gameover not implemented");
     }
 
     private void Awake()

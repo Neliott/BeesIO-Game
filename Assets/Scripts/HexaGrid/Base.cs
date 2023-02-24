@@ -40,16 +40,6 @@ public class Base : MonoBehaviour
         _baseCenterIndex = GameManager.Instance.HexaGrid.WordPositionToHexIndexes(transform.position);
         FillBase(DEFAULT_BASE_SIZE);
         _baseLevel = DEFAULT_BASE_SIZE;
-        StartCoroutine(Test());
-    }
- 
-    IEnumerator Test()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(1);
-            Upgrade(1);
-        }
     }
 
     /// <summary>
@@ -85,6 +75,7 @@ public class Base : MonoBehaviour
     void DestroyBase()
     {
         OnBaseDestroyed?.Invoke();
+        Destroy(gameObject);
     }
 
     void FillBase(int radius)
