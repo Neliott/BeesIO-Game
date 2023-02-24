@@ -28,9 +28,12 @@ public class GameManager : MonoBehaviour
         _players.SpawnControlledPlayer();
     }
 
+    /// <summary>
+    /// Called when player's base is destroyed and the player is destroy
+    /// </summary>
     public void GameOver()
     {
-        Debug.LogError("Gameover not implemented");
+        Debug.Log("GameOver!");
     }
 
     private void Awake()

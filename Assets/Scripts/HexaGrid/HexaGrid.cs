@@ -5,9 +5,21 @@ using System;
 
 public class HexaGrid : MonoBehaviour
 {
+    /// <summary>
+    /// The number of tiles on the X Axis
+    /// </summary>
     public const int MAP_WIDTH = 200;
+    /// <summary>
+    /// The number of tiles on the Y Axis
+    /// </summary>
     public const int MAP_HEIGHT = 200;
+    /// <summary>
+    /// The spacing between two tiles on X axis
+    /// </summary>
     public const float SPACING_WIDTH = 2f;
+    /// <summary>
+    /// The spacing between two tiles on Y axis
+    /// </summary>
     public const float SPACING_HEIGHT = 1.75f;
 
     [SerializeField]
@@ -18,6 +30,7 @@ public class HexaGrid : MonoBehaviour
     Material _defaultMaterial;
 
 #if UNITY_EDITOR
+    //Used for unit tests only
     public void SetHextilePrefab(GameObject hextilePrefab)
     {
         _hextilePrefab = hextilePrefab;
