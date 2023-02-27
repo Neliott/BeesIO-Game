@@ -4,17 +4,35 @@ using UnityEngine;
 
 public class ObjectsManager : MonoBehaviour
 {
-    const float SPAWN_OBJECTS_RATE = 1.5f;
-    const int TARGET_OBJECTS_AMOUNT = 200;
+    /// <summary>
+    /// The target number of objects in the map
+    /// </summary>
+    public const int TARGET_OBJECTS_AMOUNT = 200;
+    /// <summary>
+    /// Spawn objects every 1/rate seconds if needed
+    /// </summary>
+    public const float SPAWN_OBJECTS_RATE = 1.5f;
 
     [SerializeField]
     GameObject _genericObjectToSpawn;
     [SerializeField]
     Transform _spawnedObjectsParent;
 
+#if UNITY_EDITOR
+    //Used for unit tests only
+    public void SetGenericObjectToSpawn(GameObject genericObjectToSpawn)
+    {
+        _genericObjectToSpawn = genericObjectToSpawn;
+    }
+    public void SetSpawnedObjectsParent(Transform spawnedObjectsParent)
+    {
+        _spawnedObjectsParent = spawnedObjectsParent;
+    }
+#endif
+
     bool _canSpanwObjects;
     float _clock = 0;
-    List<IPlacableObject> _spawnedObjects = new List<IPlacableObject>();
+    List<PlacableObject> _spawnedObjects = new List<PlacableObject>();
 
     /// <summary>
     /// Can the object manager spawn objects ?
@@ -31,7 +49,9 @@ public class ObjectsManager : MonoBehaviour
 
     void Update()
     {
-        if (!_canSpanwObjects || _spawnedObjects.Count > TARGET_OBJECTS_AMOUNT) return;
+        if (!_canSpanwObjects) return;
+        _spawnedObjects.RemoveAll(item => item == null);
+        if (_spawnedObjects.Count >= TARGET_OBJECTS_AMOUNT) return;
 
         _clock = _clock + Time.deltaTime;
         if(_clock > 1 / SPAWN_OBJECTS_RATE)
@@ -40,7 +60,6 @@ public class ObjectsManager : MonoBehaviour
             SpawnPickupObject();
         }
     }
-
     void StartSpawningObject()
     {
         _clock = 0;
@@ -52,7 +71,7 @@ public class ObjectsManager : MonoBehaviour
 
     void StopSpawningObjects()
     {
-        foreach (IPlacableObject spawnedObject in _spawnedObjects)
+        foreach (PlacableObject spawnedObject in _spawnedObjects)
         {
             spawnedObject.OnDestroyNeeded();
         }
@@ -62,13 +81,15 @@ public class ObjectsManager : MonoBehaviour
     void SpawnPickupObject()
     {
         GameObject instance = Instantiate(_genericObjectToSpawn, GetRandomPlaceOnMap(), Quaternion.identity, _spawnedObjectsParent);
-        IPlacableObject placableObject = instance.GetComponent<IPlacableObject>();
+        PlacableObject placableObject = instance.GetComponent<PlacableObject>();
         placableObject.OnPlaced();
         _spawnedObjects.Add(placableObject);
     }
 
     Vector2 GetRandomPlaceOnMap()
     {
+        if (GameManager.Instance == null)
+            return new Vector2(Random.Range(0, HexaGrid.MAP_WIDTH), Random.Range(0, HexaGrid.MAP_HEIGHT));
         return GameManager.Instance.HexaGrid.HexIndexesToWorldPosition(new Vector2Int(Random.Range(0, HexaGrid.MAP_WIDTH), Random.Range(0, HexaGrid.MAP_HEIGHT)));
     }
 }
