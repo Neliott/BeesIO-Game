@@ -5,6 +5,7 @@ using System;
 
 [RequireComponent(typeof(HexaGrid))]
 [RequireComponent(typeof(PlayersManager))]
+[RequireComponent(typeof(ObjectsManager))]
 public class GameManager : MonoBehaviour
 {
     /// <summary>
@@ -19,13 +20,15 @@ public class GameManager : MonoBehaviour
 
     HexaGrid _hexaGrid;
     PlayersManager _players;
+    ObjectsManager _objectsManager;
 
     /// <summary>
     /// Start or Restart a new game
     /// </summary>
     public void RestartGame()
     {
-        _hexaGrid.Clear();
+        _hexaGrid.Clear(); 
+        _objectsManager.CanSpanwObjects = true;
         _players.SpawnControlledPlayer();
     }
 
@@ -34,6 +37,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void GameOver()
     {
+        _objectsManager.CanSpanwObjects = false;
         Debug.Log("GameOver!");
     }
 
@@ -42,6 +46,7 @@ public class GameManager : MonoBehaviour
         Instance = this;
         _hexaGrid = GetComponent<HexaGrid>();
         _players = GetComponent<PlayersManager>();
+        _objectsManager = GetComponent<ObjectsManager>();
         _hexaGrid.Generate();
     }
 
