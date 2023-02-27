@@ -8,11 +8,11 @@ public class HexaGrid : MonoBehaviour
     /// <summary>
     /// The number of tiles on the X Axis
     /// </summary>
-    public const int MAP_WIDTH = 200;
+    public const int MAP_WIDTH = 100;
     /// <summary>
     /// The number of tiles on the Y Axis
     /// </summary>
-    public const int MAP_HEIGHT = 200;
+    public const int MAP_HEIGHT = 100;
     /// <summary>
     /// The spacing between two tiles on X axis
     /// </summary>
