@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class Pollen : PickupObject
 {
-    // Start is called before the first frame update
-    void Start()
+    /// <summary>
+    /// Drop the pollen (if on base, add it)
+    /// </summary>
+    public override void Drop()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        base.Drop();
+        //TODO : Add to base
     }
 }

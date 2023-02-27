@@ -18,7 +18,7 @@ public class PickupObject : PlacableObject
     /// <summary>
     /// Pickup the object
     /// </summary>
-    public void PickUp(PickupController newOwner)
+    public virtual void PickUp(PickupController newOwner)
     {
         if (_owner != null) return;
         transform.localScale = Vector3.one * 0.7f;
@@ -29,7 +29,7 @@ public class PickupObject : PlacableObject
     /// <summary>
     /// Drop the object
     /// </summary>
-    public void Drop()
+    public virtual void Drop()
     {
         if (_owner == null) return;
         transform.localScale = Vector3.one;
