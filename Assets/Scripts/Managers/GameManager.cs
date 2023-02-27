@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void GameOver()
     {
+        _objectsManager.CanSpanwObjects = false;
         Debug.Log("GameOver!");
     }
 
