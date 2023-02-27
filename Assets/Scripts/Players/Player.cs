@@ -17,14 +17,14 @@ public abstract class Player : MonoBehaviour
     protected Mover _mover;
     protected string _name;
     protected Base _base;
-    protected PickupController _pickupControlled;
+    protected PickupController _pickupController;
 
     /// <summary>
     /// Setup the player when instanciated
     /// </summary>
     public virtual void Setup(string name)
     {
-        _pickupControlled = GetComponent<PickupController>();
+        _pickupController = GetComponent<PickupController>();
 
         _mover = GetComponent<Mover>();
         _mover.Speed = 6.5f;
