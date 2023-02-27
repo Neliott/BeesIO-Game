@@ -7,22 +7,32 @@ public class ObjectsManager : MonoBehaviour
     /// <summary>
     /// The target number of objects in the map
     /// </summary>
-    public const int TARGET_OBJECTS_AMOUNT = 200;
+    public const int TARGET_OBJECTS_AMOUNT = 100;
+    /// <summary>
+    /// The number of flowers to spawn
+    /// </summary>
+    public const int FLOWERS_AMOUNT = 20;
     /// <summary>
     /// Spawn objects every 1/rate seconds if needed
     /// </summary>
     public const float SPAWN_OBJECTS_RATE = 1.5f;
 
     [SerializeField]
-    GameObject _genericObjectToSpawn;
+    GameObject _pollen;
+    [SerializeField]
+    GameObject _flower;
     [SerializeField]
     Transform _spawnedObjectsParent;
 
 #if UNITY_EDITOR
     //Used for unit tests only
-    public void SetGenericObjectToSpawn(GameObject genericObjectToSpawn)
+    public void SetPollen(GameObject pollen)
     {
-        _genericObjectToSpawn = genericObjectToSpawn;
+        _pollen = pollen;
+    }
+    public void SetFlower(GameObject flower)
+    {
+        _flower = flower;
     }
     public void SetSpawnedObjectsParent(Transform spawnedObjectsParent)
     {
@@ -51,21 +61,26 @@ public class ObjectsManager : MonoBehaviour
     {
         if (!_canSpanwObjects) return;
         _spawnedObjects.RemoveAll(item => item == null);
-        if (_spawnedObjects.Count >= TARGET_OBJECTS_AMOUNT) return;
+        if ((_spawnedObjects.Count - FLOWERS_AMOUNT) >= TARGET_OBJECTS_AMOUNT) return;
 
         _clock = _clock + Time.deltaTime;
         if(_clock > 1 / SPAWN_OBJECTS_RATE)
         {
             _clock = 0;
-            SpawnPickupObject();
+            SpawnObject(_pollen);
         }
     }
+
     void StartSpawningObject()
     {
         _clock = 0;
         for (int i = 0; i < TARGET_OBJECTS_AMOUNT; i++)
         {
-            SpawnPickupObject();
+            SpawnObject(_pollen);
+        }
+        for (int i = 0; i < FLOWERS_AMOUNT; i++)
+        {
+            SpawnObject(_flower);
         }
     }
 
@@ -78,9 +93,9 @@ public class ObjectsManager : MonoBehaviour
         _spawnedObjects.Clear();
     }
 
-    void SpawnPickupObject()
+    void SpawnObject(GameObject prefab)
     {
-        GameObject instance = Instantiate(_genericObjectToSpawn, GetRandomPlaceOnMap(), Quaternion.identity, _spawnedObjectsParent);
+        GameObject instance = Instantiate(prefab, GetRandomPlaceOnMap(), Quaternion.identity, _spawnedObjectsParent);
         PlacableObject placableObject = instance.GetComponent<PlacableObject>();
         placableObject.OnPlaced();
         _spawnedObjects.Add(placableObject);

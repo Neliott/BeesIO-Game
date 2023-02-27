@@ -22,6 +22,7 @@ public class PickupObject : PlacableObject
     {
         if (_owner != null) return;
         transform.localScale = Vector3.one * 0.7f;
+        transform.parent = null;
         _owner = newOwner;
     }
 

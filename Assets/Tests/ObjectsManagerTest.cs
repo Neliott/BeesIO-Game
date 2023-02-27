@@ -23,7 +23,8 @@ public class ObjectsManagerTest
         //Given
         ObjectsManager objectManager = SpawnObjectsManager();
         Transform childrenContained = new GameObject().transform;
-        objectManager.SetGenericObjectToSpawn(TestObjectPrefab);
+        objectManager.SetPollen(TestObjectPrefab);
+        objectManager.SetFlower(TestObjectPrefab);
         objectManager.SetSpawnedObjectsParent(childrenContained);
         int expectedCount = 0;
         //When
@@ -38,9 +39,10 @@ public class ObjectsManagerTest
         //Given
         ObjectsManager objectManager = SpawnObjectsManager();
         Transform childrenContained = new GameObject().transform;
-        objectManager.SetGenericObjectToSpawn(TestObjectPrefab);
+        objectManager.SetPollen(TestObjectPrefab);
+        objectManager.SetFlower(TestObjectPrefab);
         objectManager.SetSpawnedObjectsParent(childrenContained);
-        int expectedCount = ObjectsManager.TARGET_OBJECTS_AMOUNT;
+        int expectedCount = ObjectsManager.TARGET_OBJECTS_AMOUNT + ObjectsManager.FLOWERS_AMOUNT;
         //When
         objectManager.CanSpanwObjects = true;
         //Then
@@ -53,9 +55,10 @@ public class ObjectsManagerTest
         //Given
         ObjectsManager objectManager = SpawnObjectsManager();
         Transform childrenContained = new GameObject().transform;
-        objectManager.SetGenericObjectToSpawn(TestObjectPrefab);
+        objectManager.SetPollen(TestObjectPrefab);
+        objectManager.SetFlower(TestObjectPrefab);
         objectManager.SetSpawnedObjectsParent(childrenContained);
-        int expectedCount = ObjectsManager.TARGET_OBJECTS_AMOUNT;
+        int expectedCount = ObjectsManager.TARGET_OBJECTS_AMOUNT + ObjectsManager.FLOWERS_AMOUNT;
         //When
         objectManager.CanSpanwObjects = true;
         yield return new WaitForSecondsRealtime(TEST_WAIT_TIME); //Test update method
@@ -69,9 +72,10 @@ public class ObjectsManagerTest
         //Given
         ObjectsManager objectManager = SpawnObjectsManager();
         Transform childrenContained = new GameObject().transform;
-        objectManager.SetGenericObjectToSpawn(TestObjectPrefab);
+        objectManager.SetPollen(TestObjectPrefab);
+        objectManager.SetFlower(TestObjectPrefab);
         objectManager.SetSpawnedObjectsParent(childrenContained);
-        int expectedCount = ObjectsManager.TARGET_OBJECTS_AMOUNT;
+        int expectedCount = ObjectsManager.TARGET_OBJECTS_AMOUNT + ObjectsManager.FLOWERS_AMOUNT;
         objectManager.CanSpanwObjects = true;
         //When
         Object.Destroy(childrenContained.GetChild(0).gameObject); //Remove one object
