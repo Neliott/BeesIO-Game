@@ -14,7 +14,7 @@ public class ObjectsManagerTest
 
     GameObject TestObjectPrefab
     {
-        get => Resources.Load<GameObject>("Prefabs/TestObject");
+        get => Resources.Load<GameObject>("Prefabs/Objects/PlacableTest");
     }
 
     [UnityTest]

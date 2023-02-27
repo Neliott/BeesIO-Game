@@ -373,5 +373,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddec8e336b288e44c97c0440d6c39278, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _genericObjectToSpawn: {fileID: 2997026058172776828, guid: c561413ed12e0a747a818e44fc2d1429, type: 3}
+  _genericObjectToSpawn: {fileID: 7094228239219255637, guid: 5928e4dfd444aab47967907c532dcb34, type: 3}
   _spawnedObjectsParent: {fileID: 21806322}
