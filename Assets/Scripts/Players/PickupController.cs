@@ -8,7 +8,6 @@ public class PickupController : MonoBehaviour
 {
     List<PickupObject> _currentObjectToPickup = new List<PickupObject>();
     List<PickupObject> _pickedUpObjects = new List<PickupObject>();
-    List<Vector2> _positions = new List<Vector2>();
 
     /// <summary>
     /// Pickup the last compatible object added to the list CurrentObjectToPickup
@@ -21,10 +20,8 @@ public class PickupController : MonoBehaviour
 
         _pickedUpObjects.Add(objectToPickup);
         _currentObjectToPickup.Remove(objectToPickup);
-        //TODO : Pickup bind 
         objectToPickup.PickUp(this);
         objectToPickup.transform.SetParent(null);
-        _positions.Add(transform.position);
     }
 
     /// <summary>
@@ -36,7 +33,6 @@ public class PickupController : MonoBehaviour
         {
             objectToDrop.Drop();
         }
-        _positions.Clear();
         _pickedUpObjects.Clear();
     }
 
@@ -75,12 +71,11 @@ public class PickupController : MonoBehaviour
 
     private void Update()
     {
-        if (_positions.Count == 0) return;
-        for (int i = 0; i < _positions.Count; i++)
+        if (_pickedUpObjects.Count == 0) return;
+        for (int i = 0; i < _pickedUpObjects.Count; i++)
         {
-            if (i == 0) _positions[i] = GetNewPosition(transform.position, _positions[i]);
-            else _positions[i] = GetNewPosition(_positions[i - 1], _positions[i]);
-            _pickedUpObjects[i].transform.position = _positions[i];
+            if (i == 0) _pickedUpObjects[i].transform.position = GetNewPosition(transform.position, _pickedUpObjects[i].transform.position);
+            else _pickedUpObjects[i].transform.position = GetNewPosition(_pickedUpObjects[i - 1].transform.position, _pickedUpObjects[i].transform.position);
         }
     }
 

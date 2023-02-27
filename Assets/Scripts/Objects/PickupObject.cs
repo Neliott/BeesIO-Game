@@ -21,7 +21,7 @@ public class PickupObject : PlacableObject
     public void PickUp(PickupController newOwner)
     {
         if (_owner != null) return;
-        transform.localScale = Vector3.one * 0.5f;
+        transform.localScale = Vector3.one * 0.7f;
         _owner = newOwner;
     }
 

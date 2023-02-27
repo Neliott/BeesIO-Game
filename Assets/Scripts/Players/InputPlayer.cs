@@ -5,10 +5,11 @@ using UnityEngine;
 public class InputPlayer : Player
 {
     const float SMOOTH_DIRECTION = 20;
+
     /// <inheritdoc/>
     public override bool IsControlled => true;
 
-    float velocity;
+    float _velocity;
 
     public override void Setup(string name)
     {
@@ -43,7 +44,7 @@ public class InputPlayer : Player
         //Convert the mouse relative vector to an angle
         float angle = Mathf.Atan2(mouseRelativePosition.y, mouseRelativePosition.x) * Mathf.Rad2Deg;
         //The direction is smoothed
-        float smothAngle = Mathf.SmoothDampAngle(_mover.Direction, angle, ref velocity, SMOOTH_DIRECTION * Time.deltaTime);
+        float smothAngle = Mathf.SmoothDampAngle(_mover.Direction, angle, ref _velocity, SMOOTH_DIRECTION * Time.deltaTime);
         _mover.Direction = smothAngle;
     }
     void Interact()
