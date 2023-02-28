@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class PickupObject : PlacableObject
 {
-    private PickupController _owner = null;
+    protected PickupController _owner = null;
 
     /// <summary>
     /// Get the owner of this object (or null)

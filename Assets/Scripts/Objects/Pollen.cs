@@ -9,7 +9,13 @@ public class Pollen : PickupObject
     /// </summary>
     public override void Drop()
     {
+        Vector2Int indexes = GameManager.Instance.HexaGrid.WordPositionToHexIndexes(_owner.transform.position);
+        Base baseOn = GameManager.Instance.HexaGrid.GetPropertyOfHexIndex(indexes);
+        if(baseOn != null)
+        {
+            baseOn.Upgrade(1);
+            OnDestroyNeeded();
+        }
         base.Drop();
-        //TODO : Add to base
     }
 }
