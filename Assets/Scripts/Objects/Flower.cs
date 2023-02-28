@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Flower : PlacableObject
 {
-    const float MAX_SPAWN_TIME = 10;
-    const float MIN_SPAWN_TIME = 3;
+    const float MAX_SPAWN_TIME = 15;
+    const float MIN_SPAWN_TIME = 5;
 
     [SerializeField]
     GameObject _pollenPrefab;
