@@ -7,11 +7,11 @@ public class ObjectsManager : MonoBehaviour
     /// <summary>
     /// The target number of objects in the map
     /// </summary>
-    public const int TARGET_OBJECTS_AMOUNT = 100;
+    public const int TARGET_OBJECTS_AMOUNT = 75;
     /// <summary>
     /// The number of flowers to spawn
     /// </summary>
-    public const int FLOWERS_AMOUNT = 20;
+    public const int FLOWERS_AMOUNT = 15;
     /// <summary>
     /// Spawn objects every 1/rate seconds if needed
     /// </summary>
@@ -105,6 +105,8 @@ public class ObjectsManager : MonoBehaviour
     {
         if (GameManager.Instance == null)
             return new Vector2(Random.Range(0, HexaGrid.MAP_WIDTH), Random.Range(0, HexaGrid.MAP_HEIGHT));
-        return GameManager.Instance.HexaGrid.HexIndexesToWorldPosition(new Vector2Int(Random.Range(0, HexaGrid.MAP_WIDTH), Random.Range(0, HexaGrid.MAP_HEIGHT)));
+        int randomXWithBounds = (int)Random.Range(HexaGrid.MAP_SAFE_GRID_OFFSET_X, HexaGrid.MAP_WIDTH * HexaGrid.MAP_SAFE_GRID_PERCENTAGE);
+        int randomYWithBounds = (int)Random.Range(HexaGrid.MAP_SAFE_GRID_OFFSET_Y, HexaGrid.MAP_HEIGHT * HexaGrid.MAP_SAFE_GRID_PERCENTAGE);
+        return GameManager.Instance.HexaGrid.HexIndexesToWorldPosition(new Vector2Int(randomXWithBounds, randomYWithBounds));
     }
 }
