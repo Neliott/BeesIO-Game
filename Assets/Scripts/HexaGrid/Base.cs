@@ -6,6 +6,7 @@ using Random = UnityEngine.Random;
 
 public class Base : MonoBehaviour
 {
+    const float UPGRADE_BASE_EVERY_SECONDS = 0.6f;
     const int DEFAULT_BASE_SIZE = 2;
 
     /// <summary>
@@ -17,8 +18,10 @@ public class Base : MonoBehaviour
     TextMesh _playerName;
 
     Color _color;
-    Vector2Int _baseCenterIndex;
     int _baseLevel;
+    int _upgradesToApply;
+    float _upgradeClock = 0;
+    Vector2Int _baseCenterIndex;
     List<Vector2Int> _remaningHexagonsForNextStep = new List<Vector2Int>();
 
     /// <summary>
@@ -48,13 +51,7 @@ public class Base : MonoBehaviour
     /// <param name="points">The number of new hexagons to add to the base</param>
     public void Upgrade(int points)
     {
-        if(_remaningHexagonsForNextStep.Count == 0)
-        {
-            _baseLevel++;
-            _remaningHexagonsForNextStep = GameManager.Instance.HexaGrid.GetBigHexagonPositions(_baseCenterIndex, _baseLevel, true);
-        }
-        GameManager.Instance.HexaGrid.SetHexagonProperty(_remaningHexagonsForNextStep[0], this);
-        _remaningHexagonsForNextStep.RemoveAt(0);
+        _upgradesToApply = _upgradesToApply + points;
     }
     /// <summary>
     /// Destroy the base (called when there is no more hexagons)
@@ -72,10 +69,33 @@ public class Base : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (_upgradesToApply == 0) return;
+        _upgradeClock = _upgradeClock + Time.deltaTime;
+        if(_upgradeClock > UPGRADE_BASE_EVERY_SECONDS)
+        {
+            _upgradeClock = 0;
+            _upgradesToApply--;
+            BuildNextBaseHexagon();
+        }
+    }
+
     void DestroyBase()
     {
         OnBaseDestroyed?.Invoke();
         Destroy(gameObject);
+    }
+
+    void BuildNextBaseHexagon()
+    {
+        if (_remaningHexagonsForNextStep.Count == 0)
+        {
+            _baseLevel++;
+            _remaningHexagonsForNextStep = GameManager.Instance.HexaGrid.GetBigHexagonPositions(_baseCenterIndex, _baseLevel, true);
+        }
+        GameManager.Instance.HexaGrid.SetHexagonProperty(_remaningHexagonsForNextStep[0], this);
+        _remaningHexagonsForNextStep.RemoveAt(0);
     }
 
     void FillBase(int radius)
