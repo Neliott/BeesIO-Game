@@ -4,8 +4,13 @@ using UnityEngine;
 
 public class Pesticide : PickupObject
 {
+    const int MINIMUM_RADIUS = 1;
+    const int MAXIMUM_RADIUS = 4;
+
     [SerializeField]
     TextMesh _explosionCountDown;
+    [SerializeField]
+    GameObject _explosionEffect;
 
     float _clockBeforeExplosion = 10;
     bool _isClockTicking = false;
@@ -29,11 +34,14 @@ public class Pesticide : PickupObject
     void Explode()
     {
         Vector2Int center = GameManager.Instance.HexaGrid.WordPositionToHexIndexes(transform.position);
-        List<Vector2Int> allHexsToExplode = GameManager.Instance.HexaGrid.GetBigHexagonPositions(center, 3, false);
+        int radius = Random.Range(MINIMUM_RADIUS, MAXIMUM_RADIUS);
+        List<Vector2Int> allHexsToExplode = GameManager.Instance.HexaGrid.GetBigHexagonPositions(center, radius, false);
         foreach (Vector2Int hexIndexToExplode in allHexsToExplode)
         {
             GameManager.Instance.HexaGrid.SetHexagonProperty(hexIndexToExplode, null);
         }
+        GameObject effect = Instantiate(_explosionEffect, transform.position, Quaternion.identity);
+        effect.transform.localScale = radius * Vector3.one * 1.5f;
         OnDestroyNeeded();
     }
 }

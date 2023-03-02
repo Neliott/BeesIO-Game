@@ -202,3 +202,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _explosionCountDown: {fileID: 2196394997349089337}
+  _explosionEffect: {fileID: 2401614716886062674, guid: 39415ca816c898f4085a5336991c9bb8, type: 3}
