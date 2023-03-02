@@ -49,7 +49,7 @@ public class PickupController : MonoBehaviour
         }
         else
         {
-            for (int i = _currentObjectToPickup.Count - 1; i >= 0; i++)
+            for (int i = _currentObjectToPickup.Count - 1; i >= 0; i--)
             {
                 if (_currentObjectToPickup[i].GetType() == _pickedUpObjects[0].GetType())
                 {
