@@ -18,7 +18,7 @@ public class ObjectsManager : MonoBehaviour
     public const float SPAWN_OBJECTS_RATE = 1.5f;
 
     [SerializeField]
-    GameObject _pollen;
+    List<GameObject> _objectsToSpawn = new List<GameObject>();
     [SerializeField]
     GameObject _flower;
     [SerializeField]
@@ -26,9 +26,9 @@ public class ObjectsManager : MonoBehaviour
 
 #if UNITY_EDITOR
     //Used for unit tests only
-    public void SetPollen(GameObject pollen)
+    public void SetObjectsToSpawn(List<GameObject> objectsToSpawn)
     {
-        _pollen = pollen;
+        _objectsToSpawn = objectsToSpawn;
     }
     public void SetFlower(GameObject flower)
     {
@@ -67,7 +67,7 @@ public class ObjectsManager : MonoBehaviour
         if(_clock > 1 / SPAWN_OBJECTS_RATE)
         {
             _clock = 0;
-            SpawnObject(_pollen);
+            SpawnRandomObject();
         }
     }
 
@@ -76,7 +76,7 @@ public class ObjectsManager : MonoBehaviour
         _clock = 0;
         for (int i = 0; i < TARGET_OBJECTS_AMOUNT; i++)
         {
-            SpawnObject(_pollen);
+            SpawnRandomObject();
         }
         for (int i = 0; i < FLOWERS_AMOUNT; i++)
         {
@@ -91,6 +91,11 @@ public class ObjectsManager : MonoBehaviour
             spawnedObject.OnDestroyNeeded();
         }
         _spawnedObjects.Clear();
+    }
+
+    void SpawnRandomObject()
+    {
+        SpawnObject(_objectsToSpawn[Random.Range(0, _objectsToSpawn.Count)]);
     }
 
     void SpawnObject(GameObject prefab)

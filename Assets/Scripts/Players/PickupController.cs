@@ -49,7 +49,7 @@ public class PickupController : MonoBehaviour
         }
         else
         {
-            for (int i = _currentObjectToPickup.Count - 1; i >= 0; i++)
+            for (int i = _currentObjectToPickup.Count - 1; i >= 0; i--)
             {
                 if (_currentObjectToPickup[i].GetType() == _pickedUpObjects[0].GetType())
                 {
@@ -71,6 +71,7 @@ public class PickupController : MonoBehaviour
 
     private void Update()
     {
+        _pickedUpObjects.RemoveAll(s => s == null);
         if (_pickedUpObjects.Count == 0) return;
         for (int i = 0; i < _pickedUpObjects.Count; i++)
         {

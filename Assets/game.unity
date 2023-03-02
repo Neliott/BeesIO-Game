@@ -373,6 +373,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddec8e336b288e44c97c0440d6c39278, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pollen: {fileID: 2667070909013261332, guid: b95e2a4b1463f624b87fd19c921e3f8a, type: 3}
+  _objectsToSpawn:
+  - {fileID: 2667070909013261332, guid: b95e2a4b1463f624b87fd19c921e3f8a, type: 3}
+  - {fileID: 2667070909013261332, guid: 34e708430b91c164996ddfb0febb05b8, type: 3}
   _flower: {fileID: 3076046974477128820, guid: c9561772764474b408e0a8254b38e75b, type: 3}
   _spawnedObjectsParent: {fileID: 21806322}
