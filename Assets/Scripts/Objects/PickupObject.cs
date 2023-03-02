@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class PickupObject : PlacableObject
 {
-    private PickupController _owner = null;
+    protected PickupController _owner = null;
 
     /// <summary>
     /// Get the owner of this object (or null)
@@ -18,17 +18,18 @@ public class PickupObject : PlacableObject
     /// <summary>
     /// Pickup the object
     /// </summary>
-    public void PickUp(PickupController newOwner)
+    public virtual void PickUp(PickupController newOwner)
     {
         if (_owner != null) return;
         transform.localScale = Vector3.one * 0.7f;
+        transform.parent = null;
         _owner = newOwner;
     }
 
     /// <summary>
     /// Drop the object
     /// </summary>
-    public void Drop()
+    public virtual void Drop()
     {
         if (_owner == null) return;
         transform.localScale = Vector3.one;

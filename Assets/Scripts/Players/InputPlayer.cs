@@ -11,20 +11,6 @@ public class InputPlayer : Player
 
     float _velocity;
 
-    public override void Setup(string name)
-    {
-        base.Setup(name);
-        StartCoroutine(AddTest());
-    }
-
-    IEnumerator AddTest()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(1);
-            _base.Upgrade(1);
-        }
-    }
     void RemoveTest()
     {
         Vector2Int hexindex = GameManager.Instance.HexaGrid.WordPositionToHexIndexes(transform.position);
@@ -35,7 +21,7 @@ public class InputPlayer : Player
     {
         Move();
         Interact();
-        RemoveTest();
+        //RemoveTest();
     }
     void Move()
     {
