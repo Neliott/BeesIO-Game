@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 public class Base : MonoBehaviour
 {
-    const float UPGRADE_BASE_EVERY_SECONDS = 0.6f;
+    const float UPGRADE_BASE_EVERY_SECONDS = 0.1f;
     const int DEFAULT_BASE_SIZE = 2;
 
     /// <summary>
