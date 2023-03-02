@@ -23,7 +23,7 @@ public class ObjectsManagerTest
         //Given
         ObjectsManager objectManager = SpawnObjectsManager();
         Transform childrenContained = new GameObject().transform;
-        objectManager.SetPollen(TestObjectPrefab);
+        objectManager.SetObjectsToSpawn(new List<GameObject>() { TestObjectPrefab });
         objectManager.SetFlower(TestObjectPrefab);
         objectManager.SetSpawnedObjectsParent(childrenContained);
         int expectedCount = 0;
@@ -39,7 +39,7 @@ public class ObjectsManagerTest
         //Given
         ObjectsManager objectManager = SpawnObjectsManager();
         Transform childrenContained = new GameObject().transform;
-        objectManager.SetPollen(TestObjectPrefab);
+        objectManager.SetObjectsToSpawn(new List<GameObject>() { TestObjectPrefab });
         objectManager.SetFlower(TestObjectPrefab);
         objectManager.SetSpawnedObjectsParent(childrenContained);
         int expectedCount = ObjectsManager.TARGET_OBJECTS_AMOUNT + ObjectsManager.FLOWERS_AMOUNT;
@@ -55,7 +55,7 @@ public class ObjectsManagerTest
         //Given
         ObjectsManager objectManager = SpawnObjectsManager();
         Transform childrenContained = new GameObject().transform;
-        objectManager.SetPollen(TestObjectPrefab);
+        objectManager.SetObjectsToSpawn(new List<GameObject>() { TestObjectPrefab });
         objectManager.SetFlower(TestObjectPrefab);
         objectManager.SetSpawnedObjectsParent(childrenContained);
         int expectedCount = ObjectsManager.TARGET_OBJECTS_AMOUNT + ObjectsManager.FLOWERS_AMOUNT;
@@ -72,7 +72,7 @@ public class ObjectsManagerTest
         //Given
         ObjectsManager objectManager = SpawnObjectsManager();
         Transform childrenContained = new GameObject().transform;
-        objectManager.SetPollen(TestObjectPrefab);
+        objectManager.SetObjectsToSpawn(new List<GameObject>() { TestObjectPrefab });
         objectManager.SetFlower(TestObjectPrefab);
         objectManager.SetSpawnedObjectsParent(childrenContained);
         int expectedCount = ObjectsManager.TARGET_OBJECTS_AMOUNT + ObjectsManager.FLOWERS_AMOUNT;

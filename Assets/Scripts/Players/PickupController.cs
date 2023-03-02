@@ -71,6 +71,7 @@ public class PickupController : MonoBehaviour
 
     private void Update()
     {
+        _pickedUpObjects.RemoveAll(s => s == null);
         if (_pickedUpObjects.Count == 0) return;
         for (int i = 0; i < _pickedUpObjects.Count; i++)
         {
