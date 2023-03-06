@@ -11,6 +11,16 @@ public abstract class Player : MonoBehaviour
     /// </summary>
     public abstract bool IsControlled { get; }
 
+    /// <summary>
+    /// Get the base of this player
+    /// </summary>
+    public Base Base { get => _base; }
+
+    /// <summary>
+    /// Get the name of this player
+    /// </summary>
+    public string Name { get => _name; }
+
     [SerializeField] GameObject _basePrefab;
     [SerializeField] SpriteRenderer _coloredRenderer;
 

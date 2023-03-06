@@ -45,6 +45,20 @@ public class ObjectsManager : MonoBehaviour
     List<PlacableObject> _spawnedObjects = new List<PlacableObject>();
 
     /// <summary>
+    /// Get a random objects on the map of type
+    /// </summary>
+    /// <typeparam name="T">The type of random object to get</typeparam>
+    /// <returns>A placable object of given type</returns>
+    public PlacableObject GetRandomObject<T>() where T : PlacableObject
+    {
+        while (true)
+        {
+            PlacableObject objectToTest = _spawnedObjects[Random.Range(0, _spawnedObjects.Count)];
+            if(objectToTest is T) return objectToTest;
+        }
+    }
+
+    /// <summary>
     /// Can the object manager spawn objects ?
     /// </summary>
     public bool CanSpanwObjects

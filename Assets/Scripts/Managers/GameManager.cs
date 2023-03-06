@@ -18,6 +18,16 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public HexaGrid HexaGrid { get => _hexaGrid; }
 
+    /// <summary>
+    /// Get the players manager
+    /// </summary>
+    public PlayersManager Players { get => _players; }
+
+    /// <summary>
+    /// Get the objects manager / spawner
+    /// </summary>
+    public ObjectsManager ObjectsManager { get => _objectsManager; }
+
     HexaGrid _hexaGrid;
     PlayersManager _players;
     ObjectsManager _objectsManager;
