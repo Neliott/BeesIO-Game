@@ -4,13 +4,7 @@ using UnityEngine;
 
 public class PlayersManager : MonoBehaviour
 {
-    [SerializeField]
-    GameObject _controlledPlayerPrefab;
-    [SerializeField]
-    CameraTracker _playerTracker;
-
-    List<Player> _players = new List<Player>();
-    InputPlayer _controlledPlayer;
+    const int BOTS_TARGET_NUMBER = 20;
 
     /// <summary>
     /// Get all the players on the map
@@ -27,6 +21,27 @@ public class PlayersManager : MonoBehaviour
     {
         get { return _controlledPlayer; }
     }
+
+    /// <summary>
+    /// Can the player manager spawn bots ?
+    /// </summary>
+    public bool CanSpawnBots
+    {
+        get { return _canSpawnBots; }
+        set {
+            _canSpawnBots = value;
+            if (_canSpawnBots) StartSpawnBots();
+            else DestroyBots();
+        }
+    }
+
+    [SerializeField] GameObject _controlledPlayerPrefab;
+    [SerializeField] GameObject _botPlayerPrefab;
+    [SerializeField] CameraTracker _playerTracker;
+
+    List<Player> _players = new List<Player>();
+    InputPlayer _controlledPlayer;
+    bool _canSpawnBots;
 
     /// <summary>
     /// Spawn a controlled player
@@ -53,5 +68,24 @@ public class PlayersManager : MonoBehaviour
             _playerTracker.TrackedObject = null;
         }
         _players.Remove(player);
+    }
+
+    void StartSpawnBots()
+    {
+        for (int i = 0; i < BOTS_TARGET_NUMBER; i++)
+        {
+            SpawnBot();
+        }
+    }
+    void SpawnBot()
+    {
+        GameObject newBotPlayerGameObject = Instantiate(_botPlayerPrefab, HexaGrid.GetRandomPlaceOnMap(),Quaternion.identity);
+        BotPlayer newBotPlayer = newBotPlayerGameObject.GetComponent<BotPlayer>();
+        newBotPlayer.Setup("Bot#"+Random.Range(0,100));
+        _players.Add(newBotPlayer);
+    }
+    void DestroyBots()
+    {
+
     }
 }

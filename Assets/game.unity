@@ -360,6 +360,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _controlledPlayerPrefab: {fileID: 1453689148162919451, guid: 70af4b113cef0e347913813bce8d63cd, type: 3}
+  _botPlayerPrefab: {fileID: 5734545345199644992, guid: 3b5cebec1ac2c304293a236ca6a1f50e, type: 3}
   _playerTracker: {fileID: 466243031}
 --- !u!114 &2136466683
 MonoBehaviour:

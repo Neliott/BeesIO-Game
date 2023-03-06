@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputPlayer : Player
+public class BotPlayer : Player
 {
     const float SMOOTH_DIRECTION = 20;
 
     /// <inheritdoc/>
-    public override bool IsControlled => true;
+    public override bool IsControlled => false;
 
     float _velocity;
 
-    void Update()
+    /*void Update()
     {
         Move();
         Interact();
@@ -36,5 +36,5 @@ public class InputPlayer : Player
         {
             _pickupController.Drop();
         }
-    }
+    }*/
 }

@@ -39,6 +39,7 @@ public abstract class Player : MonoBehaviour
 
     protected virtual void OnBaseDestroyed()
     {
+        GameManager.Instance.OnPlayerDestroyed(this);
         Destroy(gameObject);
     }
 
