@@ -13,7 +13,7 @@ public class InputPlayer : Player
 
     void RemoveTest()
     {
-        Vector2Int hexindex = GameManager.Instance.HexaGrid.WordPositionToHexIndexes(transform.position);
+        Vector2Int hexindex = HexaGrid.WordPositionToHexIndexes(transform.position);
         GameManager.Instance.HexaGrid.SetHexagonProperty(hexindex, null);
     }
 
