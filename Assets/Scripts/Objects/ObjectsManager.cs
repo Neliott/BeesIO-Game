@@ -51,6 +51,7 @@ public class ObjectsManager : MonoBehaviour
     /// <returns>A placable object of given type</returns>
     public PlacableObject GetRandomObject<T>() where T : PlacableObject
     {
+        if (_spawnedObjects.Count == 0) return null;
         while (true)
         {
             PlacableObject objectToTest = _spawnedObjects[Random.Range(0, _spawnedObjects.Count)];

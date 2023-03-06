@@ -59,14 +59,7 @@ public class Base : MonoBehaviour
     public void OnHexagonOwnedListChanged()
     {
         List<Vector2Int> hexagons = GameManager.Instance.HexaGrid.GetHexagonsOfBase(this);
-        if (hexagons.Count == 0)
-        {
-            DestroyBase();
-        }
-        else
-        {
-            //TODO : 
-        }
+        if (hexagons.Count == 0) DestroyBase();
     }
 
     private void Update()

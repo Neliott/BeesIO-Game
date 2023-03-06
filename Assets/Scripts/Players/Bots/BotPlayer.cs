@@ -4,52 +4,59 @@ using UnityEngine;
 
 public class BotPlayer : Player
 {
-    enum Action
-    {
-        None,
-        DestroyEnnemyBase,
-        UpgradeMyBase,
-        ProtectBase,
-    }
-
     const float SMOOTH_DIRECTION = 20;
 
     /// <inheritdoc/>
     public override bool IsControlled => false;
 
-    Action _currentAction;
-    PlacableObject _targetObject;
-    Base _targetBase;
+    MonoBehaviour _target;
     float _velocity;
 
-    public override void Setup(string name)
+    void ChooseNewTarget()
     {
-        base.Setup(name);
-        PickNewAction();
-    }
-
-    void PickNewAction()
-    {
-        _currentAction = (Action)Random.Range(1, 3);
-        switch (_currentAction)
+        float randomPercentage = Random.Range(0, 1f);
+        if (randomPercentage < 0.01f)
         {
-            case Action.DestroyEnnemyBase:
-                _targetBase = GetNearestOtherBase();
-                _targetObject = GameManager.Instance.ObjectsManager.GetRandomObject<Pesticide>();
-                break;
-            case Action.UpgradeMyBase:
-                _targetBase = _base;
-                _targetObject = GameManager.Instance.ObjectsManager.GetRandomObject<Flower>();
-                break;
-            default:
-                break;
+            _target = GameManager.Instance.ObjectsManager.GetRandomObject<Flower>();
+        }
+        else
+        {
+            _target = GameManager.Instance.ObjectsManager.GetRandomObject<Pesticide>();
         }
     }
 
     void Update()
     {
-        Move(_targetObject.transform.position);
+        if(_target == null)
+        {
+            ChooseNewTarget();
+            return;
+        }
+
+        List<PickupObject> pickedObjects = _pickupController.GetPickedUpObjects();
+        if (pickedObjects.Count != 0 && !(_target is Base))
+        {
+            if (pickedObjects[0] is Pollen) _target = _base;
+            if (pickedObjects[0] is Pesticide) _target = GetNearestOtherBase();
+        }
+
+        Move(_target.transform.position);
+        if(Vector3.Distance(transform.position, _target.transform.position) < .5f)
+        {
+            if (_target is Base && pickedObjects.Count != 0)
+            {
+                _pickupController.Drop();
+            }
+            ChooseNewTarget();
+        }
+
+        PickupObject pickup = _pickupController.GetCompatiblePickableObject();
+        if (pickup != null)
+        {
+            _pickupController.PickupLastObject();
+        }
     }
+
     void Move(Vector3 targetWorldPosition)
     {
         Vector3 targetRelativeDirection = targetWorldPosition-transform.position;

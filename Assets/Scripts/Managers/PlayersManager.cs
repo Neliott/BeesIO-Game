@@ -33,7 +33,6 @@ public class PlayersManager : MonoBehaviour
         set {
             _canSpawnBots = value;
             if (_canSpawnBots) StartSpawnBots();
-            else DestroyBots();
         }
     }
 
@@ -99,9 +98,5 @@ public class PlayersManager : MonoBehaviour
             _clock = 0;
             SpawnBot();
         }
-    }
-    void DestroyBots()
-    {
-
     }
 }

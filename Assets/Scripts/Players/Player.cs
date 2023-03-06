@@ -39,6 +39,7 @@ public abstract class Player : MonoBehaviour
         _mover = GetComponent<Mover>();
         _mover.Speed = 6.5f;
         _name = name;
+        gameObject.name = name;
 
         GameObject baseGo = Instantiate(_basePrefab, transform.position, Quaternion.identity);
         _base = baseGo.GetComponent<Base>();
@@ -50,6 +51,7 @@ public abstract class Player : MonoBehaviour
     protected virtual void OnBaseDestroyed()
     {
         GameManager.Instance.OnPlayerDestroyed(this);
+        _pickupController.Drop();
         Destroy(gameObject);
     }
 

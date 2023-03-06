@@ -69,6 +69,8 @@ public class GameManager : MonoBehaviour
     private void GameOver()
     {
         _objectsManager.CanSpanwObjects = false;
+        _players.CanSpawnBots = false;
+        _hexaGrid.Clear();
         Debug.Log("GameOver!");
     }
 }

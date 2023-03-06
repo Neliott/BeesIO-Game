@@ -170,13 +170,22 @@ public class HexaGrid : MonoBehaviour
     /// </summary>
     public void Clear()
     {
+        //List<Base> basesToUpdate = new List<Base>();
         foreach (KeyValuePair<Base,List<Vector2Int>> baseHexPositions in _hexagonsProperties)
         {
             foreach (Vector2Int index in baseHexPositions.Value)
             {
                 _hexatilesInstances[index.x][index.y].material = _defaultMaterial;
             }
+            int prevCount = baseHexPositions.Value.Count;
+            baseHexPositions.Value.Clear();
+            if (prevCount != 0 && baseHexPositions.Key != null)
+                baseHexPositions.Key.OnHexagonOwnedListChanged();
         }
+        /*foreach (Base baseToUpdate in basesToUpdate)
+        {
+            baseToUpdate.OnHexagonOwnedListChanged();
+        }*/
         _hexagonsProperties.Clear();
         _cachedMaterials.Clear();
     }

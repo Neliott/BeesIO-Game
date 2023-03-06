@@ -9,6 +9,10 @@ public class Pollen : PickupObject
     /// </summary>
     public override void Drop()
     {
+        if (_owner == null)
+        {
+            Debug.LogError("The owner is null !!! ");
+        }
         Vector2Int indexes = HexaGrid.WordPositionToHexIndexes(_owner.transform.position);
         Base baseOn = GameManager.Instance.HexaGrid.GetPropertyOfHexIndex(indexes);
         if(baseOn != null)

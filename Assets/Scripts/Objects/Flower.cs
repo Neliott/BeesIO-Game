@@ -21,7 +21,7 @@ public class Flower : PlacableObject
         foreach (var instance in _pollenInstanced)
         {
             if(instance != null)
-                Destroy(instance);
+                Destroy(instance.gameObject);
         }
         base.OnDestroyNeeded();
     }
