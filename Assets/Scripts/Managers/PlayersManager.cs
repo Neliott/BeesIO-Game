@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class PlayersManager : MonoBehaviour
 {
+
     const int BOTS_TARGET_NUMBER = 20;
+    const float SPAWN_BOTS_RATE = 0.1f;
 
     /// <summary>
     /// Get all the players on the map
@@ -41,6 +43,7 @@ public class PlayersManager : MonoBehaviour
 
     List<Player> _players = new List<Player>();
     InputPlayer _controlledPlayer;
+    float _clock = 0;
     bool _canSpawnBots;
 
     /// <summary>
@@ -83,6 +86,19 @@ public class PlayersManager : MonoBehaviour
         BotPlayer newBotPlayer = newBotPlayerGameObject.GetComponent<BotPlayer>();
         newBotPlayer.Setup("Bot#"+Random.Range(0,100));
         _players.Add(newBotPlayer);
+    }
+    void Update()
+    {
+        if (!_canSpawnBots) return;
+        _players.RemoveAll(item => item == null);
+        if ((_players.Count - 1) >= BOTS_TARGET_NUMBER) return;
+
+        _clock = _clock + Time.deltaTime;
+        if (_clock > 1 / SPAWN_BOTS_RATE)
+        {
+            _clock = 0;
+            SpawnBot();
+        }
     }
     void DestroyBots()
     {
