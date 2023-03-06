@@ -27,12 +27,10 @@ public class HexaGridTest
     public void HexaGrid_SpacesTransformationTwoWays_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2Int expectedHexIndex = new Vector2Int(Random.Range(0, 200), Random.Range(0, 200));
         //When
-        Vector2 worldPosition = hexaGrid.HexIndexesToWorldPosition(expectedHexIndex);
-        Vector2Int actualIndex = hexaGrid.WordPositionToHexIndexes(worldPosition);
+        Vector2 worldPosition = HexaGrid.HexIndexesToWorldPosition(expectedHexIndex);
+        Vector2Int actualIndex = HexaGrid.WordPositionToHexIndexes(worldPosition);
         //Then
         Assert.AreEqual(expectedHexIndex, actualIndex);
     }
@@ -41,12 +39,10 @@ public class HexaGridTest
     public void HexaGrid_WordPositionToHexIndexes_Center_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2 expectedWorldPosition = new Vector2(0f, 0f);
         Vector2Int expectedIndexes = new Vector2Int(HexaGrid.MAP_WIDTH / 2, HexaGrid.MAP_HEIGHT / 2);
         //When
-        Vector2Int actualIndexes = hexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
+        Vector2Int actualIndexes = HexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
         //Then
         Assert.AreEqual(expectedIndexes, actualIndexes);
     }
@@ -54,12 +50,10 @@ public class HexaGridTest
     public void HexaGrid_WordPositionToHexIndexes_ShiftedX_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2 expectedWorldPosition = new Vector2(HexaGrid.SPACING_WIDTH, 0f);
         Vector2Int expectedIndexes = new Vector2Int((HexaGrid.MAP_WIDTH / 2)+1, HexaGrid.MAP_HEIGHT / 2);
         //When
-        Vector2Int actualIndexes = hexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
+        Vector2Int actualIndexes = HexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
         //Then
         Assert.AreEqual(expectedIndexes, actualIndexes);
     }
@@ -67,12 +61,10 @@ public class HexaGridTest
     public void HexaGrid_WordPositionToHexIndexes_ShiftedY_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2 expectedWorldPosition = new Vector2(0f, HexaGrid.SPACING_HEIGHT);
         Vector2Int expectedIndexes = new Vector2Int(HexaGrid.MAP_WIDTH / 2, (HexaGrid.MAP_HEIGHT / 2) + 1);
         //When
-        Vector2Int actualIndexes = hexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
+        Vector2Int actualIndexes = HexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
         //Then
         Assert.AreEqual(expectedIndexes, actualIndexes);
     }
@@ -80,12 +72,10 @@ public class HexaGridTest
     public void HexaGrid_WordPositionToHexIndexes_ShiftedXY_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2 expectedWorldPosition = new Vector2(HexaGrid.SPACING_WIDTH, HexaGrid.SPACING_HEIGHT);
         Vector2Int expectedIndexes = new Vector2Int((HexaGrid.MAP_WIDTH / 2) + 2, (HexaGrid.MAP_HEIGHT / 2) + 1);
         //When
-        Vector2Int actualIndexes = hexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
+        Vector2Int actualIndexes = HexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
         //Then
         Assert.AreEqual(expectedIndexes, actualIndexes);
     }
@@ -93,12 +83,10 @@ public class HexaGridTest
     public void HexaGrid_WordPositionToHexIndexes_ShiftedXYRound_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2 expectedWorldPosition = new Vector2(HexaGrid.SPACING_WIDTH / 2.5f, HexaGrid.SPACING_HEIGHT / 2.5f);
         Vector2Int expectedIndexes = new Vector2Int(HexaGrid.MAP_WIDTH / 2, HexaGrid.MAP_HEIGHT / 2);
         //When
-        Vector2Int actualIndexes = hexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
+        Vector2Int actualIndexes = HexaGrid.WordPositionToHexIndexes(expectedWorldPosition);
         //Then
         Assert.AreEqual(expectedIndexes, actualIndexes);
     }
@@ -107,12 +95,10 @@ public class HexaGridTest
     public void HexaGrid_HexIndexesToWorldPosition_Center_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2 expectedWorldPosition = new Vector2(0f, 0f);
         Vector2Int expectedIndexes = new Vector2Int(HexaGrid.MAP_WIDTH / 2, HexaGrid.MAP_HEIGHT / 2);
         //When
-        Vector2 actualWorldPosition = hexaGrid.HexIndexesToWorldPosition(expectedIndexes);
+        Vector2 actualWorldPosition = HexaGrid.HexIndexesToWorldPosition(expectedIndexes);
         //Then
         Assert.AreEqual(expectedWorldPosition, actualWorldPosition);
     }
@@ -120,12 +106,10 @@ public class HexaGridTest
     public void HexaGrid_HexIndexesToWorldPosition_ShiftedX_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2 expectedWorldPosition = new Vector2(HexaGrid.SPACING_WIDTH, 0f);
         Vector2Int expectedIndexes = new Vector2Int((HexaGrid.MAP_WIDTH / 2) + 1, HexaGrid.MAP_HEIGHT / 2);
         //When
-        Vector2 actualWorldPosition = hexaGrid.HexIndexesToWorldPosition(expectedIndexes);
+        Vector2 actualWorldPosition = HexaGrid.HexIndexesToWorldPosition(expectedIndexes);
         //Then
         Assert.AreEqual(expectedWorldPosition, actualWorldPosition);
     }
@@ -133,12 +117,10 @@ public class HexaGridTest
     public void HexaGrid_HexIndexesToWorldPosition_ShiftedY_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2 expectedWorldPosition = new Vector2(-HexaGrid.SPACING_WIDTH/2, HexaGrid.SPACING_HEIGHT);
         Vector2Int expectedIndexes = new Vector2Int(HexaGrid.MAP_WIDTH / 2, (HexaGrid.MAP_HEIGHT / 2) + 1);
         //When
-        Vector2 actualWorldPosition = hexaGrid.HexIndexesToWorldPosition(expectedIndexes);
+        Vector2 actualWorldPosition = HexaGrid.HexIndexesToWorldPosition(expectedIndexes);
         //Then
         Assert.AreEqual(expectedWorldPosition, actualWorldPosition);
     }
@@ -146,12 +128,10 @@ public class HexaGridTest
     public void HexaGrid_HexIndexesToWorldPosition_ShiftedXY_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2 expectedWorldPosition = new Vector2(HexaGrid.SPACING_WIDTH * 1.5f, HexaGrid.SPACING_HEIGHT);
         Vector2Int expectedIndexes = new Vector2Int((HexaGrid.MAP_WIDTH / 2) + 2, (HexaGrid.MAP_HEIGHT / 2) + 1);
         //When
-        Vector2 actualWorldPosition = hexaGrid.HexIndexesToWorldPosition(expectedIndexes);
+        Vector2 actualWorldPosition = HexaGrid.HexIndexesToWorldPosition(expectedIndexes);
         //Then
         Assert.AreEqual(expectedWorldPosition, actualWorldPosition);
     }
@@ -160,8 +140,6 @@ public class HexaGridTest
     public void HexaGrid_GetBigHexagonPositions_WithFill_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2Int center = new Vector2Int(0, 0);
         int radius = 4;
         bool outline = false;
@@ -205,7 +183,7 @@ public class HexaGridTest
             new Vector2Int(2,3),
         };
         //When
-        List<Vector2Int> actualHexagonPositions = hexaGrid.GetBigHexagonPositions(center, radius, outline);
+        List<Vector2Int> actualHexagonPositions = HexaGrid.GetBigHexagonPositions(center, radius, outline);
         //Then
         Assert.AreEqual(expectedHexagonPositions, actualHexagonPositions);
     }
@@ -213,8 +191,6 @@ public class HexaGridTest
     public void HexaGrid_GetBigHexagonPositions_OnlyOutline_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2Int center = new Vector2Int(0, 0);
         int radius = 4;
         bool outline = true;
@@ -239,7 +215,7 @@ public class HexaGridTest
             new Vector2Int(2,3),
         };
         //When
-        List<Vector2Int> actualHexagonPositions = hexaGrid.GetBigHexagonPositions(center, radius, outline);
+        List<Vector2Int> actualHexagonPositions = HexaGrid.GetBigHexagonPositions(center, radius, outline);
         //Then
         Assert.AreEqual(expectedHexagonPositions, actualHexagonPositions);
     }
@@ -247,8 +223,6 @@ public class HexaGridTest
     public void HexaGrid_GetBigHexagonPositions_Bigger_WithFill_ShiftedY_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2Int center = new Vector2Int(0, 1);
         int radius = 7;
         bool outline = false;
@@ -382,7 +356,7 @@ public class HexaGridTest
             new Vector2Int(3,7),
         };
         //When
-        List<Vector2Int> actualHexagonPositions = hexaGrid.GetBigHexagonPositions(center, radius, outline);
+        List<Vector2Int> actualHexagonPositions = HexaGrid.GetBigHexagonPositions(center, radius, outline);
         //Then
         Assert.AreEqual(expectedHexagonPositions, actualHexagonPositions);
     }
@@ -390,8 +364,6 @@ public class HexaGridTest
     public void HexaGrid_GetBigHexagonPositions_Bigger_OnlyOutline_ShiftedY_Equals()
     {
         //Given
-        HexaGrid hexaGrid = CreateHexGridInstance();
-        hexaGrid.Generate();
         Vector2Int center = new Vector2Int(0, 1);
         int radius = 7;
         bool outline = true;
@@ -434,7 +406,7 @@ public class HexaGridTest
             new Vector2Int(3,7),
         };
         //When
-        List<Vector2Int> actualHexagonPositions = hexaGrid.GetBigHexagonPositions(center, radius, outline);
+        List<Vector2Int> actualHexagonPositions = HexaGrid.GetBigHexagonPositions(center, radius, outline);
         //Then
         Assert.AreEqual(expectedHexagonPositions, actualHexagonPositions);
     }

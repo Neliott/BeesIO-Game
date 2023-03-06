@@ -33,9 +33,9 @@ public class Pesticide : PickupObject
     }
     void Explode()
     {
-        Vector2Int center = GameManager.Instance.HexaGrid.WordPositionToHexIndexes(transform.position);
+        Vector2Int center = HexaGrid.WordPositionToHexIndexes(transform.position);
         int radius = Random.Range(MINIMUM_RADIUS, MAXIMUM_RADIUS);
-        List<Vector2Int> allHexsToExplode = GameManager.Instance.HexaGrid.GetBigHexagonPositions(center, radius, false);
+        List<Vector2Int> allHexsToExplode = HexaGrid.GetBigHexagonPositions(center, radius, false);
         foreach (Vector2Int hexIndexToExplode in allHexsToExplode)
         {
             GameManager.Instance.HexaGrid.SetHexagonProperty(hexIndexToExplode, null);

@@ -100,18 +100,9 @@ public class ObjectsManager : MonoBehaviour
 
     void SpawnObject(GameObject prefab)
     {
-        GameObject instance = Instantiate(prefab, GetRandomPlaceOnMap(), Quaternion.identity, _spawnedObjectsParent);
+        GameObject instance = Instantiate(prefab, HexaGrid.GetRandomPlaceOnMap(), Quaternion.identity, _spawnedObjectsParent);
         PlacableObject placableObject = instance.GetComponent<PlacableObject>();
         placableObject.OnPlaced();
         _spawnedObjects.Add(placableObject);
-    }
-
-    Vector2 GetRandomPlaceOnMap()
-    {
-        if (GameManager.Instance == null)
-            return new Vector2(Random.Range(0, HexaGrid.MAP_WIDTH), Random.Range(0, HexaGrid.MAP_HEIGHT));
-        int randomXWithBounds = (int)Random.Range(HexaGrid.MAP_SAFE_GRID_OFFSET_X, HexaGrid.MAP_WIDTH * HexaGrid.MAP_SAFE_GRID_PERCENTAGE);
-        int randomYWithBounds = (int)Random.Range(HexaGrid.MAP_SAFE_GRID_OFFSET_Y, HexaGrid.MAP_HEIGHT * HexaGrid.MAP_SAFE_GRID_PERCENTAGE);
-        return GameManager.Instance.HexaGrid.HexIndexesToWorldPosition(new Vector2Int(randomXWithBounds, randomYWithBounds));
     }
 }

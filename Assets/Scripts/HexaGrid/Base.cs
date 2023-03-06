@@ -40,7 +40,7 @@ public class Base : MonoBehaviour
     {
         _color = Random.ColorHSV(0, 1, 1, 1, 1, 1);
         _playerName.text = name;
-        _baseCenterIndex = GameManager.Instance.HexaGrid.WordPositionToHexIndexes(transform.position);
+        _baseCenterIndex = HexaGrid.WordPositionToHexIndexes(transform.position);
         FillBase(DEFAULT_BASE_SIZE);
         _baseLevel = DEFAULT_BASE_SIZE;
     }
@@ -92,7 +92,7 @@ public class Base : MonoBehaviour
         if (_remaningHexagonsForNextStep.Count == 0)
         {
             _baseLevel++;
-            _remaningHexagonsForNextStep = GameManager.Instance.HexaGrid.GetBigHexagonPositions(_baseCenterIndex, _baseLevel, true);
+            _remaningHexagonsForNextStep = HexaGrid.GetBigHexagonPositions(_baseCenterIndex, _baseLevel, true);
         }
         GameManager.Instance.HexaGrid.SetHexagonProperty(_remaningHexagonsForNextStep[0], this);
         _remaningHexagonsForNextStep.RemoveAt(0);
@@ -100,7 +100,7 @@ public class Base : MonoBehaviour
 
     void FillBase(int radius)
     {
-        List<Vector2Int> basePosition = GameManager.Instance.HexaGrid.GetBigHexagonPositions(_baseCenterIndex, radius, false);
+        List<Vector2Int> basePosition = HexaGrid.GetBigHexagonPositions(_baseCenterIndex, radius, false);
         foreach (var position in basePosition)
         {
             GameManager.Instance.HexaGrid.SetHexagonProperty(position, this);
