@@ -30,7 +30,7 @@ public class PickupObject : PlacableObject
     /// </summary>
     public virtual void Drop()
     {
-        // if (_owner == null) return;
+        if (_owner == null) return; //Todo : fix owner null
         transform.localScale = Vector3.one;
         _owner = null;
     }

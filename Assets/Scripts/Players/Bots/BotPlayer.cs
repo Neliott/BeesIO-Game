@@ -15,19 +15,21 @@ public class BotPlayer : Player
     void ChooseNewTarget()
     {
         float randomPercentage = Random.Range(0, 1f);
-        if (randomPercentage < 0.01f)
+        if (randomPercentage < 0.7f)
         {
-            _target = GameManager.Instance.ObjectsManager.GetRandomObject<Flower>();
+            if (Random.Range(0, 1f) < 0.9) _target = GameManager.Instance.ObjectsManager.GetNearestObject<Flower>(transform.position);
+            else _target = GameManager.Instance.ObjectsManager.GetRandomObject<Flower>();
         }
         else
         {
-            _target = GameManager.Instance.ObjectsManager.GetRandomObject<Pesticide>();
+            if (Random.Range(0, 1f) < 0.9) _target = GameManager.Instance.ObjectsManager.GetNearestObject<Pesticide>(transform.position);
+            else _target = GameManager.Instance.ObjectsManager.GetRandomObject<Pesticide>();
         }
     }
 
     void Update()
     {
-        if(_target == null)
+        if (_target == null || (_target is PickupObject && ((PickupObject)_target).Owner != null && ((PickupObject)_target).Owner != _pickupController))
         {
             ChooseNewTarget();
             return;
@@ -41,7 +43,7 @@ public class BotPlayer : Player
         }
 
         Move(_target.transform.position);
-        if(Vector3.Distance(transform.position, _target.transform.position) < .5f)
+        if(Vector3.Distance(transform.position, _target.transform.position) < 1f)
         {
             if (_target is Base && pickedObjects.Count != 0)
             {

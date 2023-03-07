@@ -60,6 +60,31 @@ public class ObjectsManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Get the nearest object on the map of a given type
+    /// </summary>
+    /// <typeparam name="T">The type of object to get</typeparam>
+    /// <param name="position">The target position</param>
+    /// <returns>The nearest placable object of given type or null if no objects found</returns>
+    public PlacableObject GetNearestObject<T>(Vector2 position) where T : PlacableObject
+    {
+        float minDistance = Mathf.Infinity;
+        PlacableObject nearestObject = null;
+        foreach (var objectToTest in _spawnedObjects)
+        {
+            if (objectToTest is T)
+            {
+                float distance = Vector3.Distance(position, objectToTest.transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearestObject = objectToTest;
+                }
+            }
+        }
+        return nearestObject;
+    }
+
+    /// <summary>
     /// Can the object manager spawn objects ?
     /// </summary>
     public bool CanSpanwObjects
