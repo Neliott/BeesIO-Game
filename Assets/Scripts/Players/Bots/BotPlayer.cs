@@ -5,12 +5,14 @@ using UnityEngine;
 public class BotPlayer : Player
 {
     const float SMOOTH_DIRECTION = 20;
+    const float DROP_DISTANCE_TOLERANCE = .35f;
 
     /// <inheritdoc/>
     public override bool IsControlled => false;
 
     MonoBehaviour _target;
     float _velocity;
+    Vector2 _lastCachedBasePosition;
 
     void ChooseNewTarget()
     {
@@ -34,29 +36,12 @@ public class BotPlayer : Player
             ChooseNewTarget();
             return;
         }
-
-        List<PickupObject> pickedObjects = _pickupController.GetPickedUpObjects();
-        if (pickedObjects.Count != 0 && !(_target is Base))
-        {
-            if (pickedObjects[0] is Pollen) _target = _base;
-            if (pickedObjects[0] is Pesticide) _target = GetNearestOtherBase();
-        }
-
-        Move(_target.transform.position);
-        if(Vector3.Distance(transform.position, _target.transform.position) < 1f)
-        {
-            if (_target is Base && pickedObjects.Count != 0)
-            {
-                _pickupController.Drop();
-            }
-            ChooseNewTarget();
-        }
-
-        PickupObject pickup = _pickupController.GetCompatiblePickableObject();
-        if (pickup != null)
-        {
-            _pickupController.PickupLastObject();
-        }
+        
+        Vector3 targetWorldPosition = (_target is Base) ? _lastCachedBasePosition : _target.transform.position;
+        
+        Move(targetWorldPosition);
+        CheckTargetAccomplishement(targetWorldPosition);
+        TryToPickup();
     }
 
     void Move(Vector3 targetWorldPosition)
@@ -67,6 +52,34 @@ public class BotPlayer : Player
         //The direction is smoothed
         float smothAngle = Mathf.SmoothDampAngle(_mover.Direction, angle, ref _velocity, SMOOTH_DIRECTION * Time.deltaTime);
         _mover.Direction = smothAngle;
+    }
+    
+    void CheckTargetAccomplishement(Vector3 targetWorldPosition)
+    {
+        float distanceFromTarget = Vector3.Distance(transform.position, targetWorldPosition);
+        if (distanceFromTarget < DROP_DISTANCE_TOLERANCE)
+        {
+            if (_target is Base && _pickupController.GetPickedUpObjects().Count != 0)
+            {
+                _pickupController.Drop();
+            }
+            ChooseNewTarget();
+        }
+    }
+    
+    void TryToPickup()
+    {
+        PickupObject pickup = _pickupController.GetCompatiblePickableObject();
+        if (pickup != null)
+        {
+            _pickupController.PickupLastObject();
+            if (!(_target is Base))
+            {
+                if (pickup is Pollen) _target = _base;
+                if (pickup is Pesticide) _target = GetNearestOtherBase();
+                _lastCachedBasePosition = ((Base)_target).GetNearestValidPlacablePosition(transform.position);
+            }
+        }
     }
 
     Base GetNearestOtherBase()

@@ -34,6 +34,7 @@ public class Base : MonoBehaviour
         get { return _color; }
         set { _color = value; }
     }
+    
     /// <summary>
     /// Setup the base with the player's name
     /// </summary>
@@ -48,6 +49,29 @@ public class Base : MonoBehaviour
     }
 
     /// <summary>
+    /// Get the nearest valid position to place a new hexagon on the base
+    /// </summary>
+    /// <param name="position">The target position</param>
+    /// <returns>The nearest valid position</returns>
+    public Vector2 GetNearestValidPlacablePosition(Vector2 position)
+    {
+        //TODO : ADD TO DIAGRAM
+        float minDistance = float.MaxValue;
+        Vector2 nearestPosition = Vector2.zero;
+        foreach (Vector2Int hexagon in _currentHexagones)
+        {
+            Vector2 hexagonPosition = HexaGrid.HexIndexesToWorldPosition(hexagon);
+            float distance = Vector2.Distance(position, hexagonPosition);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                nearestPosition = hexagonPosition;
+            }
+        }
+        return nearestPosition;
+    }
+
+    /// <summary>
     /// Upgrade the base with a amount of points
     /// </summary>
     /// <param name="points">The number of new hexagons to add to the base</param>
@@ -55,6 +79,7 @@ public class Base : MonoBehaviour
     {
         _upgradesToApply = _upgradesToApply + points;
     }
+    
     /// <summary>
     /// Make checks when the list of owned hexagones changes
     /// </summary>
