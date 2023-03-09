@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ObjectsManager : MonoBehaviour
@@ -45,11 +46,28 @@ public class ObjectsManager : MonoBehaviour
     List<PlacableObject> _spawnedObjects = new List<PlacableObject>();
 
     /// <summary>
+    /// The list of all spawned objects
+    /// </summary>
+    public List<PlacableObject> SpawnedObjects { get { return _spawnedObjects; } }
+
+    /// <summary>
+    /// The list of all spawned objects of a given type
+    /// </summary>
+    /// <typeparam name="T">The type of object to get</typeparam>
+    /// <returns>The list of all placable objects of the given type</returns>
+    public List<PlacableObject> GetSpawnedObjectsByType<T>() where T : PlacableObject
+    {
+        return _spawnedObjects.Where(objectToTest => objectToTest is T).ToList();
+    }
+
+    /// <summary>
     /// Get a random objects on the map of type
     /// </summary>
     /// <typeparam name="T">The type of random object to get</typeparam>
     /// <returns>A placable object of given type</returns>
-    public PlacableObject GetRandomObject<T>() where T : PlacableObject
+
+    //TODO : REMOVE FROM DIAGRAM + ADD OTHER
+    /*public PlacableObject GetRandomObject<T>() where T : PlacableObject
     {
         if (_spawnedObjects.Count == 0) return null;
         while (true)
@@ -57,32 +75,7 @@ public class ObjectsManager : MonoBehaviour
             PlacableObject objectToTest = _spawnedObjects[Random.Range(0, _spawnedObjects.Count)];
             if(objectToTest is T) return objectToTest;
         }
-    }
-
-    /// <summary>
-    /// Get the nearest object on the map of a given type
-    /// </summary>
-    /// <typeparam name="T">The type of object to get</typeparam>
-    /// <param name="position">The target position</param>
-    /// <returns>The nearest placable object of given type or null if no objects found</returns>
-    public PlacableObject GetNearestObject<T>(Vector2 position) where T : PlacableObject
-    {
-        float minDistance = Mathf.Infinity;
-        PlacableObject nearestObject = null;
-        foreach (var objectToTest in _spawnedObjects)
-        {
-            if (objectToTest is T)
-            {
-                float distance = Vector3.Distance(position, objectToTest.transform.position);
-                if (distance < minDistance)
-                {
-                    minDistance = distance;
-                    nearestObject = objectToTest;
-                }
-            }
-        }
-        return nearestObject;
-    }
+    }*/
 
     /// <summary>
     /// Can the object manager spawn objects ?

@@ -1,11 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BotPlayer : Player
 {
     const float SMOOTH_DIRECTION = 20;
     const float DROP_DISTANCE_TOLERANCE = .35f;
+    const float PASSIVITY = 0.6f;
+    const float RISK = 0.5f;
+    const int NEAR_OBJECT_ERROR = 2;
+
 
     /// <inheritdoc/>
     public override bool IsControlled => false;
@@ -17,21 +22,20 @@ public class BotPlayer : Player
     void ChooseNewTarget()
     {
         float randomPercentage = Random.Range(0, 1f);
-        if (randomPercentage < 0.7f)
+        if (randomPercentage < PASSIVITY)
         {
-            if (Random.Range(0, 1f) < 0.9) _target = GameManager.Instance.ObjectsManager.GetNearestObject<Flower>(transform.position);
-            else _target = GameManager.Instance.ObjectsManager.GetRandomObject<Flower>();
+            _target = GetNearObject<Flower>();
+            if (_target == null) _target = GetNearObject<Pollen>();
         }
         else
         {
-            if (Random.Range(0, 1f) < 0.9) _target = GameManager.Instance.ObjectsManager.GetNearestObject<Pesticide>(transform.position);
-            else _target = GameManager.Instance.ObjectsManager.GetRandomObject<Pesticide>();
+            _target = GetNearObject<Pesticide>();
         }
     }
 
     void Update()
     {
-        if (_target == null || (_target is PickupObject && ((PickupObject)_target).Owner != null && ((PickupObject)_target).Owner != _pickupController))
+        if (_target == null || (_target is PickupObject && ((PickupObject)_target).Owner != _pickupController))
         {
             ChooseNewTarget();
             return;
@@ -73,11 +77,20 @@ public class BotPlayer : Player
         if (pickup != null)
         {
             _pickupController.PickupLastObject();
-            if (!(_target is Base))
+
+            float randomPercentage = Random.Range(0, 1f);
+            if (randomPercentage > RISK)
             {
                 if (pickup is Pollen) _target = _base;
                 if (pickup is Pesticide) _target = GetNearestOtherBase();
                 _lastCachedBasePosition = ((Base)_target).GetNearestValidPlacablePosition(transform.position);
+            }
+            else
+            {
+                if (pickup is Pollen)
+                    _target = GetNearObject<Pollen>();
+                if (pickup is Pesticide)
+                    _target = GetNearObject<Pesticide>();
             }
         }
     }
@@ -99,5 +112,18 @@ public class BotPlayer : Player
             }
         }
         return nearestBase;
+    }
+    
+    PlacableObject GetNearObject<T>() where T : PlacableObject
+    {
+        List<PlacableObject> objectsByDistance = GameManager.Instance.ObjectsManager.GetSpawnedObjectsByType<T>().OrderBy(point => Vector3.Distance(transform.position, point.transform.position)).ToList();
+        for (int i = Mathf.Min(objectsByDistance.Count, NEAR_OBJECT_ERROR) - 1; i < objectsByDistance.Count; i++)
+        {
+            PlacableObject objectToTest = objectsByDistance[i];
+            if (objectToTest is PickupObject && ((PickupObject)objectToTest).Owner != null) continue;
+            if (objectToTest is Flower && (((Flower)objectToTest).HasPollen() == false)) continue;
+            return objectToTest;
+        }
+        return null;
     }
 }
