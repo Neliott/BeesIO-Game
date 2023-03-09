@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -23,6 +24,7 @@ public class Base : MonoBehaviour
     float _upgradeClock = 0;
     Vector2Int _baseCenterIndex;
     List<Vector2Int> _remaningHexagonsForNextStep = new List<Vector2Int>();
+    List<Vector2Int> _currentHexagones = new List<Vector2Int>();
 
     /// <summary>
     /// The color of the base
@@ -54,12 +56,17 @@ public class Base : MonoBehaviour
         _upgradesToApply = _upgradesToApply + points;
     }
     /// <summary>
-    /// Destroy the base (called when there is no more hexagons)
+    /// Make checks when the list of owned hexagones changes
     /// </summary>
     public void OnHexagonOwnedListChanged()
     {
         List<Vector2Int> hexagons = GameManager.Instance.HexaGrid.GetHexagonsOfBase(this);
-        if (hexagons.Count == 0) DestroyBase();
+        foreach (Vector2Int removedHexagon in _currentHexagones.Except(hexagons))
+        {
+            _remaningHexagonsForNextStep.Insert(0,removedHexagon);
+        }
+        _currentHexagones = hexagons;
+        if (_currentHexagones.Count == 0) DestroyBase();
     }
 
     private void Update()
