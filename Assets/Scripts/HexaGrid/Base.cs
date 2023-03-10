@@ -55,7 +55,6 @@ public class Base : MonoBehaviour
     /// <returns>The nearest valid position</returns>
     public Vector2 GetNearestValidPlacablePosition(Vector2 position)
     {
-        //TODO : ADD TO DIAGRAM
         float minDistance = float.MaxValue;
         Vector2 nearestPosition = Vector2.zero;
         foreach (Vector2Int hexagon in _currentHexagones)
