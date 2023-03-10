@@ -9,7 +9,7 @@ public class HexaGrid : MonoBehaviour
     /// <summary>
     /// The percentage of grid to spawn object (do not spawn in border, they will be innaccesible)
     /// </summary>
-    public const float MAP_SAFE_GRID_PERCENTAGE = 0.9f;
+    public const float MAP_SAFE_GRID_PERCENTAGE = 0.8f;
     public const int MAP_SAFE_GRID_OFFSET_X = (int)(MAP_WIDTH * (1-MAP_SAFE_GRID_PERCENTAGE));
     public const int MAP_SAFE_GRID_OFFSET_Y = (int)(MAP_HEIGHT * (1-MAP_SAFE_GRID_PERCENTAGE));
     /// <summary>
