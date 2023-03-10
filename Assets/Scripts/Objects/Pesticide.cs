@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Pesticide : PickupObject
 {
-    const int MINIMUM_RADIUS = 1;
+    const int MINIMUM_RADIUS = 2;
     const int MAXIMUM_RADIUS = 4;
 
     [SerializeField]

@@ -7,11 +7,8 @@ public class BotPlayer : Player
 {
     const float SMOOTH_DIRECTION = 10;
     const float DROP_DISTANCE_TOLERANCE = .35f;
-    const float PASSIVITY = 0.6f;
-    const float RISK = 0.7f;
-    const float BASE_PESTICIDE_RISK_RADIUS = 5f;
     const int NEAR_OBJECT_ERROR = 2;
-
+    const float BASE_PESTICIDE_RISK_RADIUS = 7f;
 
     /// <inheritdoc/>
     public override bool IsControlled => false;
@@ -19,6 +16,15 @@ public class BotPlayer : Player
     MonoBehaviour _target;
     float _velocity;
     Vector2 _lastCachedBasePosition;
+    float _passivity;
+    float _risk;
+
+    public override void Setup(string name)
+    {
+        base.Setup(name);
+        _passivity = Random.Range(0.3f, 0.8f);
+        _risk = Random.Range(0.3f, 0.9f);
+    }
 
     void Update()
     {
@@ -42,13 +48,13 @@ public class BotPlayer : Player
     /// <returns>True if the target need to be changed</returns>
     bool IsNeedingANewTarget()
     {
-        if (_target == null) { Debug.Log(gameObject.name + " target is null"); return true; }
+        if (_target == null) return true;
 
         //The target pickup object has a owner
-        if (_target is PickupObject && (((PickupObject)_target).Owner != null) && ((PickupObject)_target).Owner != _pickupController) { Debug.Log(gameObject.name + " target is a pickup object already owned"); return true; }
+        if (_target is PickupObject && (((PickupObject)_target).Owner != null) && ((PickupObject)_target).Owner != _pickupController) return true;
 
         //The flower target has no more pollen
-        if (_target is Flower && ((Flower)_target).HasPollen() == false) { Debug.Log(gameObject.name + " target a empty flower"); return true; }
+        if (_target is Flower && ((Flower)_target).HasPollen() == false) return true;
 
         return false;
     }
@@ -58,7 +64,6 @@ public class BotPlayer : Player
     /// </summary>
     void ChooseNewTarget()
     {
-        Debug.Log(gameObject.name + " need a new target!");
         List<PickupObject> pickedUpObjects = _pickupController.GetPickedUpObjects();
 
         //Check if the base is in danger (take the pesticide out of base)
@@ -66,7 +71,6 @@ public class BotPlayer : Player
         if (potentialDanger != null)
         {
             _target = potentialDanger;
-            Debug.Log(gameObject.name + " has a pesticide danger!");
             //Drop objects if they are not Pesticide
             if (pickedUpObjects.Count > 0 && !(pickedUpObjects[0] is Pesticide)) _pickupController.Drop();
             return;
@@ -78,7 +82,7 @@ public class BotPlayer : Player
         if (pickedUpObjects.Count > 0)
         {
             //Calculate the risk for choosing what to do (with objects pickedup)
-            if (randomPercentage > RISK)
+            if (randomPercentage > _risk)
             {
                 //Go to a base depending on the type of object
                 if (pickedUpObjects[0] is Pollen) _target = _base;
@@ -98,7 +102,7 @@ public class BotPlayer : Player
         }
 
         //Choose a new strategy
-        if (randomPercentage < PASSIVITY)
+        if (randomPercentage < _passivity)
         {
             _target = GetNearObject<Flower>();
             //If no compatible flowers found, go to single pollen units
