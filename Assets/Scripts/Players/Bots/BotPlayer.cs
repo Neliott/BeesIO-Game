@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class BotPlayer : Player
 {
-    const float SMOOTH_DIRECTION = 20;
+    const float SMOOTH_DIRECTION = 10;
     const float DROP_DISTANCE_TOLERANCE = .35f;
     const float PASSIVITY = 0.6f;
-    const float RISK = 0.5f;
+    const float RISK = 0.7f;
+    const float BASE_PESTICIDE_RISK_RADIUS = 5f;
     const int NEAR_OBJECT_ERROR = 2;
 
 
@@ -41,23 +42,62 @@ public class BotPlayer : Player
     /// <returns>True if the target need to be changed</returns>
     bool IsNeedingANewTarget()
     {
-        if (_target == null) return true;
+        if (_target == null) { Debug.Log(gameObject.name + " target is null"); return true; }
 
         //The target pickup object has a owner
-        if (_target is PickupObject && ((PickupObject)_target).Owner != _pickupController) return true;
+        if (_target is PickupObject && (((PickupObject)_target).Owner != null) && ((PickupObject)_target).Owner != _pickupController) { Debug.Log(gameObject.name + " target is a pickup object already owned"); return true; }
 
         //The flower target has no more pollen
-        if (_target is Flower && ((Flower)_target).HasPollen() == false) return true;
+        if (_target is Flower && ((Flower)_target).HasPollen() == false) { Debug.Log(gameObject.name + " target a empty flower"); return true; }
 
         return false;
     }
 
     /// <summary>
-    /// Choose a random new target
+    /// Choose a new target based on the general state of the bot
     /// </summary>
     void ChooseNewTarget()
     {
+        Debug.Log(gameObject.name + " need a new target!");
+        List<PickupObject> pickedUpObjects = _pickupController.GetPickedUpObjects();
+
+        //Check if the base is in danger (take the pesticide out of base)
+        Pesticide potentialDanger = PesticideEndangeringBase();
+        if (potentialDanger != null)
+        {
+            _target = potentialDanger;
+            Debug.Log(gameObject.name + " has a pesticide danger!");
+            //Drop objects if they are not Pesticide
+            if (pickedUpObjects.Count > 0 && !(pickedUpObjects[0] is Pesticide)) _pickupController.Drop();
+            return;
+        }
+
+        //Get a random percentage to randomize next decisions
         float randomPercentage = Random.Range(0, 1f);
+
+        if (pickedUpObjects.Count > 0)
+        {
+            //Calculate the risk for choosing what to do (with objects pickedup)
+            if (randomPercentage > RISK)
+            {
+                //Go to a base depending on the type of object
+                if (pickedUpObjects[0] is Pollen) _target = _base;
+                if (pickedUpObjects[0] is Pesticide) _target = GetNearestOtherBase();
+                //Using cached positions to not compute the NearestValidPlacablePosition at every frames
+                _lastCachedBasePosition = ((Base)_target).GetNearestValidPlacablePosition(transform.position);
+            }
+            else
+            {
+                //Go to search more similar objects
+                if (pickedUpObjects[0] is Pollen)
+                    _target = GetNearObject<Pollen>();
+                if (pickedUpObjects[0] is Pesticide)
+                    _target = GetNearObject<Pesticide>();
+            }
+            return;
+        }
+
+        //Choose a new strategy
         if (randomPercentage < PASSIVITY)
         {
             _target = GetNearObject<Flower>();
@@ -100,6 +140,7 @@ public class BotPlayer : Player
             {
                 _pickupController.Drop();
             }
+
             ChooseNewTarget();
         }
     }
@@ -113,25 +154,7 @@ public class BotPlayer : Player
         if (pickup != null)
         {
             _pickupController.PickupLastObject();
-
-            //Calculate the risk to choose what to do next
-            float randomPercentage = Random.Range(0, 1f);
-            if (randomPercentage > RISK)
-            {
-                //Go to a base depending on the type of object
-                if (pickup is Pollen) _target = _base;
-                if (pickup is Pesticide) _target = GetNearestOtherBase();
-                //Using cached positions to not compute the NearestValidPlacablePosition at every frames
-                _lastCachedBasePosition = ((Base)_target).GetNearestValidPlacablePosition(transform.position);
-            }
-            else
-            {
-                //Go to search more similar objects
-                if (pickup is Pollen)
-                    _target = GetNearObject<Pollen>();
-                if (pickup is Pesticide)
-                    _target = GetNearObject<Pesticide>();
-            }
+            ChooseNewTarget();
         }
     }
 
@@ -156,6 +179,22 @@ public class BotPlayer : Player
             }
         }
         return nearestBase;
+    }
+
+    /// <summary>
+    /// Return a pesticide if he is in the BASE_PESTICIDE_RISK_RADIUS
+    /// </summary>
+    /// <returns>Return a problematic pesticide for the base or null is not found in the radius</returns>
+    Pesticide PesticideEndangeringBase()
+    {
+        List<PlacableObject> pesticides = GameManager.Instance.ObjectsManager.GetSpawnedObjectsByType<Pesticide>();
+        foreach (var pesticideToTest in pesticides)
+        {
+            if (Vector3.Distance(_base.transform.position, pesticideToTest.transform.position) > BASE_PESTICIDE_RISK_RADIUS) continue;
+            if (((Pesticide)pesticideToTest).Owner != null) continue;
+            return (Pesticide)pesticideToTest;
+        }
+        return null;
     }
 
     /// <summary>
