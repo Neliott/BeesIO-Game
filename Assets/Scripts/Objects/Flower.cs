@@ -21,9 +21,22 @@ public class Flower : PlacableObject
         foreach (var instance in _pollenInstanced)
         {
             if(instance != null)
-                Destroy(instance);
+                Destroy(instance.gameObject);
         }
         base.OnDestroyNeeded();
+    }
+
+    /// <summary>
+    /// Check if the flower has at least one pollen to collect (attached to it)
+    /// </summary>
+    /// <returns>True if there is at least one pollen</returns>
+    public bool HasPollen()
+    {
+        foreach (Transform spawn in _spawnPositions)
+        {
+            if (spawn.childCount > 0) return true;
+        }
+        return false;
     }
 
     void Update()

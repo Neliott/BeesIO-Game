@@ -14,9 +14,19 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     /// <summary>
-    /// The the hexagrid unique instance
+    /// The hexagrid unique instance
     /// </summary>
     public HexaGrid HexaGrid { get => _hexaGrid; }
+
+    /// <summary>
+    /// Get the players manager
+    /// </summary>
+    public PlayersManager Players { get => _players; }
+
+    /// <summary>
+    /// Get the objects manager / spawner
+    /// </summary>
+    public ObjectsManager ObjectsManager { get => _objectsManager; }
 
     HexaGrid _hexaGrid;
     PlayersManager _players;
@@ -30,15 +40,16 @@ public class GameManager : MonoBehaviour
         _hexaGrid.Clear(); 
         _objectsManager.CanSpanwObjects = true;
         _players.SpawnControlledPlayer();
+        _players.CanSpawnBots = true;
     }
 
     /// <summary>
-    /// Called when player's base is destroyed and the player is destroy
+    /// Call when a player has no more base and will be destroyed
     /// </summary>
-    public void GameOver()
+    public void OnPlayerDestroyed(Player playerDestroyed)
     {
-        _objectsManager.CanSpanwObjects = false;
-        Debug.Log("GameOver!");
+        if (playerDestroyed.IsControlled) GameOver();
+        _players.RemovePlayer(playerDestroyed);
     }
 
     private void Awake()
@@ -53,5 +64,13 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         RestartGame();
+    }
+
+    private void GameOver()
+    {
+        _objectsManager.CanSpanwObjects = false;
+        _players.CanSpawnBots = false;
+        _hexaGrid.Clear();
+        Debug.Log("GameOver!");
     }
 }

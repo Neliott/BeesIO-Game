@@ -170,13 +170,22 @@ public class HexaGrid : MonoBehaviour
     /// </summary>
     public void Clear()
     {
+        //List<Base> basesToUpdate = new List<Base>();
         foreach (KeyValuePair<Base,List<Vector2Int>> baseHexPositions in _hexagonsProperties)
         {
             foreach (Vector2Int index in baseHexPositions.Value)
             {
                 _hexatilesInstances[index.x][index.y].material = _defaultMaterial;
             }
+            int prevCount = baseHexPositions.Value.Count;
+            baseHexPositions.Value.Clear();
+            if (prevCount != 0 && baseHexPositions.Key != null)
+                baseHexPositions.Key.OnHexagonOwnedListChanged();
         }
+        /*foreach (Base baseToUpdate in basesToUpdate)
+        {
+            baseToUpdate.OnHexagonOwnedListChanged();
+        }*/
         _hexagonsProperties.Clear();
         _cachedMaterials.Clear();
     }
@@ -206,13 +215,13 @@ public class HexaGrid : MonoBehaviour
     }
 
     /// <summary>
-    /// Get the list of hexagons owned by the base
+    /// Get a copy of the list of hexagons owned by the base at the current status
     /// </summary>
     /// <param name="givenBase">The owner of hexagons</param>
     /// <returns>The list or null</returns>
     public List<Vector2Int> GetHexagonsOfBase(Base givenBase)
     {
-        return _hexagonsProperties[givenBase];
+        return new List<Vector2Int>(_hexagonsProperties[givenBase]);
     }
 
     /// <summary>

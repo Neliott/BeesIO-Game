@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ObjectsManager : MonoBehaviour
@@ -43,6 +44,21 @@ public class ObjectsManager : MonoBehaviour
     bool _canSpanwObjects;
     float _clock = 0;
     List<PlacableObject> _spawnedObjects = new List<PlacableObject>();
+
+    /// <summary>
+    /// The list of all spawned objects
+    /// </summary>
+    public List<PlacableObject> SpawnedObjects { get { return _spawnedObjects; } }
+
+    /// <summary>
+    /// The list of all spawned objects of a given type
+    /// </summary>
+    /// <typeparam name="T">The type of object to get</typeparam>
+    /// <returns>The list of all placable objects of the given type</returns>
+    public List<PlacableObject> GetSpawnedObjectsByType<T>() where T : PlacableObject
+    {
+        return _spawnedObjects.Where(objectToTest => objectToTest is T).ToList();
+    }
 
     /// <summary>
     /// Can the object manager spawn objects ?

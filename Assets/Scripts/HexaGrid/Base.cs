@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -23,6 +24,7 @@ public class Base : MonoBehaviour
     float _upgradeClock = 0;
     Vector2Int _baseCenterIndex;
     List<Vector2Int> _remaningHexagonsForNextStep = new List<Vector2Int>();
+    List<Vector2Int> _currentHexagones = new List<Vector2Int>();
 
     /// <summary>
     /// The color of the base
@@ -32,6 +34,7 @@ public class Base : MonoBehaviour
         get { return _color; }
         set { _color = value; }
     }
+    
     /// <summary>
     /// Setup the base with the player's name
     /// </summary>
@@ -46,6 +49,28 @@ public class Base : MonoBehaviour
     }
 
     /// <summary>
+    /// Get the nearest valid position to place a new hexagon on the base
+    /// </summary>
+    /// <param name="position">The target position</param>
+    /// <returns>The nearest valid position</returns>
+    public Vector2 GetNearestValidPlacablePosition(Vector2 position)
+    {
+        float minDistance = float.MaxValue;
+        Vector2 nearestPosition = Vector2.zero;
+        foreach (Vector2Int hexagon in _currentHexagones)
+        {
+            Vector2 hexagonPosition = HexaGrid.HexIndexesToWorldPosition(hexagon);
+            float distance = Vector2.Distance(position, hexagonPosition);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                nearestPosition = hexagonPosition;
+            }
+        }
+        return nearestPosition;
+    }
+
+    /// <summary>
     /// Upgrade the base with a amount of points
     /// </summary>
     /// <param name="points">The number of new hexagons to add to the base</param>
@@ -53,20 +78,19 @@ public class Base : MonoBehaviour
     {
         _upgradesToApply = _upgradesToApply + points;
     }
+    
     /// <summary>
-    /// Destroy the base (called when there is no more hexagons)
+    /// Make checks when the list of owned hexagones changes
     /// </summary>
     public void OnHexagonOwnedListChanged()
     {
         List<Vector2Int> hexagons = GameManager.Instance.HexaGrid.GetHexagonsOfBase(this);
-        if (hexagons.Count == 0)
+        foreach (Vector2Int removedHexagon in _currentHexagones.Except(hexagons))
         {
-            DestroyBase();
+            _remaningHexagonsForNextStep.Insert(0,removedHexagon);
         }
-        else
-        {
-            //TODO : 
-        }
+        _currentHexagones = hexagons;
+        if (_currentHexagones.Count == 0) DestroyBase();
     }
 
     private void Update()

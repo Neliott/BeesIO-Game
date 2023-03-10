@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Pesticide : PickupObject
 {
-    const int MINIMUM_RADIUS = 1;
+    const int MINIMUM_RADIUS = 2;
     const int MAXIMUM_RADIUS = 4;
 
     [SerializeField]
@@ -20,6 +20,7 @@ public class Pesticide : PickupObject
     /// </summary>
     public override void Drop()
     {
+        if (_owner == null) return; //Todo : Fix owner null
         _isClockTicking = true;
         base.Drop();
     }

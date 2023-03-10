@@ -11,17 +11,10 @@ public class InputPlayer : Player
 
     float _velocity;
 
-    void RemoveTest()
-    {
-        Vector2Int hexindex = HexaGrid.WordPositionToHexIndexes(transform.position);
-        GameManager.Instance.HexaGrid.SetHexagonProperty(hexindex, null);
-    }
-
     void Update()
     {
         Move();
         Interact();
-        //RemoveTest();
     }
     void Move()
     {
@@ -43,11 +36,5 @@ public class InputPlayer : Player
         {
             _pickupController.Drop();
         }
-    }
-
-    protected override void OnBaseDestroyed()
-    {
-        GameManager.Instance.GameOver();
-        base.OnBaseDestroyed();
     }
 }
