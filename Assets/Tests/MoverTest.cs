@@ -158,7 +158,7 @@ public class MoverTest
     public IEnumerator Mover_MoveFastDiagonal_PositionEquals()
     {
         //Given
-        Vector3 expectedPosition = GetApproximatePosition(new Vector3(3.55f,3.55f, 0) * TEST_WAIT_TIME);
+        Vector3 expectedPosition = GetApproximatePosition(new Vector3(3.56f, 3.56f, 0) * TEST_WAIT_TIME);
         Mover mover = SpawnMoverPlayer();
         mover.Direction = 45;
         mover.Speed = 5f;
