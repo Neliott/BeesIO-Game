@@ -6,6 +6,7 @@ using System;
 [RequireComponent(typeof(HexaGrid))]
 [RequireComponent(typeof(PlayersManager))]
 [RequireComponent(typeof(ObjectsManager))]
+[RequireComponent(typeof(UIManager))]
 public class GameManager : MonoBehaviour
 {
     /// <summary>
@@ -28,9 +29,15 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public ObjectsManager ObjectsManager { get => _objectsManager; }
 
+    /// <summary>
+    /// Get the User Interface manager (HUD)
+    /// </summary>
+    public UIManager UIManager { get => _uiManager; }
+
     HexaGrid _hexaGrid;
     PlayersManager _players;
     ObjectsManager _objectsManager;
+    UIManager _uiManager;
 
     /// <summary>
     /// Start or Restart a new game
@@ -58,12 +65,13 @@ public class GameManager : MonoBehaviour
         _hexaGrid = GetComponent<HexaGrid>();
         _players = GetComponent<PlayersManager>();
         _objectsManager = GetComponent<ObjectsManager>();
+        _uiManager = GetComponent<UIManager>();
         _hexaGrid.Generate();
     }
 
     private void Start()
     {
-        RestartGame();
+        _uiManager.ShowNameSelection();
     }
 
     private void GameOver()
@@ -71,6 +79,6 @@ public class GameManager : MonoBehaviour
         _objectsManager.CanSpanwObjects = false;
         _players.CanSpawnBots = false;
         _hexaGrid.Clear();
-        Debug.Log("GameOver!");
+        _uiManager.ShowGameOver();
     }
 }
