@@ -2,13 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+[RequireComponent(typeof(Scoreboard))]
 public class UIManager : MonoBehaviour
 {
     [SerializeField] GameObject _nameSelectionPannel;
     [SerializeField] InputField _nameField;
     [SerializeField] GameObject _firstPlayPannel;
     [SerializeField] GameObject _replayPannel;
+
+    Scoreboard _scoreboard;
+
+    private void Awake()
+    {
+        _scoreboard = GetComponent<Scoreboard>();
+    }
 
     /// <summary>
     /// Show the name selection UI
@@ -18,6 +25,7 @@ public class UIManager : MonoBehaviour
         _nameSelectionPannel.SetActive(true);
         _firstPlayPannel.SetActive(true);
         _replayPannel.SetActive(false);
+        _scoreboard.IsDisplayed = false;
     }
 
     /// <summary>
@@ -28,6 +36,7 @@ public class UIManager : MonoBehaviour
         _nameSelectionPannel.SetActive(true);
         _firstPlayPannel.SetActive(false);
         _replayPannel.SetActive(true);
+        _scoreboard.IsDisplayed = false;
     }
 
     /// <summary>
@@ -36,6 +45,7 @@ public class UIManager : MonoBehaviour
     public void ClickedPlayButton()
     {
         _nameSelectionPannel.SetActive(false);
+        _scoreboard.IsDisplayed = true;
         GameManager.Instance.RestartGame();
     }
 
