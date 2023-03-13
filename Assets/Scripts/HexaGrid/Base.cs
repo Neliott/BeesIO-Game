@@ -25,6 +25,15 @@ public class Base : MonoBehaviour
     Vector2Int _baseCenterIndex;
     List<Vector2Int> _remaningHexagonsForNextStep = new List<Vector2Int>();
     List<Vector2Int> _currentHexagones = new List<Vector2Int>();
+    string _name;
+
+    /// <summary>
+    /// Get the base name
+    /// </summary>
+    public string Name
+    {
+        get { return _name; }
+    }
 
     /// <summary>
     /// The color of the base
@@ -34,6 +43,14 @@ public class Base : MonoBehaviour
         get { return _color; }
         set { _color = value; }
     }
+
+    /// <summary>
+    /// Get the current score base
+    /// </summary>
+    public int Score
+    {
+        get { return _currentHexagones.Count; }
+    }
     
     /// <summary>
     /// Setup the base with the player's name
@@ -42,6 +59,7 @@ public class Base : MonoBehaviour
     public void Setup(string name)
     {
         _color = Random.ColorHSV(0, 1, 1, 1, 1, 1);
+        _name = name;
         _playerName.text = name;
         _baseCenterIndex = HexaGrid.WordPositionToHexIndexes(transform.position);
         FillBase(DEFAULT_BASE_SIZE);
