@@ -28,11 +28,11 @@ public class InputPlayer : Player
     }
     void Interact()
     {
-        if (Input.GetKeyDown("e"))
+        if (Input.GetKeyDown("e") || Input.GetMouseButtonDown(0))
         {
             _pickupController.PickupLastObject();
         }
-        if (Input.GetKeyDown("q"))
+        if (Input.GetKeyDown("q") || Input.GetMouseButtonDown(1))
         {
             _pickupController.Drop();
         }

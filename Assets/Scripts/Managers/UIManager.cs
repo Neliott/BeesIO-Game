@@ -9,12 +9,26 @@ public class UIManager : MonoBehaviour
     [SerializeField] InputField _nameField;
     [SerializeField] GameObject _firstPlayPannel;
     [SerializeField] GameObject _replayPannel;
+    [SerializeField] Button _pickupButton;
+    [SerializeField] Button _dropButton;
 
     Scoreboard _scoreboard;
 
     private void Awake()
     {
         _scoreboard = GetComponent<Scoreboard>();
+    }
+
+    private void Update()
+    {
+        bool hasControlledPlayer = GameManager.Instance.Players.ControlledPlayer != null;
+        _pickupButton.gameObject.SetActive(hasControlledPlayer);
+        _dropButton.gameObject.SetActive(hasControlledPlayer);
+        if (hasControlledPlayer)
+        {
+            _pickupButton.interactable = GameManager.Instance.Players.ControlledPlayer.PickupController.GetCompatiblePickableObject() != null;
+            _dropButton.interactable = GameManager.Instance.Players.ControlledPlayer.PickupController.GetPickedUpObjects().Count > 0;
+        }
     }
 
     /// <summary>
@@ -47,6 +61,22 @@ public class UIManager : MonoBehaviour
         _nameSelectionPannel.SetActive(false);
         _scoreboard.IsDisplayed = true;
         GameManager.Instance.RestartGame();
+    }
+
+    /// <summary>
+    /// Pickup item of the ControlledPlayer
+    /// </summary>
+    public void ClickedPickupButton()
+    {
+        GameManager.Instance.Players.ControlledPlayer.PickupController.PickupLastObject();
+    }
+
+    /// <summary>
+    /// Drop items of the ControlledPlayer
+    /// </summary>
+    public void ClickedDropButton()
+    {
+        GameManager.Instance.Players.ControlledPlayer.PickupController.Drop();
     }
 
     /// <summary>

@@ -21,6 +21,11 @@ public abstract class Player : MonoBehaviour
     /// </summary>
     public string Name { get => _name; }
 
+    /// <summary>
+    /// Get the pickup controller
+    /// </summary>
+    public PickupController PickupController { get => _pickupController; }
+
     [SerializeField] GameObject _basePrefab;
     [SerializeField] SpriteRenderer _coloredRenderer;
 
