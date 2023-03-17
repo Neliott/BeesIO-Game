@@ -14,25 +14,6 @@ public class UIManager : MonoBehaviour
 
     Scoreboard _scoreboard;
 
-    /// <summary>
-    /// The pickup button is displayed and interactable ?
-    /// </summary>
-    public bool PickupButtonDisplayed
-    {
-        get { return _pickupButton.interactable; }
-        set { _pickupButton.gameObject.SetActive(value); }
-    }
-
-    /// <summary>
-    /// The drop button is displayed and interactable ?
-    /// </summary>
-    public bool DropButtonDisplayed
-    {
-        get { return _dropButton.gameObject.activeSelf; }
-        set { _dropButton.gameObject.SetActive(value); }
-    }
-
-
     private void Awake()
     {
         _scoreboard = GetComponent<Scoreboard>();
@@ -40,15 +21,13 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if(GameManager.Instance.Players.ControlledPlayer != null)
+        bool hasControlledPlayer = GameManager.Instance.Players.ControlledPlayer != null;
+        _pickupButton.gameObject.SetActive(hasControlledPlayer);
+        _dropButton.gameObject.SetActive(hasControlledPlayer);
+        if (hasControlledPlayer)
         {
-            PickupButtonDisplayed = GameManager.Instance.Players.ControlledPlayer.PickupController.GetCompatiblePickableObject() != null;
-            DropButtonDisplayed = GameManager.Instance.Players.ControlledPlayer.PickupController.GetPickedUpObjects().Count > 0;
-        }
-        else
-        {
-            PickupButtonDisplayed = false;
-            DropButtonDisplayed = false;
+            _pickupButton.interactable = GameManager.Instance.Players.ControlledPlayer.PickupController.GetCompatiblePickableObject() != null;
+            _dropButton.interactable = GameManager.Instance.Players.ControlledPlayer.PickupController.GetPickedUpObjects().Count > 0;
         }
     }
 
