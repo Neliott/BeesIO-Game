@@ -28,12 +28,18 @@ public class Scoreboard : MonoBehaviour
     private void Update()
     {
         if (!_isDisplayed) return;
+
+        //Get scores
         List<(string, int)> scores = new List<(string, int)>();
         foreach (var player in GameManager.Instance.Players.Players)
         {
             scores.Add((player.Base.Name, player.Base.Score));
         }
+
+        //Order scores
         List<(string, int)> scoresOrdered = scores.OrderByDescending(score => score.Item2).ToList();
+
+        //Display scores
         for (int i = 0; i < _names.Length; i++)
         {
             if(i < scoresOrdered.Count)
