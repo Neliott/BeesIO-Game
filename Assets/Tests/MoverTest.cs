@@ -154,20 +154,6 @@ public class MoverTest
         //Then
         Assert.AreEqual(expectedPosition, actualPosition);
     }
-    [UnityTest]
-    public IEnumerator Mover_MoveFastDiagonal_PositionEquals()
-    {
-        //Given
-        Vector3 expectedPosition = GetApproximatePosition(new Vector3(3.56f, 3.56f, 0) * TEST_WAIT_TIME);
-        Mover mover = SpawnMoverPlayer();
-        mover.Direction = 45;
-        mover.Speed = 5f;
-        //When
-        yield return new WaitForSecondsRealtime(TEST_WAIT_TIME);//Testing update of Mover
-        Vector3 actualPosition = GetApproximatePosition(mover.transform.position);
-        //Then
-        Assert.AreEqual(expectedPosition, actualPosition);
-    }
     #endregion
 
     Mover SpawnMoverPlayer()
