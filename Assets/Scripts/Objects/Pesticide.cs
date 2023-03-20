@@ -6,13 +6,15 @@ public class Pesticide : PickupObject
 {
     const int MINIMUM_RADIUS = 2;
     const int MAXIMUM_RADIUS = 4;
+    const float SECONDS_BEFORE_EXPLOSION = 10;
 
     [SerializeField]
     TextMesh _explosionCountDown;
     [SerializeField]
     GameObject _explosionEffect;
 
-    float _clockBeforeExplosion = 10;
+    float _clockBeforeExplosion = SECONDS_BEFORE_EXPLOSION;
+    float _clockBeforeExplosionRound = SECONDS_BEFORE_EXPLOSION;
     bool _isClockTicking = false;
 
     /// <summary>
@@ -29,7 +31,12 @@ public class Pesticide : PickupObject
     {
         if (!_isClockTicking || _clockBeforeExplosion < 0) return;
         _clockBeforeExplosion = _clockBeforeExplosion - Time.deltaTime;
-        _explosionCountDown.text = Mathf.Round(_clockBeforeExplosion).ToString();
+        float clockRounded = Mathf.Round(_clockBeforeExplosion);
+        if (clockRounded != _clockBeforeExplosionRound)
+        {
+            _clockBeforeExplosionRound = clockRounded; 
+            _explosionCountDown.text = "" + clockRounded;
+        }
         if (_clockBeforeExplosion < 0) Explode();
     }
     void Explode()
