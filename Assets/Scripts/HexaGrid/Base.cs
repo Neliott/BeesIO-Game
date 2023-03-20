@@ -108,6 +108,7 @@ public class Base : MonoBehaviour
             _remaningHexagonsForNextStep.Insert(0,removedHexagon);
         }
         _currentHexagones = hexagons;
+        GameManager.Instance.UIManager.Scoreboard.UpdateScores();
         if (_currentHexagones.Count == 0) DestroyBase();
     }
 

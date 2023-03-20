@@ -12,6 +12,7 @@ public class Scoreboard : MonoBehaviour
     [SerializeField] Text[] _scores;
 
     private bool _isDisplayed;
+    private bool _needUpdate;
 
     /// <summary>
     /// Get / Set if the scoreboard is displayed
@@ -27,7 +28,8 @@ public class Scoreboard : MonoBehaviour
 
     private void Update()
     {
-        if (!_isDisplayed) return;
+        if (!_needUpdate) return;
+        _needUpdate = false;
 
         //Get scores
         List<(string, int)> scores = new List<(string, int)>();
@@ -42,16 +44,25 @@ public class Scoreboard : MonoBehaviour
         //Display scores
         for (int i = 0; i < _names.Length; i++)
         {
-            if(i < scoresOrdered.Count)
+            if (i < scoresOrdered.Count)
             {
                 _names[i].text = scoresOrdered[i].Item1;
-                _scores[i].text = scoresOrdered[i].Item2+ " pts";
+                _scores[i].text = scoresOrdered[i].Item2 + " pts";
             }
             else
             {
-                _names[i].text = ""; 
+                _names[i].text = "";
                 _scores[i].text = "";
             }
         }
+    }
+
+    /// <summary>
+    /// Tell the scoreboard to refresh the next tick
+    /// </summary>
+    public void UpdateScores()
+    {
+        if (!_isDisplayed) return;
+        _needUpdate = true;
     }
 }
