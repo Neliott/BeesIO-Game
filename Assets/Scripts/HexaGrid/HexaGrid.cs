@@ -191,14 +191,14 @@ public class HexaGrid : MonoBehaviour
     }
 
     /// <summary>
-    /// Set a given hexagon owner
+    /// Set hexagon of a given index to a new property
     /// </summary>
     /// <param name="position">The index of the hexagon</param>
     /// <param name="property">The new owner or null for remove owner</param>
     public void SetHexagonProperty(Vector2Int position, Base property)
     {
         Base lastOwner = GetPropertyOfHexIndex(position);
-        if(lastOwner != null)
+        if (lastOwner != null)
         {
             _hexagonsProperties[lastOwner].Remove(position);
             _hexatilesInstances[position.x][position.y].material = _defaultMaterial;
@@ -212,6 +212,40 @@ public class HexaGrid : MonoBehaviour
         _hexagonsProperties[property].Add(position);
         ChangeHexColor(position, property.Color);
         property.OnHexagonOwnedListChanged();
+    }
+
+    /// <summary>
+    /// Set hexagons of indexes to a new property
+    /// </summary>
+    /// <param name="positions">The indexes of hexagons to change</param>
+    /// <param name="property">The new owner or null for remove owner</param>
+    public void SetHexagonsProperty(List<Vector2Int> positions, Base property)
+    {
+        List<Base> basesToNotify = new List<Base>();
+        foreach (var position in positions)
+        {
+            Base lastOwner = GetPropertyOfHexIndex(position);
+            if(lastOwner != null)
+            {
+                _hexagonsProperties[lastOwner].Remove(position);
+                _hexatilesInstances[position.x][position.y].material = _defaultMaterial; 
+                if (!basesToNotify.Contains(lastOwner))
+                    basesToNotify.Add(lastOwner);
+            }
+            if (property == null) continue;
+            if (!_hexagonsProperties.ContainsKey(property))
+            {
+                _hexagonsProperties[property] = new List<Vector2Int>();
+            }
+            _hexagonsProperties[property].Add(position);
+            ChangeHexColor(position, property.Color);
+            if(!basesToNotify.Contains(property))
+                basesToNotify.Add(property);
+        }
+        foreach (Base baseToNotifyOnce in basesToNotify)
+        {
+            baseToNotifyOnce.OnHexagonOwnedListChanged();
+        }
     }
 
     /// <summary>

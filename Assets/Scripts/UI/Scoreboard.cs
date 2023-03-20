@@ -12,7 +12,6 @@ public class Scoreboard : MonoBehaviour
     [SerializeField] Text[] _scores;
 
     private bool _isDisplayed;
-    private bool _needUpdate;
 
     /// <summary>
     /// Get / Set if the scoreboard is displayed
@@ -26,10 +25,12 @@ public class Scoreboard : MonoBehaviour
         }
     }
 
-    private void Update()
+    /// <summary>
+    /// Tell the scoreboard to refresh the next tick
+    /// </summary>
+    public void UpdateScores()
     {
-        if (!_needUpdate) return;
-        _needUpdate = false;
+        if (!_isDisplayed) return;
 
         //Order players by score
         List<Player> playersOredered = GameManager.Instance.Players.Players.OrderByDescending(player => player.Base.Score).ToList();
@@ -48,14 +49,5 @@ public class Scoreboard : MonoBehaviour
                 _scores[i].text = "";
             }
         }
-    }
-
-    /// <summary>
-    /// Tell the scoreboard to refresh the next tick
-    /// </summary>
-    public void UpdateScores()
-    {
-        if (!_isDisplayed) return;
-        _needUpdate = true;
     }
 }
