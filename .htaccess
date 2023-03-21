@@ -27,4 +27,4 @@ AddType application/wasm .wasm
 # AddEncoding gzip .unityweb
 
 # Uncomment the following line to improve loading performance for brotli-compressed builds with decompression fallback
-# AddEncoding br .unityweb
+AddEncoding br .unityweb
