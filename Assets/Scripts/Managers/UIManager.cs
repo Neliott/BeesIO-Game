@@ -14,6 +14,11 @@ public class UIManager : MonoBehaviour
 
     Scoreboard _scoreboard;
 
+    /// <summary>
+    /// Get the scoreboard
+    /// </summary>
+    public Scoreboard Scoreboard { get => _scoreboard; }
+
     private void Awake()
     {
         _scoreboard = GetComponent<Scoreboard>();

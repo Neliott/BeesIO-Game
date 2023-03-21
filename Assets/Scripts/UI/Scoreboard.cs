@@ -25,31 +25,27 @@ public class Scoreboard : MonoBehaviour
         }
     }
 
-    private void Update()
+    /// <summary>
+    /// Tell the scoreboard to refresh the next tick
+    /// </summary>
+    public void UpdateScores()
     {
         if (!_isDisplayed) return;
 
-        //Get scores
-        List<(string, int)> scores = new List<(string, int)>();
-        foreach (var player in GameManager.Instance.Players.Players)
-        {
-            scores.Add((player.Base.Name, player.Base.Score));
-        }
-
-        //Order scores
-        List<(string, int)> scoresOrdered = scores.OrderByDescending(score => score.Item2).ToList();
+        //Order players by score
+        List<Player> playersOredered = GameManager.Instance.Players.Players.OrderByDescending(player => player.Base.Score).ToList();
 
         //Display scores
         for (int i = 0; i < _names.Length; i++)
         {
-            if(i < scoresOrdered.Count)
+            if (i < playersOredered.Count)
             {
-                _names[i].text = scoresOrdered[i].Item1;
-                _scores[i].text = scoresOrdered[i].Item2+ " pts";
+                _names[i].text = playersOredered[i].Base.Name;
+                _scores[i].text = playersOredered[i].Base.Score + " pts";
             }
             else
             {
-                _names[i].text = ""; 
+                _names[i].text = "";
                 _scores[i].text = "";
             }
         }
