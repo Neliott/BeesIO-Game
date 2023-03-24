@@ -1,4 +1,3 @@
-# This configuration file should be uploaded to the server as "<Application Folder>/Build/.htaccess"
 # This configuration has been tested with Unity 2020.1 builds, hosted on Apache/2.4
 # NOTE: "mod_mime" Apache module must be enabled for this configuration to work.
 <IfModule mod_mime.c>
@@ -27,4 +26,4 @@ AddType application/wasm .wasm
 # AddEncoding gzip .unityweb
 
 # Uncomment the following line to improve loading performance for brotli-compressed builds with decompression fallback
-# AddEncoding br .unityweb
+AddEncoding br .unityweb

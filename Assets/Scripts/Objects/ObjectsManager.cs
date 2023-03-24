@@ -25,7 +25,6 @@ public class ObjectsManager : MonoBehaviour
     [SerializeField]
     Transform _spawnedObjectsParent;
 
-#if UNITY_EDITOR
     //Used for unit tests only
     public void SetObjectsToSpawn(List<GameObject> objectsToSpawn)
     {
@@ -39,7 +38,6 @@ public class ObjectsManager : MonoBehaviour
     {
         _spawnedObjectsParent = spawnedObjectsParent;
     }
-#endif
 
     bool _canSpanwObjects;
     float _clock = 0;

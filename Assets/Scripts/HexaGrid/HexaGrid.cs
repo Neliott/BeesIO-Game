@@ -106,7 +106,6 @@ public class HexaGrid : MonoBehaviour
     [SerializeField]
     Material _defaultMaterial;
 
-#if UNITY_EDITOR
     //Used for unit tests only
     public void SetHextilePrefab(GameObject hextilePrefab)
     {
@@ -116,7 +115,6 @@ public class HexaGrid : MonoBehaviour
     {
         _hexInstancesParent = instancesParent;
     }
-#endif
 
     /// <summary>
     /// Store all the hextile prefab instances renderer
