@@ -1,0 +1,27 @@
+= BeesIO-Game
+Welcome to this project which is the client part of the BeesIO game made on Unity. The final goal is to make a '.io' style, massively multiplayer game available through a web page. For now, multiplayer has not been implemented yet. So there is only the client part of the game working locally with robots simulating the player.
+
+== Getting started
+
+Prerequisite: 
+
+- Unity 2021.3.18f1 (LTS) with the build module for WebGL
+- Visual Studio 2019 Community
+- Git LFS
+
+Other software used (for documentation):
+
+- AsciiDocFx (ASCIIDOC Edition)
+- Astah community (UML diagrams)
+- DrawIO (Other diagrams)
+
+== Collaborate
+=== Naming conventions
+The conventions are based on those available on https://learn.microsoft.com/fr-fr/dotnet/csharp/fundamentals/coding-style/coding-conventions[this page]
+
+* Use of PascalCase for public elements (classes, methods, fields or a properties) and files
+* Use of camelCase with the prefix '_' for private elements
+
+=== Class diagram
+Use of the UML for class diagrams and sequence diagrams. The associations of the diagrams were created following the logic available 
+https://www.visual-paradigm.com/guide/uml-unified-modeling-language/uml-aggregation-vs-composition/[here]
