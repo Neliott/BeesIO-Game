@@ -1,4 +1,4 @@
-import NetworkObjectDropAttributes from "./NetworkObjectDropAttributes";
+import NetworkObjectDropAttributes from "./networkObjectDropAttributes";
 
 /**
  * Used to send the informations about the objects dropped by a player.
