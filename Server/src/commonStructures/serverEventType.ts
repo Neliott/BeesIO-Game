@@ -1,3 +1,6 @@
+/**
+ * All the possible events that can be sent from the server to the client
+ */
 enum ServerEventType{
     JOINED,
     GAME_OVER,

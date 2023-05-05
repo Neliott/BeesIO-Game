@@ -1,8 +1,23 @@
+/**
+ * A 2d point in the space used to represent a position
+ */
 export default class Position {
     
+    /**
+     * The x coordinate
+     */
     public x : number;
+    
+    /**
+     * The y coordinate
+     */
     public y : number;
     
+    /**
+     * Create a new position from the given coordinates
+     * @param x The x coordinate
+     * @param y The y coordinate
+     */
     constructor(x:number, y:number) {
         this.x = x;
         this.y = y;
