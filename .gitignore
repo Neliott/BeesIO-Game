@@ -60,3 +60,4 @@ crashlytics-build.properties
 
 *.bkp
 *.dwlt
+*.dtmp

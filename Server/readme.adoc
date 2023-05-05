@@ -1,0 +1,27 @@
+# BeesIO - Server
+This is the official server of the game Bees.IO. This project is created in TypeScript and is intended to be used with NodeJS. The tests are done with Jest. The server installation is based on : https://www.youtube.com/watch?v=a3nj66pzKJ0
+
+A public instance is deployed on Glitch.com : https://beesio.glitch.me (https://glitch.com/edit/#!/beesio)
+
+Naming conventions are based on : https://google.github.io/styleguide/tsguide.html
+
+[width="100%",options="header,footer"]
+|====================
+| Style | Category
+| UpperCamelCase |  class / interface / type / enum / decorator / type parameters
+| lowerCamelCase | variable / parameter / function / method / property / module alias
+| CONSTANT_CASE | global constant values, including enum values.
+|====================	
+
+## Installation
+```bash
+npm install
+```
+## Run locally
+```bash
+npm run start
+```
+## Development (auto reload)
+```bash
+npm run dev
+```
