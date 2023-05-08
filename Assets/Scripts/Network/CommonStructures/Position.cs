@@ -19,6 +19,15 @@ namespace Network
         public float y;
 
         /// <summary>
+        /// Create a 0,0 position
+        /// </summary>
+        public Position()
+        {
+            this.x = 0;
+            this.y = 0;
+        }
+
+        /// <summary>
         /// Create a new position with the given values
         /// </summary>
         /// <param name="x">The x axis position</param>
