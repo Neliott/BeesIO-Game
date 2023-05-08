@@ -65,7 +65,12 @@ namespace Network
             _transport.OnClose += _transport_OnClose;
             _transport.OnOpen += _transport_OnOpen;
         }
-        
+
+        private void OnDestroy()
+        {
+            _transport.Disconnect();
+        }
+
         /// <summary>
         /// Connect to the server to join a game
         /// </summary>
