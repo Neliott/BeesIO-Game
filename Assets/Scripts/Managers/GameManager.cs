@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Network;
 
 [RequireComponent(typeof(HexaGrid))]
 [RequireComponent(typeof(PlayersManager))]
 [RequireComponent(typeof(ObjectsManager))]
 [RequireComponent(typeof(UIManager))]
+[RequireComponent(typeof(NetworkManager))]
 public class GameManager : MonoBehaviour
 {
     /// <summary>
@@ -34,20 +36,27 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public UIManager UIManager { get => _uiManager; }
 
+    /// <summary>
+    /// Get the network manager (transport and serialization)
+    /// </summary>
+    public NetworkManager NetworkManager { get => _networkManager; }
+
     HexaGrid _hexaGrid;
     PlayersManager _players;
     ObjectsManager _objectsManager;
     UIManager _uiManager;
+    NetworkManager _networkManager;
 
     /// <summary>
     /// Start or Restart a new game
     /// </summary>
     public void RestartGame()
     {
-        _hexaGrid.Clear(); 
-        _objectsManager.CanSpanwObjects = true;
+        _hexaGrid.Clear();
+        _networkManager.Connect();
+        /*_objectsManager.CanSpanwObjects = true;
         _players.SpawnControlledPlayer();
-        _players.CanSpawnBots = true;
+        _players.CanSpawnBots = true;*/
     }
 
     /// <summary>
@@ -66,6 +75,7 @@ public class GameManager : MonoBehaviour
         _players = GetComponent<PlayersManager>();
         _objectsManager = GetComponent<ObjectsManager>();
         _uiManager = GetComponent<UIManager>();
+        _networkManager = GetComponent<NetworkManager>();
         _hexaGrid.Generate();
     }
 
