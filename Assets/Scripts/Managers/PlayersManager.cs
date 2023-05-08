@@ -83,16 +83,14 @@ public class PlayersManager : MonoBehaviour
     private void ApplyOwnership(int? newId)
     {
         _playerIdOwned = newId;
-        if (newId != null && _networkedClients.ContainsKey(newId.Value))
-        {
-            _playerTracker.TrackedObject = _networkedClients[newId.Value].transform;
-            FinalizePlayerSetup();
-        }
+        if (newId != null && _networkedClients.ContainsKey(newId.Value)) FinalizePlayerSetup();
     }
 
     private void FinalizePlayerSetup()
     {
+        Debug.LogWarning("Player spawned and initialized!");
         _myClientInstance = _networkedClients[_playerIdOwned.Value];
         _myClientInstance.AdditionnalNetworkSetupForOwnedClient(_simulationStateStartIndex);
+        _playerTracker.TrackedObject = _myClientInstance.transform;
     }
 }
