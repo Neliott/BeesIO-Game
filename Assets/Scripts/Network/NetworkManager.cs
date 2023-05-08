@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 namespace Network
 {
@@ -70,7 +71,10 @@ namespace Network
         /// </summary>
         public void Connect()
         {
-            _transport.Connect(_serverUrl);
+            new Thread(() =>
+            {
+                _transport.Connect(_serverUrl);
+            }).Start();
             _state = NetworkState.CONNECTING;
         }
 
