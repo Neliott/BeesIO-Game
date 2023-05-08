@@ -31,9 +31,9 @@ public class Scoreboard : MonoBehaviour
     public void UpdateScores()
     {
         if (!_isDisplayed) return;
-
+        //TODO
         //Order players by score
-        List<Player> playersOredered = GameManager.Instance.Players.Players.OrderByDescending(player => player.Base.Score).ToList();
+        /*List<Player> playersOredered = GameManager.Instance.Players.NetworkedClients.OrderByDescending(player => player.Value.Base.Score).ToList();
 
         //Display scores
         for (int i = 0; i < _names.Length; i++)
@@ -48,6 +48,6 @@ public class Scoreboard : MonoBehaviour
                 _names[i].text = "";
                 _scores[i].text = "";
             }
-        }
+        }*/
     }
 }

@@ -59,15 +59,6 @@ public class GameManager : MonoBehaviour
         _players.CanSpawnBots = true;*/
     }
 
-    /// <summary>
-    /// Call when a player has no more base and will be destroyed
-    /// </summary>
-    public void OnPlayerDestroyed(Player playerDestroyed)
-    {
-        if (playerDestroyed.IsControlled) GameOver();
-        _players.RemovePlayer(playerDestroyed);
-    }
-
     private void Awake()
     {
         Instance = this;
@@ -87,7 +78,7 @@ public class GameManager : MonoBehaviour
     private void GameOver()
     {
         _objectsManager.CanSpanwObjects = false;
-        _players.CanSpawnBots = false;
+        //_players.CanSpawnBots = false;
         _hexaGrid.Clear();
         _uiManager.ShowGameOver();
     }

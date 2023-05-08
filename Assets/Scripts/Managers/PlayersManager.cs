@@ -1,102 +1,98 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Network;
+using NetworkPlayer = Network.NetworkPlayer;
 
+/// <summary>
+/// Manage all the networked players
+/// </summary>
 public class PlayersManager : MonoBehaviour
 {
-
-    const int BOTS_TARGET_NUMBER = 20;
-    const float SPAWN_BOTS_RATE = 0.1f;
+    private NetworkPlayer _myClientInstance;
 
     /// <summary>
-    /// Get all the players on the map
+    /// Get the current owned player instance
     /// </summary>
-    public List<Player> Players
+    public NetworkPlayer MyClientInstance
     {
-        get { return _players; }
+        get { return _myClientInstance; }
     }
+
+    private Dictionary<int, NetworkPlayer> _networkedClients = new Dictionary<int, NetworkPlayer>();
 
     /// <summary>
-    /// Get the current controlled player
+    /// Get all the network clients by their id
     /// </summary>
-    public InputPlayer ControlledPlayer
+    public Dictionary<int, NetworkPlayer> NetworkedClients
     {
-        get { return _controlledPlayer; }
+        get { return _networkedClients; }
     }
 
-    /// <summary>
-    /// Can the player manager spawn bots ?
-    /// </summary>
-    public bool CanSpawnBots
-    {
-        get { return _canSpawnBots; }
-        set {
-            _canSpawnBots = value;
-            if (_canSpawnBots) StartSpawnBots();
-        }
-    }
-
-    [SerializeField] GameObject _controlledPlayerPrefab;
-    [SerializeField] GameObject _botPlayerPrefab;
+    [SerializeField] NetworkPlayer _networkPrefab;
     [SerializeField] CameraTracker _playerTracker;
 
-    List<Player> _players = new List<Player>();
-    InputPlayer _controlledPlayer;
-    float _clock = 0;
-    bool _canSpawnBots;
+    int _simulationStateStartIndex = 0;
+    int? _playerIdOwned = null;
 
     /// <summary>
-    /// Spawn a controlled player
+    /// Spawn a new player in the map
     /// </summary>
-    public void SpawnControlledPlayer()
+    /// <param name="networkPlayerAttributes">The new player attributes</param>
+    public void SpawnPlayer(NetworkPlayerFixedAttributes networkPlayerAttributes)
     {
-        if (_controlledPlayer != null) return;
-        GameObject newControlledPlayer = Instantiate(_controlledPlayerPrefab);
-        _controlledPlayer = newControlledPlayer.GetComponent<InputPlayer>();
-        _controlledPlayer.Setup(GameManager.Instance.UIManager.GetName());
-        _playerTracker.TrackedObject = _controlledPlayer.transform;
-        _players.Add(_controlledPlayer);
+        if (_networkedClients.ContainsKey(networkPlayerAttributes.id))
+        {
+            Debug.LogWarning("The networked client (" + networkPlayerAttributes.id + ") has already spawned!");
+            _networkedClients[networkPlayerAttributes.id].NetworkSetup(networkPlayerAttributes);
+        }
+        else
+        {
+            NetworkPlayer playerInstance = Instantiate(_networkPrefab);
+            playerInstance.NetworkSetup(networkPlayerAttributes);
+            _networkedClients.Add(networkPlayerAttributes.id, playerInstance);
+        }
+
+        if (_playerIdOwned != null && _playerIdOwned == networkPlayerAttributes.id) FinalizePlayerSetup();
     }
 
     /// <summary>
-    /// Remove a player from the list of player on the map
+    /// Remove and destroy a given player id (when left)
     /// </summary>
-    /// <param name="player">The player to remove (controlled or bot)</param>
-    public void RemovePlayer(Player player)
+    /// <param name="playerId">The id of the player to destroy</param>
+    public void RemovePlayer(int playerId)
     {
-        if (player.IsControlled)
-        {
-            _controlledPlayer = null;
-            _playerTracker.TrackedObject = null;
-        }
-        _players.Remove(player);
+        Destroy(_networkedClients[playerId].gameObject);
+        _networkedClients.Remove(playerId);
     }
 
-    void StartSpawnBots()
+    /// <summary>
+    /// Apply the initial game state (in a player context). Spawn all players and apply ownership.
+    /// </summary>
+    /// <param name="initialGameState">The full InitialGameState object</param>
+    public void ApplyInitialGameState(InitialGameState initialGameState)
     {
-        for (int i = 0; i < BOTS_TARGET_NUMBER; i++)
+        foreach (var playerAttribute in initialGameState.otherClientsInitialAttributes)
         {
-            SpawnBot();
+            SpawnPlayer(playerAttribute);
         }
+        _simulationStateStartIndex = initialGameState.simulationStateStartIndex;
+        ApplyOwnership(initialGameState.ownedClientID);
     }
-    void SpawnBot()
-    {
-        GameObject newBotPlayerGameObject = Instantiate(_botPlayerPrefab, HexaGrid.GetRandomPlaceOnMap(),Quaternion.identity);
-        BotPlayer newBotPlayer = newBotPlayerGameObject.GetComponent<BotPlayer>();
-        newBotPlayer.Setup("Bot#"+Random.Range(0,100));
-        _players.Add(newBotPlayer);
-    }
-    void Update()
-    {
-        if (!_canSpawnBots) return;
-        _players.RemoveAll(item => item == null);
-        if ((_players.Count - 1) >= BOTS_TARGET_NUMBER) return;
 
-        _clock = _clock + Time.deltaTime;
-        if (_clock > 1 / SPAWN_BOTS_RATE)
+    private void ApplyOwnership(int? newId)
+    {
+        _playerIdOwned = newId;
+        if (newId != null && _networkedClients.ContainsKey(newId.Value))
         {
-            _clock = 0;
-            SpawnBot();
+            _playerTracker.TrackedObject = _networkedClients[newId.Value].transform;
+            FinalizePlayerSetup();
         }
+    }
+
+    private void FinalizePlayerSetup()
+    {
+        _myClientInstance = _networkedClients[_playerIdOwned.Value];
+        _myClientInstance.AdditionnalNetworkSetupForOwnedClient(_simulationStateStartIndex);
     }
 }

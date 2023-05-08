@@ -86,7 +86,7 @@ public class BotPlayer : Player
             {
                 //Go to a base depending on the type of object
                 if (pickedUpObjects[0] is Pollen) _target = _base;
-                if (pickedUpObjects[0] is Pesticide) _target = GetNearestOtherBase();
+                //if (pickedUpObjects[0] is Pesticide) _target = GetNearestOtherBase();
                 //Using cached positions to not compute the NearestValidPlacablePosition at every frames
                 _lastCachedBasePosition = ((Base)_target).GetNearestValidPlacablePosition(transform.position);
             }
@@ -166,7 +166,7 @@ public class BotPlayer : Player
     /// Get the nearest base of an other player
     /// </summary>
     /// <returns>The nearest base found</returns>
-    Base GetNearestOtherBase()
+    /*Base GetNearestOtherBase()
     {
         float minDistance = Mathf.Infinity;
         Base nearestBase = null;
@@ -183,7 +183,7 @@ public class BotPlayer : Player
             }
         }
         return nearestBase;
-    }
+    }*/
 
     /// <summary>
     /// Return a pesticide if he is in the BASE_PESTICIDE_RISK_RADIUS
