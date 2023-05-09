@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static Network.NetworkManager;
+
 [RequireComponent(typeof(Scoreboard))]
 public class UIManager : MonoBehaviour
 {
@@ -11,6 +13,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject _replayPannel;
     [SerializeField] Button _pickupButton;
     [SerializeField] Button _dropButton;
+    [SerializeField] GameObject _connectionStatusPannel;
+    [SerializeField] Text _connectionStatusText;
 
     Scoreboard _scoreboard;
 
@@ -21,7 +25,34 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
+        GameManager.Instance.NetworkManager.OnStateChanged += NetworkManager_OnStateChanged;
         _scoreboard = GetComponent<Scoreboard>();
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.Instance.NetworkManager.OnStateChanged -= NetworkManager_OnStateChanged;
+    }
+
+    private void NetworkManager_OnStateChanged(NetworkState obj)
+    {
+        _connectionStatusPannel.SetActive(obj == NetworkState.CONNECTING || obj == NetworkState.RECONNECTING || obj == NetworkState.DISCONNECTING);
+        _scoreboard.IsDisplayed = obj == NetworkState.CONNECTED;
+        switch (obj)
+        {
+            case NetworkState.CONNECTING:
+                _connectionStatusText.text = "Connexion au serveur...";
+                break;
+            case NetworkState.RECONNECTING:
+                _connectionStatusText.text = "Reconnexion à la partie...";
+                break;
+            case NetworkState.DISCONNECTING:
+                _connectionStatusText.text = "Déconnexion...";
+                break;
+            default:
+                _connectionStatusText.text = "";
+                break;
+        }
     }
 
     private void Update()
@@ -45,7 +76,6 @@ public class UIManager : MonoBehaviour
         _nameSelectionPannel.SetActive(true);
         _firstPlayPannel.SetActive(true);
         _replayPannel.SetActive(false);
-        _scoreboard.IsDisplayed = false;
     }
 
     /// <summary>
@@ -56,7 +86,6 @@ public class UIManager : MonoBehaviour
         _nameSelectionPannel.SetActive(true);
         _firstPlayPannel.SetActive(false);
         _replayPannel.SetActive(true);
-        _scoreboard.IsDisplayed = false;
     }
 
     /// <summary>
@@ -65,7 +94,6 @@ public class UIManager : MonoBehaviour
     public void ClickedPlayButton()
     {
         _nameSelectionPannel.SetActive(false);
-        _scoreboard.IsDisplayed = true;
         GameManager.Instance.RestartGame();
     }
 
