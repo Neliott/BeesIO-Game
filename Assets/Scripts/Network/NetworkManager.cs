@@ -45,14 +45,24 @@ namespace Network
         public NetworkState State
         {
             get { return _state; }
+            private set
+            {
+                _state = value;
+                OnStateChanged?.Invoke(value);
+            }
         }
+
+        /// <summary>
+        /// Triggered when the current state has changed
+        /// </summary>
+        public event Action<NetworkState> OnStateChanged;
 
         [SerializeField] string _serverUrl;
         ITransport _transport;
 
         private void Awake()
         {
-            _state = NetworkState.NOT_CONNECTED;
+            State = NetworkState.NOT_CONNECTED;
 
             //Using different transport depending on the platform
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -80,7 +90,7 @@ namespace Network
             {
                 _transport.Connect(_serverUrl);
             }).Start();
-            _state = NetworkState.CONNECTING;
+            State = NetworkState.CONNECTING;
         }
 
         private void _transport_OnOpen()
@@ -134,7 +144,7 @@ namespace Network
 
         private void Join(string name)
         {
-            _state = NetworkState.CONNECTING;
+            State = NetworkState.CONNECTING;
             SendEvent(ClientEventType.JOIN, name);
         }
 
@@ -147,7 +157,7 @@ namespace Network
         private void ApplyInitialGameState(InitialGameState initialGameState)
         {
             Debug.LogWarning("Connected to a party!");
-            _state = NetworkState.CONNECTED;
+            State = NetworkState.CONNECTED;
             GameManager.Instance.Players.ApplyInitialGameState(initialGameState);
         }
 
