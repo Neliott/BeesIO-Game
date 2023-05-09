@@ -55,7 +55,7 @@ public abstract class Player : MonoBehaviour
 
     protected virtual void OnBaseDestroyed()
     {
-        GameManager.Instance.OnPlayerDestroyed(this);
+        //GameManager.Instance.OnPlayerDestroyed(this);
         _pickupController.Drop();
         Destroy(gameObject);
     }

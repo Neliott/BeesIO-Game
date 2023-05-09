@@ -40,7 +40,7 @@ class NetworkPlayersManager {
 
         //Create a new client / spawn attributes
         const clientId = this.GetNextClientId();
-        const colorHue:number = Random.Range(0,360);
+        const colorHue:number = Math.round(Random.Range(0,360));
         const networkPlayerFixedAttributes = new NetworkPlayerFixedAttributes(clientId,colorHue,name,/*HexaGrid.GetRandomPlaceOnMap()*/new Position(Random.Range(-10,10),Random.Range(-10,10)));
         this._clients.set(sender,new NetworkPlayer(networkPlayerFixedAttributes));
         
@@ -67,11 +67,11 @@ class NetworkPlayersManager {
      * @returns The list of all the clients attributes
      */
     private GetAllClientsAttributes():NetworkPlayerFixedAttributes[] {
-        const clients : NetworkPlayerFixedAttributes[] = [];
+        const clientsAttributes : NetworkPlayerFixedAttributes[] = [];
         this._clients.forEach((client)=>{
-            clients.push(client.fixedAttributes);
+            clientsAttributes.push(client.fixedAttributes);
         });
-        return clients;
+        return clientsAttributes;
     }
 
     /**

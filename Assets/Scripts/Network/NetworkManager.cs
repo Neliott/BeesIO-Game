@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 namespace Network
 {
@@ -46,8 +47,7 @@ namespace Network
             get { return _state; }
         }
 
-        [SerializeField] string ServerURL;
-
+        [SerializeField] string _serverUrl;
         ITransport _transport;
 
         private void Awake()
@@ -65,13 +65,21 @@ namespace Network
             _transport.OnClose += _transport_OnClose;
             _transport.OnOpen += _transport_OnOpen;
         }
-        
+
+        private void OnDestroy()
+        {
+            _transport.Disconnect();
+        }
+
         /// <summary>
         /// Connect to the server to join a game
         /// </summary>
         public void Connect()
         {
-            _transport.Connect(ServerURL);
+            new Thread(() =>
+            {
+                _transport.Connect(_serverUrl);
+            }).Start();
             _state = NetworkState.CONNECTING;
         }
 
@@ -107,6 +115,7 @@ namespace Network
                     ApplyInitialGameState(JsonConvert.DeserializeObject<InitialGameState>(json));
                     break;
                 case ServerEventType.LEFT:
+                    ApplyLeft(JsonConvert.DeserializeObject<int>(json));
                     break;
                 case ServerEventType.SPAWN:
                     break;
@@ -131,12 +140,20 @@ namespace Network
 
         private void ApplyJoined(NetworkPlayerFixedAttributes clientFixedAttributes)
         {
-            Debug.Log("Player joined! " + clientFixedAttributes);
+            Debug.LogWarning("New player joined : "+clientFixedAttributes.name);
+            GameManager.Instance.Players.SpawnPlayer(clientFixedAttributes);
         }
 
         private void ApplyInitialGameState(InitialGameState initialGameState)
         {
-            Debug.Log("Initial game state received!");
+            Debug.LogWarning("Connected to a party!");
+            _state = NetworkState.CONNECTED;
+            GameManager.Instance.Players.ApplyInitialGameState(initialGameState);
+        }
+
+        private void ApplyLeft(int leftPlayerId)
+        {
+            GameManager.Instance.Players.RemovePlayer(leftPlayerId);
         }
 
         private void SendEvent(ClientEventType type)

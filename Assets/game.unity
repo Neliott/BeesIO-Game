@@ -4986,11 +4986,11 @@ GameObject:
   - component: {fileID: 2136466680}
   - component: {fileID: 2136466679}
   - component: {fileID: 2136466681}
+  - component: {fileID: 2136466686}
   - component: {fileID: 2136466682}
   - component: {fileID: 2136466683}
   - component: {fileID: 2136466684}
   - component: {fileID: 2136466685}
-  - component: {fileID: 2136466686}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -5055,8 +5055,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2084eaa8079a6eb4c9d6ed3a477bf2b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _controlledPlayerPrefab: {fileID: 1453689148162919451, guid: 70af4b113cef0e347913813bce8d63cd, type: 3}
-  _botPlayerPrefab: {fileID: 5734545345199644992, guid: 3b5cebec1ac2c304293a236ca6a1f50e, type: 3}
+  _networkPrefab: {fileID: 4083879031900954678, guid: 70af4b113cef0e347913813bce8d63cd, type: 3}
   _playerTracker: {fileID: 466243031}
 --- !u!114 &2136466683
 MonoBehaviour:
@@ -5140,4 +5139,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a55c647468247964ba24cb0536e6a27b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ServerURL: ws://localhost:3000
+  _serverUrl: ws://localhost:3000

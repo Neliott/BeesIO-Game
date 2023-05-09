@@ -26,13 +26,14 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        bool hasControlledPlayer = GameManager.Instance.Players.ControlledPlayer != null;
+        bool hasControlledPlayer = GameManager.Instance.Players.MyClientInstance != null;
         _pickupButton.gameObject.SetActive(hasControlledPlayer);
         _dropButton.gameObject.SetActive(hasControlledPlayer);
         if (hasControlledPlayer)
         {
-            _pickupButton.interactable = GameManager.Instance.Players.ControlledPlayer.PickupController.GetCompatiblePickableObject() != null;
-            _dropButton.interactable = GameManager.Instance.Players.ControlledPlayer.PickupController.GetPickedUpObjects().Count > 0;
+            //TODO
+            /*_pickupButton.interactable = GameManager.Instance.Players.MyClientInstance.PickupController.GetCompatiblePickableObject() != null;
+            _dropButton.interactable = GameManager.Instance.Players.MyClientInstance.PickupController.GetPickedUpObjects().Count > 0;*/
         }
     }
 
@@ -73,7 +74,8 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ClickedPickupButton()
     {
-        GameManager.Instance.Players.ControlledPlayer.PickupController.PickupLastObject();
+        //TODO
+        //GameManager.Instance.Players.MyClientInstance.PickupController.PickupLastObject();
     }
 
     /// <summary>
@@ -81,7 +83,8 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ClickedDropButton()
     {
-        GameManager.Instance.Players.ControlledPlayer.PickupController.Drop();
+        //TODO
+        //GameManager.Instance.Players.MyClientInstance.PickupController.Drop();
     }
 
     /// <summary>
