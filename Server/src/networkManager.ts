@@ -34,6 +34,9 @@ class NetworkManager {
      */
     constructor() {
         this._clientsManager = new NetworkPlayersManager(this);
+        setInterval(()=>{
+            this.NetworkTick();
+        },NetworkManager.TICK_INTERVAL*1000);
     }
 
     /**
@@ -86,6 +89,10 @@ class NetworkManager {
      */
     public OnClose(sender:WebSocket) {
         this._clientsManager.Leave(sender);
+    }
+
+    private NetworkTick(){
+        this._clientsManager.NetworkTick();
     }
 
     private EncodeMessage(type:ServerEventType,data:any):string{

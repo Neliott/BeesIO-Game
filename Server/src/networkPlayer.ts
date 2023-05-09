@@ -39,6 +39,7 @@ class NetworkPlayer {
     constructor(fixedAttributes:NetworkPlayerFixedAttributes) {
         this._fixedAttributes = fixedAttributes;
         this._currentPosition = fixedAttributes.basePosition;
+        this._currentSimulationState.position = fixedAttributes.basePosition;
     }
 
     /**

@@ -7,6 +7,7 @@ import NetworkManager from "./networkManager";
 import ServerEventType from "./commonStructures/serverEventType";
 import InitialGameState from "./commonStructures/initialGameState";
 import NetworkPlayerInputState from "./commonStructures/networkPlayerInputState";
+import NetworkPlayerGameStateStream from "./commonStructures/networkPlayerGameStateStream";
 
 /**
  * Manages the players connected to a network manager
@@ -65,6 +66,18 @@ class NetworkPlayersManager {
         if(player == undefined) return;
         player.EnqueueInputStream(input);
     }
+
+    /**
+     * Refresh the players states and send the new game state to all the clients
+     */
+    public NetworkTick() {
+        this._clients.forEach((client)=>{
+            client.NetworkTick();
+        });
+        const clients = this.GetGameSimulationStateStream();
+        if(clients.length > 0)
+            this._networkManager.SendGlobalMessage(ServerEventType.GAME_STATE_STREAM,clients);
+    }
     
     /**
      * Removes the client from the list of players
@@ -87,6 +100,18 @@ class NetworkPlayersManager {
             clientsAttributes.push(client.fixedAttributes);
         });
         return clientsAttributes;
+    }
+    
+    /**
+     * Get all the clients simulation states list
+     * @returns The list of all the clients simulation states
+     */
+    private GetGameSimulationStateStream():NetworkPlayerGameStateStream[] {
+        const simulationStateStream : NetworkPlayerGameStateStream[] = [];
+        this._clients.forEach((client)=>{
+            simulationStateStream.push(new NetworkPlayerGameStateStream(client.fixedAttributes.id,client.currentSimulationState));
+        });
+        return simulationStateStream;
     }
 
     /**
