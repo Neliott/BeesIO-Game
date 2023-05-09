@@ -14,7 +14,7 @@ wss.on('connection', (ws) => {
     console.log("Client connected");
     ws.on('message', (message) => {
         console.log("Message received : "+message.toString());
-        networkManager.OnMessage(ws,message.toString());
+        networkManager.OnMessage(ws,message.toString()); 
     });
     ws.on("close", () => {
         console.log("Client disconnected");

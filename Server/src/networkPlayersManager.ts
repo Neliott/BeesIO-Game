@@ -8,13 +8,14 @@ import ServerEventType from "./commonStructures/serverEventType";
 import InitialGameState from "./commonStructures/initialGameState";
 import NetworkPlayerInputState from "./commonStructures/networkPlayerInputState";
 import NetworkPlayerGameStateStream from "./commonStructures/networkPlayerGameStateStream";
+import iWebSocketClientSend from "./iWebSocketClientSend";
 
 /**
  * Manages the players connected to a network manager
  */
 class NetworkPlayersManager {
     private _networkManager : NetworkManager;
-    private _clients : Map<WebSocket,NetworkPlayer>;
+    private _clients : Map<iWebSocketClientSend,NetworkPlayer>;
     private _nextClientId : number = 0;
 
     /**
@@ -30,8 +31,17 @@ class NetworkPlayersManager {
      * Get all the websocket clients
      * @returns The websocket clients list
      */
-    public GetClientsList():WebSocket[] {
+    public GetClientsList():iWebSocketClientSend[] {
         return Array.from(this._clients.keys());
+    }
+
+    /**
+     * Get a network player by its websocket (ONLY USED FOR TESTING, DO NOT USE IN PRODUCTION CODE)
+     * @param websocket The websocket of the client
+     * @returns The network player
+     */
+    public GetNetworkPlayer(websocket:iWebSocketClientSend):NetworkPlayer | undefined {
+        return this._clients.get(websocket);
     }
 
     /**
@@ -39,7 +49,7 @@ class NetworkPlayersManager {
      * @param sender The websocket of the client to assign to a player
      * @param name The name of the client
      */
-    public OnJoin(sender:WebSocket,name:string){
+    public OnJoin(sender:iWebSocketClientSend,name:string){
         //Store the attributes of other players before the join (to send them to the new player, without the new player attributes)
         const attributesBeforeJoin = this.GetAllClientsAttributes();
 
@@ -61,7 +71,7 @@ class NetworkPlayersManager {
      * @param sender The websocket of the client that sent the input
      * @param input The new input state of the client
      */
-    public OnInput(sender:WebSocket,input:NetworkPlayerInputState){
+    public OnInput(sender:iWebSocketClientSend,input:NetworkPlayerInputState){
         const player = this._clients.get(sender);
         if(player == undefined) return;
         player.EnqueueInputStream(input);

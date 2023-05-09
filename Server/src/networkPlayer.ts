@@ -10,8 +10,9 @@ import NetworkManager from "./networkManager";
 class NetworkPlayer {
     /**
      * The speed of the player
+     * ONLY PUBLIC FOR TESTING
      */
-    private static SPEED : number = 6.5;
+    public static SPEED : number = 6.5;
 
     private _fixedAttributes : NetworkPlayerFixedAttributes;
     /**
@@ -38,7 +39,8 @@ class NetworkPlayer {
      */
     constructor(fixedAttributes:NetworkPlayerFixedAttributes) {
         this._fixedAttributes = fixedAttributes;
-        this._currentPosition = fixedAttributes.basePosition;
+        //Copy the position cause it's a reference type
+        this._currentPosition = new Position(fixedAttributes.basePosition.x,fixedAttributes.basePosition.y);
         this._currentSimulationState.position = fixedAttributes.basePosition;
     }
 

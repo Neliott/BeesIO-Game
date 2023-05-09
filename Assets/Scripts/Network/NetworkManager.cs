@@ -131,7 +131,7 @@ namespace Network
 
         private void SendEvent(ClientEventType type, object data)
         {
-            Debug.Log("Sending " + type);
+            Debug.Log("Sending " + ((int)type) + "|" + JsonConvert.SerializeObject(data));
             if (_transport.IsConnected)
                 _transport.Send(((int)type) + "|" + JsonConvert.SerializeObject(data));
         }
