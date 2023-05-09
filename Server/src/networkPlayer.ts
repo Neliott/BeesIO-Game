@@ -11,7 +11,7 @@ class NetworkPlayer {
     /**
      * The speed of the player
      */
-    private static SPEED : number = 2;
+    private static SPEED : number = 6.5;
 
     private _fixedAttributes : NetworkPlayerFixedAttributes;
     /**
