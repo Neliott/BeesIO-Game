@@ -1,12 +1,16 @@
+import WebSocket = require("ws");
 import Random from "./commonStructures/random";
 import NetworkPlayerFixedAttributes from "./commonStructures/networkPlayerFixedAttributes";
 import NetworkPlayer from "./networkPlayer";
 import Position from "./commonStructures/position";
 import NetworkManager from "./networkManager";
-import WebSocket = require("ws");
 import ServerEventType from "./commonStructures/serverEventType";
 import InitialGameState from "./commonStructures/initialGameState";
+import NetworkPlayerInputState from "./commonStructures/networkPlayerInputState";
 
+/**
+ * Manages the players connected to a network manager
+ */
 class NetworkPlayersManager {
     private _networkManager : NetworkManager;
     private _clients : Map<WebSocket,NetworkPlayer>;
@@ -34,7 +38,7 @@ class NetworkPlayersManager {
      * @param sender The websocket of the client to assign to a player
      * @param name The name of the client
      */
-    public Join(sender:WebSocket,name:string){
+    public OnJoin(sender:WebSocket,name:string){
         //Store the attributes of other players before the join (to send them to the new player, without the new player attributes)
         const attributesBeforeJoin = this.GetAllClientsAttributes();
 
@@ -49,6 +53,17 @@ class NetworkPlayersManager {
         
         //Inform all other clients that a new client joined
         this._networkManager.SendGlobalMessage(ServerEventType.JOINED,networkPlayerFixedAttributes);
+    }
+
+    /**
+     * When the server receives an input from a client
+     * @param sender The websocket of the client that sent the input
+     * @param input The new input state of the client
+     */
+    public OnInput(sender:WebSocket,input:NetworkPlayerInputState){
+        const player = this._clients.get(sender);
+        if(player == undefined) return;
+        player.EnqueueInputStream(input);
     }
     
     /**

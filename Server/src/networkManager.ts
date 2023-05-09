@@ -70,7 +70,10 @@ class NetworkManager {
 
         switch (eventType) {
             case ClientEventType.JOIN:
-                this._clientsManager.Join(sender,JSON.parse(json));
+                this._clientsManager.OnJoin(sender,JSON.parse(json));
+                break;
+            case ClientEventType.INPUT_STREAM:
+                this._clientsManager.OnInput(sender,JSON.parse(json));
                 break;
             default:
                 break;
