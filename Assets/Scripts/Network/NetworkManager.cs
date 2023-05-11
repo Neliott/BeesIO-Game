@@ -82,7 +82,7 @@ namespace Network
 
         private void Update()
         {
-            if (_state != NetworkState.CONNECTED) return;
+            if (State != NetworkState.CONNECTED) return;
 
             if ((DateTime.Now - _lastSeenServer).TotalMilliseconds > CONNECTION_TIMEOUT) Reconnect();
 
@@ -114,7 +114,7 @@ namespace Network
 
         private void Reconnect()
         {
-            _state = NetworkState.RECONNECTING;
+            State = NetworkState.RECONNECTING;
             Debug.LogWarning("Connection to server lost! Trying to reconnect.");
             if (!_transport.IsConnected)
             {
@@ -170,13 +170,13 @@ namespace Network
         private void _transport_OnOpen()
         {
             Debug.LogWarning("Connection open");
-            if (_state == NetworkState.RECONNECTING && _lastPlayerIdOwned != null) Rejoin();
+            if (State == NetworkState.RECONNECTING && _lastPlayerIdOwned != null) Rejoin();
             else Join(GameManager.Instance.UIManager.GetName());
         }
 
         private void _transport_OnClose()
         {
-            if (_state == NetworkState.CONNECTED) Reconnect();
+            if (State == NetworkState.CONNECTED) Reconnect();
             Debug.LogWarning("Connection closed");
         }
 
