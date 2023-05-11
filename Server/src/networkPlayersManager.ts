@@ -67,6 +67,33 @@ class NetworkPlayersManager {
     }
 
     /**
+     * Reconnect a new client to an old player (with his ID)
+     * @param sender The websocket of the client to assign to a player
+     * @param lastId The ID of the player that is reconnecting
+     */
+    public OnRejoin(sender:iWebSocketClientSend,lastId:number){
+        //Store the attributes of other players before the join (to send them to the new player, without the new player attributes)
+        const attributesBeforeJoin = this.GetAllClientsAttributes();
+
+        //Reconnect the client
+        for(let [websocket,player] of this._clients){
+            if(player.fixedAttributes.id == lastId){
+                this._clients.delete(websocket);
+                this._clients.set(sender,player);
+                console.log("Reconnecting player (FOUND) "+player.fixedAttributes.name+" with ID "+lastId);
+
+                //Send the initial complete game state to the client
+                this._networkManager.SendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,0,attributesBeforeJoin,[],[]));
+
+                //Inform all other clients that a new client joined
+                this._networkManager.SendGlobalMessage(ServerEventType.JOINED,this._clients.get(sender)?.fixedAttributes);
+
+                break;
+            }
+        }
+    }
+
+    /**
      * When the server receives an input from a client
      * @param sender The websocket of the client that sent the input
      * @param input The new input state of the client
@@ -75,6 +102,17 @@ class NetworkPlayersManager {
         const player = this._clients.get(sender);
         if(player == undefined) return;
         player.EnqueueInputStream(input);
+    }
+    
+    /**
+     * Removes the client from the list of players
+     * @param sender The websocket that left
+     */
+    public OnLeave(sender:WebSocket) {
+        const playerDisconnected = this._clients.get(sender);
+        if(playerDisconnected == undefined) return;
+        this._clients.delete(sender);
+        this._networkManager.SendGlobalMessage(ServerEventType.LEFT,playerDisconnected.fixedAttributes.id);
     }
 
     /**
@@ -87,17 +125,6 @@ class NetworkPlayersManager {
         const clients = this.GetGameSimulationStateStream();
         if(clients.length > 0)
             this._networkManager.SendGlobalMessage(ServerEventType.GAME_STATE_STREAM,clients);
-    }
-    
-    /**
-     * Removes the client from the list of players
-     * @param sender The websocket that left
-     */
-    public Leave(sender:WebSocket) {
-        const playerDisconnected = this._clients.get(sender);
-        if(playerDisconnected == undefined) return;
-        this._clients.delete(sender);
-        this._networkManager.SendGlobalMessage(ServerEventType.LEFT,playerDisconnected.fixedAttributes.id);
     }
     
     /**

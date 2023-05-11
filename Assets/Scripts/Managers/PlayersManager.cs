@@ -29,11 +29,38 @@ public class PlayersManager : MonoBehaviour
         get { return _networkedClients; }
     }
 
+    private int? _currentPlayerIdOwned = null;
+
+    /// <summary>
+    /// The id of the current owned local player (can be null)
+    /// </summary>
+    public int? CurrentPlayerIdOwned
+    {
+        get
+        {
+            return _currentPlayerIdOwned;
+        }
+        set
+        {
+            _currentPlayerIdOwned = value;
+            if (value != null && _networkedClients.ContainsKey(value.Value)) FinalizePlayerSetup();
+        }
+    }
+
+    private int _simulationStateStartIndex;
+
+    /// <summary>
+    /// The simulation state start index for the owned player
+    /// </summary>
+    public int SimulationStateStartIndex
+    {
+        private get { return _simulationStateStartIndex; }
+        set { _simulationStateStartIndex = value; }
+    }
+
+
     [SerializeField] NetworkPlayer _networkPrefab;
     [SerializeField] CameraTracker _playerTracker;
-
-    int _simulationStateStartIndex = 0;
-    int? _playerIdOwned = null;
 
     /// <summary>
     /// Spawn a new player in the map
@@ -53,7 +80,7 @@ public class PlayersManager : MonoBehaviour
             _networkedClients.Add(networkPlayerAttributes.id, playerInstance);
         }
 
-        if (_playerIdOwned != null && _playerIdOwned == networkPlayerAttributes.id) FinalizePlayerSetup();
+        if (_currentPlayerIdOwned != null && _currentPlayerIdOwned == networkPlayerAttributes.id) FinalizePlayerSetup();
     }
 
     /// <summary>
@@ -66,30 +93,10 @@ public class PlayersManager : MonoBehaviour
         _networkedClients.Remove(playerId);
     }
 
-    /// <summary>
-    /// Apply the initial game state (in a player context). Spawn all players and apply ownership.
-    /// </summary>
-    /// <param name="initialGameState">The full InitialGameState object</param>
-    public void ApplyInitialGameState(InitialGameState initialGameState)
-    {
-        foreach (var playerAttribute in initialGameState.otherClientsInitialAttributes)
-        {
-            SpawnPlayer(playerAttribute);
-        }
-        _simulationStateStartIndex = initialGameState.simulationStateStartIndex;
-        ApplyOwnership(initialGameState.ownedClientID);
-    }
-
-    private void ApplyOwnership(int? newId)
-    {
-        _playerIdOwned = newId;
-        if (newId != null && _networkedClients.ContainsKey(newId.Value)) FinalizePlayerSetup();
-    }
-
     private void FinalizePlayerSetup()
     {
         Debug.LogWarning("Player spawned and initialized!");
-        _myClientInstance = _networkedClients[_playerIdOwned.Value];
+        _myClientInstance = _networkedClients[_currentPlayerIdOwned.Value];
         _myClientInstance.AdditionnalNetworkSetupForOwnedClient(_simulationStateStartIndex);
         _playerTracker.TrackedObject = _myClientInstance.transform;
     }

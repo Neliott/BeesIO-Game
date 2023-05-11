@@ -78,6 +78,9 @@ class NetworkManager {
             case ClientEventType.JOIN:
                 this._clientsManager.OnJoin(sender,JSON.parse(json));
                 break;
+            case ClientEventType.REJOIN:
+                this._clientsManager.OnRejoin(sender,JSON.parse(json));
+                break;
             case ClientEventType.INPUT_STREAM:
                 this._clientsManager.OnInput(sender,JSON.parse(json));
                 break;
@@ -91,7 +94,7 @@ class NetworkManager {
      * @param sender The websocket of the client disconnected
      */
     public OnClose(sender:WebSocket) {
-        this._clientsManager.Leave(sender);
+        this._clientsManager.OnLeave(sender);
     }
 
     /**
