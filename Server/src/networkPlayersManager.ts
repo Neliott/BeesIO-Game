@@ -85,7 +85,7 @@ class NetworkPlayersManager {
                 player.UpdateLastSeen();
 
                 //Send the initial complete game state to the client
-                this._networkManager.SendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,0,attributesBeforeJoin,[],[]));
+                this._networkManager.SendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,player.currentSimulationState.simulationFrame,attributesBeforeJoin,[],[]));
 
                 //Inform all other clients that a new client joined
                 this._networkManager.SendGlobalMessage(ServerEventType.JOINED,this._clients.get(sender)?.fixedAttributes);
