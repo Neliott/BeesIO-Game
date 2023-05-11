@@ -10,8 +10,9 @@ import iWebSocketClientSend from './iWebSocketClientSend';
 class NetworkManager {
     /**
      * The time in milliseconds before a client is considered disconnected
+     * This is not readonly because it can be changed for the tests
      */
-    public static readonly CONNECTION_TIMEOUT:number = 2000;
+    public static CONNECTION_TIMEOUT:number = 2000;
     /**
      * The number of ticks per seconds
      */

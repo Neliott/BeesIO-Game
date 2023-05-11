@@ -4,7 +4,16 @@ import Position from "../commonStructures/position";
 import NetworkManager from "../networkManager";
 import NetworkPlayer from "../networkPlayer";
 
+function wait(milliseconds:number){
+    return new Promise(resolve => {
+        setTimeout(resolve, milliseconds);
+    });
+  }
+
 describe('NetworkPlayer',() => {
+    beforeAll(() => {
+        NetworkManager.CONNECTION_TIMEOUT = 100;
+    });
     it('ctor_fixedAttributes_equals', () => {
         expect(new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0))).fixedAttributes.id).toBe(10);
     });
@@ -27,11 +36,30 @@ describe('NetworkPlayer',() => {
         let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
         expect(networkPlayer.isEnabled).toBe(true);
     });
-    it('lastSeen_isEnabled_false', () => {
+    it('lastSeen_isEnabled_false', async () => {
         let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
-        //TODO
-        setTimeout(() => {
-            expect(networkPlayer.isEnabled).toBe(false);
-        },NetworkManager.CONNECTION_TIMEOUT+1);
+        await wait(NetworkManager.CONNECTION_TIMEOUT+10);
+        expect(networkPlayer.isEnabled).toBe(false);
+    });
+    it('updateLastSeen_isEnabled_true', async () => {
+        let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
+        await wait(NetworkManager.CONNECTION_TIMEOUT+10);
+        networkPlayer.UpdateLastSeen();
+        expect(networkPlayer.isEnabled).toBe(true);
+    });
+    it('enqueueInputStream_isEnabled_true', async () => {
+        let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
+        await wait(NetworkManager.CONNECTION_TIMEOUT+10);
+        networkPlayer.EnqueueInputStream(new NetworkPlayerInputState(1,0));
+        expect(networkPlayer.isEnabled).toBe(true);
+    });
+    it('isAppearingOffline_false', () => {
+        let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
+        expect(networkPlayer.isAppearingOffline).toBe(false);
+    });
+    it('isAppearingOffline_true', () => {
+        let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
+        networkPlayer.isAppearingOffline = true;
+        expect(networkPlayer.isAppearingOffline).toBe(true);
     });
 });
