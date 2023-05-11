@@ -3,12 +3,7 @@ import NetworkPlayerInputState from "../commonStructures/networkPlayerInputState
 import Position from "../commonStructures/position";
 import NetworkManager from "../networkManager";
 import NetworkPlayer from "../networkPlayer";
-
-function wait(milliseconds:number){
-    return new Promise(resolve => {
-        setTimeout(resolve, milliseconds);
-    });
-  }
+import TestHelper from "./testHelper";
 
 describe('NetworkPlayer',() => {
     beforeAll(() => {
@@ -38,18 +33,18 @@ describe('NetworkPlayer',() => {
     });
     it('lastSeen_isEnabled_false', async () => {
         let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
-        await wait(NetworkManager.CONNECTION_TIMEOUT+10);
+        await TestHelper.wait(NetworkManager.CONNECTION_TIMEOUT+10);
         expect(networkPlayer.isEnabled).toBe(false);
     });
     it('updateLastSeen_isEnabled_true', async () => {
         let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
-        await wait(NetworkManager.CONNECTION_TIMEOUT+10);
+        await TestHelper.wait(NetworkManager.CONNECTION_TIMEOUT+10);
         networkPlayer.UpdateLastSeen();
         expect(networkPlayer.isEnabled).toBe(true);
     });
     it('enqueueInputStream_isEnabled_true', async () => {
         let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
-        await wait(NetworkManager.CONNECTION_TIMEOUT+10);
+        await TestHelper.wait(NetworkManager.CONNECTION_TIMEOUT+10);
         networkPlayer.EnqueueInputStream(new NetworkPlayerInputState(1,0));
         expect(networkPlayer.isEnabled).toBe(true);
     });

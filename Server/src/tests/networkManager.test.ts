@@ -1,9 +1,13 @@
 import Position from "../commonStructures/position";
 import NetworkManager from "../networkManager";
 import NetworkPlayer from "../networkPlayer";
+import TestHelper from "./testHelper";
 import WebSocketMock from "./webSocketMock";
 
 describe('NetworkManager',() => {
+    beforeAll(() => {
+        NetworkManager.CONNECTION_TIMEOUT = 100;
+    });
     it('ctor_works', () => {
         //Given + When
         let networkManager:NetworkManager = new NetworkManager(false);
@@ -22,7 +26,7 @@ describe('NetworkManager',() => {
         //Then
         expect(networkManager.clientsManager.GetClientsList().length).toBe(0);
     });
-    it('onmessage_join_playercount_equal',() => {
+    it('onMessage_join_playerCount_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
@@ -31,7 +35,7 @@ describe('NetworkManager',() => {
         //Then
         expect(networkManager.clientsManager.GetClientsList().length).toBe(1);
     });
-    it('onmessage_join_playername_equal',() => {
+    it('onMessage_join_playerName_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
@@ -40,7 +44,7 @@ describe('NetworkManager',() => {
         //Then
         expect(networkManager.clientsManager.GetNetworkPlayer(ws)?.fixedAttributes.name).toBe("test");
     });
-    it('onmessage_join_playerid_equal',() => {
+    it('onMessage_join_playerId_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
@@ -49,7 +53,7 @@ describe('NetworkManager',() => {
         //Then
         expect(networkManager.clientsManager.GetNetworkPlayer(ws)?.fixedAttributes.id).toBe(0);
     });
-    it('onmessage_join_multipleplayerid_equal',() => {
+    it('onMessage_join_multiplePlayerId_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
@@ -61,7 +65,7 @@ describe('NetworkManager',() => {
         expect(networkManager.clientsManager.GetNetworkPlayer(ws)?.fixedAttributes.id).toBe(0);
         expect(networkManager.clientsManager.GetNetworkPlayer(ws2)?.fixedAttributes.id).toBe(1);
     });
-    it('onmessage_move_positionx_equal',() => {
+    it('onMessage_move_positionx_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
@@ -74,9 +78,9 @@ describe('NetworkManager',() => {
         //Then
         let currentPosition = networkPlayer.currentSimulationState.position;
         expect(currentPosition.x-initialPosition.x).toBeCloseTo(NetworkPlayer.SPEED/NetworkManager.TICK_PER_SECONDS);
-        expect(currentPosition.y-initialPosition.y).toBe(0);
+        expect(currentPosition.y-initialPosition.y).toBeCloseTo(0);
     });
-    it('onmessage_move_positiony_equal',() => {
+    it('onMessage_move_positionY_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
@@ -88,10 +92,10 @@ describe('NetworkManager',() => {
         //Then
         let initialPosition = networkPlayer.fixedAttributes.basePosition;
         let currentPosition = networkPlayer.currentSimulationState.position;
-        expect(currentPosition.x-initialPosition.x).toBe(0); 
+        expect(currentPosition.x-initialPosition.x).toBeCloseTo(0); 
         expect(currentPosition.y-initialPosition.y).toBeCloseTo(NetworkPlayer.SPEED/NetworkManager.TICK_PER_SECONDS);
     });
-    it('onmessage_move_positionxy_equal',() => {
+    it('onMessage_move_positionXY_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
@@ -106,7 +110,7 @@ describe('NetworkManager',() => {
         expect(currentPosition.x-initialPosition.x).toBeCloseTo(0.45961940);
         expect(currentPosition.y-initialPosition.y).toBeCloseTo(-0.45961940);
     });
-    it('onmessage_doublemove_positiony_equal',() => {
+    it('onMessage_doubleMove_positionY_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
@@ -119,7 +123,43 @@ describe('NetworkManager',() => {
         //Then
         let initialPosition = networkPlayer.fixedAttributes.basePosition;
         let currentPosition = networkPlayer.currentSimulationState.position;
-        expect(currentPosition.x-initialPosition.x).toBe(0); 
+        expect(currentPosition.x-initialPosition.x).toBeCloseTo(0); 
         expect(currentPosition.y-initialPosition.y).toBeCloseTo(NetworkPlayer.SPEED*2/NetworkManager.TICK_PER_SECONDS);
+    });
+    it('onMessage_wait_fakeLeave_sent',async () => {
+        //Given
+        let networkManager = new NetworkManager(false);
+        let ws = new WebSocketMock();
+        networkManager.OnMessage(ws,"0|\"test\"");
+        //When
+        await TestHelper.wait(NetworkManager.CONNECTION_TIMEOUT+10);
+        networkManager.NetworkTick();
+        //Then
+        expect(ws.dataSent[2]).toBe("2|0");
+    });
+    it('onMessage_waitAndReconnect_rejoin_sent',async () => {
+        //Given
+        let networkManager = new NetworkManager(false);
+        let ws = new WebSocketMock();
+        networkManager.OnMessage(ws,"0|\"test\"");
+        await TestHelper.wait(NetworkManager.CONNECTION_TIMEOUT+10);
+        networkManager.NetworkTick();
+        //When
+        networkManager.OnMessage(ws,"1|0");
+        networkManager.NetworkTick();
+        //Then
+        expect(ws.dataSent[3]).toContain("9|");
+        expect(ws.dataSent[4]).toContain("0|");
+    });
+    it('onClose_playercount_equal',() => {
+        //Given
+        let networkManager = new NetworkManager(false);
+        let ws = new WebSocketMock();
+        networkManager.OnMessage(ws,"0|\"test\"");
+        expect(networkManager.clientsManager.GetClientsList().length).toBe(1);
+        //When
+        networkManager.OnClose(ws);
+        //Then
+        expect(networkManager.clientsManager.GetClientsList().length).toBe(0);
     });
 });

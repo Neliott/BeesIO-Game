@@ -110,7 +110,7 @@ class NetworkPlayersManager {
      * Removes the client from the list of players
      * @param sender The websocket that left
      */
-    public OnLeave(sender:WebSocket) {
+    public OnLeave(sender:iWebSocketClientSend) {
         const playerDisconnected = this._clients.get(sender);
         if(playerDisconnected == undefined) return;
         this._clients.delete(sender);

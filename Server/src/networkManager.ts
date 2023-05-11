@@ -94,7 +94,7 @@ class NetworkManager {
      * Removes the client from the list of connected clients
      * @param sender The websocket of the client disconnected
      */
-    public OnClose(sender:WebSocket) {
+    public OnClose(sender:iWebSocketClientSend) {
         this._clientsManager.OnLeave(sender);
     }
 
