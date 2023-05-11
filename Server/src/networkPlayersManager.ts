@@ -1,15 +1,21 @@
+import WebSocket = require("ws");
 import Random from "./commonStructures/random";
 import NetworkPlayerFixedAttributes from "./commonStructures/networkPlayerFixedAttributes";
 import NetworkPlayer from "./networkPlayer";
 import Position from "./commonStructures/position";
 import NetworkManager from "./networkManager";
-import WebSocket = require("ws");
 import ServerEventType from "./commonStructures/serverEventType";
 import InitialGameState from "./commonStructures/initialGameState";
+import NetworkPlayerInputState from "./commonStructures/networkPlayerInputState";
+import NetworkPlayerGameStateStream from "./commonStructures/networkPlayerGameStateStream";
+import iWebSocketClientSend from "./iWebSocketClientSend";
 
+/**
+ * Manages the players connected to a network manager
+ */
 class NetworkPlayersManager {
     private _networkManager : NetworkManager;
-    private _clients : Map<WebSocket,NetworkPlayer>;
+    private _clients : Map<iWebSocketClientSend,NetworkPlayer>;
     private _nextClientId : number = 0;
 
     /**
@@ -25,8 +31,17 @@ class NetworkPlayersManager {
      * Get all the websocket clients
      * @returns The websocket clients list
      */
-    public GetClientsList():WebSocket[] {
+    public GetClientsList():iWebSocketClientSend[] {
         return Array.from(this._clients.keys());
+    }
+
+    /**
+     * Get a network player by its websocket (ONLY USED FOR TESTING, DO NOT USE IN PRODUCTION CODE)
+     * @param websocket The websocket of the client
+     * @returns The network player
+     */
+    public GetNetworkPlayer(websocket:iWebSocketClientSend):NetworkPlayer | undefined {
+        return this._clients.get(websocket);
     }
 
     /**
@@ -34,7 +49,7 @@ class NetworkPlayersManager {
      * @param sender The websocket of the client to assign to a player
      * @param name The name of the client
      */
-    public Join(sender:WebSocket,name:string){
+    public OnJoin(sender:iWebSocketClientSend,name:string){
         //Store the attributes of other players before the join (to send them to the new player, without the new player attributes)
         const attributesBeforeJoin = this.GetAllClientsAttributes();
 
@@ -49,6 +64,29 @@ class NetworkPlayersManager {
         
         //Inform all other clients that a new client joined
         this._networkManager.SendGlobalMessage(ServerEventType.JOINED,networkPlayerFixedAttributes);
+    }
+
+    /**
+     * When the server receives an input from a client
+     * @param sender The websocket of the client that sent the input
+     * @param input The new input state of the client
+     */
+    public OnInput(sender:iWebSocketClientSend,input:NetworkPlayerInputState){
+        const player = this._clients.get(sender);
+        if(player == undefined) return;
+        player.EnqueueInputStream(input);
+    }
+
+    /**
+     * Refresh the players states and send the new game state to all the clients
+     */
+    public NetworkTick() {
+        this._clients.forEach((client)=>{
+            client.NetworkTick();
+        });
+        const clients = this.GetGameSimulationStateStream();
+        if(clients.length > 0)
+            this._networkManager.SendGlobalMessage(ServerEventType.GAME_STATE_STREAM,clients);
     }
     
     /**
@@ -72,6 +110,18 @@ class NetworkPlayersManager {
             clientsAttributes.push(client.fixedAttributes);
         });
         return clientsAttributes;
+    }
+    
+    /**
+     * Get all the clients simulation states list
+     * @returns The list of all the clients simulation states
+     */
+    private GetGameSimulationStateStream():NetworkPlayerGameStateStream[] {
+        const simulationStateStream : NetworkPlayerGameStateStream[] = [];
+        this._clients.forEach((client)=>{
+            simulationStateStream.push(new NetworkPlayerGameStateStream(client.fixedAttributes.id,client.currentSimulationState));
+        });
+        return simulationStateStream;
     }
 
     /**

@@ -2,6 +2,7 @@ import WebSocket = require('ws');
 import ClientEventType from './commonStructures/clientEventType';
 import ServerEventType from './commonStructures/serverEventType';
 import NetworkPlayersManager from './networkPlayersManager';
+import iWebSocketClientSend from './iWebSocketClientSend';
 
 /**
  * This manager is used to manage the network (serialize the game state, send it to the clients, receive the inputs, etc.) and the different services managing the game state
@@ -32,8 +33,13 @@ class NetworkManager {
     /**
      * Creates a new NetworkManager (new room with services)
      */
-    constructor() {
+    constructor(initialiseTimer:boolean = true) {
         this._clientsManager = new NetworkPlayersManager(this);
+        if(initialiseTimer){
+            setInterval(()=>{
+                this.NetworkTick();
+            },NetworkManager.TICK_INTERVAL*1000);
+        }
     }
 
     /**
@@ -42,7 +48,7 @@ class NetworkManager {
      * @param type The type of the message
      * @param data The additional data of the message
      */
-    public SendMessage(target:WebSocket,type:ServerEventType,data:any){
+    public SendMessage(target:iWebSocketClientSend,type:ServerEventType,data:any){
         console.log("Sending message : "+this.EncodeMessage(type,data));
         target.send(this.EncodeMessage(type,data));
     }
@@ -63,14 +69,17 @@ class NetworkManager {
     /**
      * Deserializes the message and calls the appropriate function
      */
-    public OnMessage(sender:WebSocket,message:string) {
+    public OnMessage(sender:iWebSocketClientSend,message:string) {
         const index = message.indexOf("|");
         const eventType:ClientEventType = parseInt(message.substring(0,index)) as ClientEventType;
         const json = message.substring(index+1);
 
         switch (eventType) {
             case ClientEventType.JOIN:
-                this._clientsManager.Join(sender,JSON.parse(json));
+                this._clientsManager.OnJoin(sender,JSON.parse(json));
+                break;
+            case ClientEventType.INPUT_STREAM:
+                this._clientsManager.OnInput(sender,JSON.parse(json));
                 break;
             default:
                 break;
@@ -83,6 +92,14 @@ class NetworkManager {
      */
     public OnClose(sender:WebSocket) {
         this._clientsManager.Leave(sender);
+    }
+
+    /**
+     * Tick the network (refresh the game state, etc.)
+     * Note : THIS IS PUBLIC ONLY FOR TESTING PURPOSES
+     */
+    public NetworkTick(){
+        this._clientsManager.NetworkTick();
     }
 
     private EncodeMessage(type:ServerEventType,data:any):string{

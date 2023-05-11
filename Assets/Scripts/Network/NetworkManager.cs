@@ -59,7 +59,9 @@ namespace Network
 
         [SerializeField] string _serverUrl;
         ITransport _transport;
+        float _clock = 0;
 
+        #region MonoBehaviour Callbacks
         private void Awake()
         {
             State = NetworkState.NOT_CONNECTED;
@@ -76,11 +78,24 @@ namespace Network
             _transport.OnOpen += _transport_OnOpen;
         }
 
+        private void Update()
+        {
+            if (_state != NetworkState.CONNECTED) return;
+
+            _clock += Time.deltaTime;
+            while (_clock > CLIENT_TICK_INTERVAL)
+            {
+                _clock -= CLIENT_TICK_INTERVAL;
+                NetworkTick();
+            }
+        }
+
         private void OnDestroy()
         {
             _transport.Disconnect();
         }
-
+        #endregion
+        #region Actions
         /// <summary>
         /// Connect to the server to join a game
         /// </summary>
@@ -93,6 +108,35 @@ namespace Network
             State = NetworkState.CONNECTING;
         }
 
+        private void Join(string name)
+        {
+            State = NetworkState.CONNECTING;
+            SendEvent(ClientEventType.JOIN, name);
+        }
+
+        private void NetworkTick()
+        {
+            foreach (var clientInstance in GameManager.Instance.Players.NetworkedClients)
+            {
+                clientInstance.Value.NetworkTick();
+            }
+            if (GameManager.Instance.Players.MyClientInstance == null) return;
+            SendEvent(ClientEventType.INPUT_STREAM, GameManager.Instance.Players.MyClientInstance.LocalCurrentInputState);
+        }
+
+        private void SendEvent(ClientEventType type)
+        {
+            SendEvent(type, null);
+        }
+
+        private void SendEvent(ClientEventType type, object data)
+        {
+            Debug.Log("Sending " + ((int)type) + "|" + JsonConvert.SerializeObject(data));
+            if (_transport.IsConnected)
+                _transport.Send(((int)type) + "|" + JsonConvert.SerializeObject(data));
+        }
+        #endregion
+        #region Transport Callbacks
         private void _transport_OnOpen()
         {
             Debug.LogWarning("Connection open"); 
@@ -132,6 +176,7 @@ namespace Network
                 case ServerEventType.DESTROY:
                     break;
                 case ServerEventType.GAME_STATE_STREAM:
+                    ApplyGameState(JsonConvert.DeserializeObject<List<NetworkPlayerGameStateStream>>(json));
                     break;
                 case ServerEventType.PICKUP:
                     break;
@@ -141,13 +186,8 @@ namespace Network
                     break;
             }
         }
-
-        private void Join(string name)
-        {
-            State = NetworkState.CONNECTING;
-            SendEvent(ClientEventType.JOIN, name);
-        }
-
+        #endregion
+        #region Server event applications
         private void ApplyJoined(NetworkPlayerFixedAttributes clientFixedAttributes)
         {
             Debug.LogWarning("New player joined : "+clientFixedAttributes.name);
@@ -161,21 +201,21 @@ namespace Network
             GameManager.Instance.Players.ApplyInitialGameState(initialGameState);
         }
 
+        private void ApplyGameState(List<NetworkPlayerGameStateStream> simulationState)
+        {
+            foreach (var NetworkPlayerSimulationState in simulationState)
+            {
+                if (GameManager.Instance.Players.NetworkedClients.ContainsKey(NetworkPlayerSimulationState.id))
+                    GameManager.Instance.Players.NetworkedClients[NetworkPlayerSimulationState.id].OnSimulationReceived(NetworkPlayerSimulationState.simulationState);
+                else
+                    Debug.LogWarning("A simulation state was sent with innexisting local player replication");
+            }
+        }
+
         private void ApplyLeft(int leftPlayerId)
         {
             GameManager.Instance.Players.RemovePlayer(leftPlayerId);
         }
-
-        private void SendEvent(ClientEventType type)
-        {
-            SendEvent(type, null);
-        }
-
-        private void SendEvent(ClientEventType type, object data)
-        {
-            Debug.Log("Sending " + type);
-            if (_transport.IsConnected)
-                _transport.Send(((int)type) + "|" + JsonConvert.SerializeObject(data));
-        }
+        #endregion
     }
 }
