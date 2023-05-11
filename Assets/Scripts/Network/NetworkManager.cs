@@ -148,7 +148,9 @@ namespace Network
                 clientInstance.Value.NetworkTick();
             }
             if (GameManager.Instance.Players.MyClientInstance == null) return;
+#if UNITY_EDITOR
             if (Input.GetKey("r")) return;
+#endif
             SendEvent(ClientEventType.INPUT_STREAM, GameManager.Instance.Players.MyClientInstance.LocalCurrentInputState);
         }
 
@@ -163,8 +165,8 @@ namespace Network
             if (_transport.IsConnected)
                 _transport.Send(((int)type) + "|" + JsonConvert.SerializeObject(data));
         }
-        #endregion
-        #region Transport Callbacks
+#endregion
+#region Transport Callbacks
         private void _transport_OnOpen()
         {
             Debug.LogWarning("Connection open");
@@ -206,7 +208,9 @@ namespace Network
                 case ServerEventType.DESTROY:
                     break;
                 case ServerEventType.GAME_STATE_STREAM:
+#if UNITY_EDITOR
                     if (Input.GetKey("r")) return;
+#endif
                     ApplyGameState(JsonConvert.DeserializeObject<List<NetworkPlayerGameStateStream>>(json));
                     break;
                 case ServerEventType.PICKUP:
@@ -219,8 +223,8 @@ namespace Network
 
             _lastSeenServer = DateTime.Now;
         }
-        #endregion
-        #region Server event applications
+#endregion
+#region Server event applications
         private void ApplyJoined(NetworkPlayerFixedAttributes clientFixedAttributes)
         {
             Debug.LogWarning("New player joined : "+clientFixedAttributes.name);
@@ -256,6 +260,6 @@ namespace Network
         {
             GameManager.Instance.Players.RemovePlayer(leftPlayerId);
         }
-        #endregion
+#endregion
     }
 }
