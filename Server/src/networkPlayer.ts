@@ -14,6 +14,14 @@ class NetworkPlayer {
      */
     public static SPEED : number = 6.5;
 
+    private _lastSeen : number = 0;
+    /**
+     * Returns true if the client has been seen in the last CLIENT_TIMEOUT milliseconds
+     */
+    public get isEnabled() : boolean {
+        return Date.now()-this._lastSeen < NetworkManager.CONNECTION_TIMEOUT;
+    }
+
     private _fixedAttributes : NetworkPlayerFixedAttributes;
     /**
      * Returns the fixed attributes of the client
@@ -29,6 +37,20 @@ class NetworkPlayer {
     public get currentSimulationState() : NetworkPlayerSimulationState {
         return this._currentSimulationState;
     }
+    
+    private _isAppearingOffline : boolean = false;
+    /**
+     * Is the client appearing offline (has left from the client perspective)
+    */
+    public get isAppearingOffline() : boolean {
+        return this._isAppearingOffline;
+    }
+    /**
+     * Set the client to appear offline (has left from the client perspective)
+     */
+    public set isAppearingOffline(value : boolean) {
+        this._isAppearingOffline = value;
+    }
 
     private _inputStreamQueue : NetworkPlayerInputState[] = [];
     private _currentPosition : Position = new Position(0,0);
@@ -42,6 +64,15 @@ class NetworkPlayer {
         //Copy the position cause it's a reference type
         this._currentPosition = new Position(fixedAttributes.basePosition.x,fixedAttributes.basePosition.y);
         this._currentSimulationState.position = fixedAttributes.basePosition;
+        this.UpdateLastSeen();
+    }
+
+    /**
+     * Update the last time the client has been seen (to check if it's still connected)
+     */
+    public UpdateLastSeen() {
+        this._lastSeen = Date.now();
+        this.isAppearingOffline = false;
     }
 
     /**
@@ -57,6 +88,7 @@ class NetworkPlayer {
      */
     public EnqueueInputStream(inputStream:NetworkPlayerInputState) {
         this._inputStreamQueue.push(inputStream);
+        this.UpdateLastSeen();
     }
     
     private DequeueInputStream() : NetworkPlayerInputState | undefined {

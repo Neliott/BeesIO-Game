@@ -80,7 +80,9 @@ class NetworkPlayersManager {
             if(player.fixedAttributes.id == lastId){
                 this._clients.delete(websocket);
                 this._clients.set(sender,player);
-                console.log("Reconnecting player (FOUND) "+player.fixedAttributes.name+" with ID "+lastId);
+                
+                //Immediately update the last seen of the player
+                player.UpdateLastSeen();
 
                 //Send the initial complete game state to the client
                 this._networkManager.SendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,0,attributesBeforeJoin,[],[]));
@@ -120,7 +122,12 @@ class NetworkPlayersManager {
      */
     public NetworkTick() {
         this._clients.forEach((client)=>{
-            client.NetworkTick();
+            if(client.isEnabled){
+                client.NetworkTick();
+            }else if(!client.isAppearingOffline){
+                client.isAppearingOffline = true;
+                this._networkManager.SendGlobalMessage(ServerEventType.LEFT,client.fixedAttributes.id);
+            }
         });
         const clients = this.GetGameSimulationStateStream();
         if(clients.length > 0)
@@ -134,7 +141,9 @@ class NetworkPlayersManager {
     private GetAllClientsAttributes():NetworkPlayerFixedAttributes[] {
         const clientsAttributes : NetworkPlayerFixedAttributes[] = [];
         this._clients.forEach((client)=>{
-            clientsAttributes.push(client.fixedAttributes);
+            if(client.isEnabled){
+                clientsAttributes.push(client.fixedAttributes);
+            }
         });
         return clientsAttributes;
     }
@@ -146,7 +155,9 @@ class NetworkPlayersManager {
     private GetGameSimulationStateStream():NetworkPlayerGameStateStream[] {
         const simulationStateStream : NetworkPlayerGameStateStream[] = [];
         this._clients.forEach((client)=>{
-            simulationStateStream.push(new NetworkPlayerGameStateStream(client.fixedAttributes.id,client.currentSimulationState));
+            if(client.isEnabled){
+                simulationStateStream.push(new NetworkPlayerGameStateStream(client.fixedAttributes.id,client.currentSimulationState));
+            }
         });
         return simulationStateStream;
     }
