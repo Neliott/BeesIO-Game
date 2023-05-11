@@ -85,8 +85,6 @@ class NetworkManager {
             case ClientEventType.INPUT_STREAM:
                 this._clientsManager.onInput(sender,JSON.parse(json));
                 break;
-            default:
-                break;
         }
     }
 

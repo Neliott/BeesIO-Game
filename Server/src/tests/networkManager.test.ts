@@ -65,7 +65,7 @@ describe('NetworkManager',() => {
         expect(networkManager.clientsManager.getNetworkPlayer(ws)?.fixedAttributes.id).toBe(0);
         expect(networkManager.clientsManager.getNetworkPlayer(ws2)?.fixedAttributes.id).toBe(1);
     });
-    it('onMessage_move_positionx_equal',() => {
+    it('onMessage_move_positionX_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
@@ -126,6 +126,21 @@ describe('NetworkManager',() => {
         expect(currentPosition.x-initialPosition.x).toBeCloseTo(0); 
         expect(currentPosition.y-initialPosition.y).toBeCloseTo(NetworkPlayer.SPEED*2/NetworkManager.TICK_PER_SECONDS);
     });
+    it('onMessage_moveUndefinedWebSocket_positionX_equal',() => {
+        //Given
+        let networkManager = new NetworkManager(false);
+        let ws = new WebSocketMock();
+        networkManager.onMessage(ws,"0|\"test\"");
+        let networkPlayer = networkManager.clientsManager.getNetworkPlayer(ws)!;
+        let initialPosition = networkPlayer.fixedAttributes.basePosition;
+        //When
+        networkManager.onMessage(new WebSocketMock(),"2|{\"simulationFrame\":1,\"direction\":0}"); 
+        networkManager.networkTick();
+        //Then
+        let currentPosition = networkPlayer.currentSimulationState.position;
+        expect(currentPosition.x-initialPosition.x).toBeCloseTo(0);
+        expect(currentPosition.y-initialPosition.y).toBeCloseTo(0);
+    });
     it('onMessage_wait_fakeLeave_sent',async () => {
         //Given
         let networkManager = new NetworkManager(false);
@@ -161,5 +176,15 @@ describe('NetworkManager',() => {
         networkManager.onClose(ws);
         //Then
         expect(networkManager.clientsManager.getClientsList().length).toBe(0);
+    });
+    it('onClose_unknownSender_playercount_equal',() => {
+        //Given
+        let networkManager = new NetworkManager(false);
+        let ws = new WebSocketMock();
+        networkManager.onMessage(ws,"0|\"test\"");
+        //When
+        networkManager.onClose(new WebSocketMock());
+        //Then
+        expect(networkManager.clientsManager.getClientsList().length).toBe(1);
     });
 });

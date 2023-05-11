@@ -99,7 +99,6 @@ class NetworkPlayer {
         let inputStream:NetworkPlayerInputState | undefined;
         while (this._inputStreamQueue.length > 0) {
             inputStream = this.dequeueInputStream();
-            if(inputStream == undefined) continue;
             this._currentPosition.translate(inputStream!.direction,NetworkPlayer.SPEED*NetworkManager.TICK_INTERVAL);
         }
         if(inputStream == undefined) return;
