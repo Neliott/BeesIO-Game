@@ -59,7 +59,9 @@ namespace Network
 
         [SerializeField] string _serverUrl;
         ITransport _transport;
+        DateTime _lastSeenServer;
         float _clock = 0;
+        int? _lastPlayerIdOwned = null;
 
         #region MonoBehaviour Callbacks
         private void Awake()
@@ -81,6 +83,8 @@ namespace Network
         private void Update()
         {
             if (_state != NetworkState.CONNECTED) return;
+
+            if ((DateTime.Now - _lastSeenServer).TotalMilliseconds > CONNECTION_TIMEOUT) Reconnect();
 
             _clock += Time.deltaTime;
             while (_clock > CLIENT_TICK_INTERVAL)
@@ -108,10 +112,33 @@ namespace Network
             State = NetworkState.CONNECTING;
         }
 
+        private void Reconnect()
+        {
+            _state = NetworkState.RECONNECTING;
+            Debug.LogWarning("Connection to server lost! Trying to reconnect.");
+            if (!_transport.IsConnected)
+            {
+                new Thread(() =>
+                {
+                    _transport.Disconnect();
+                    _transport.Connect(_serverUrl);
+                }).Start();
+            }
+            else
+            {
+                Rejoin();
+            }
+        }
+
         private void Join(string name)
         {
-            State = NetworkState.CONNECTING;
             SendEvent(ClientEventType.JOIN, name);
+        }
+
+        private void Rejoin()
+        {
+            SendEvent(ClientEventType.REJOIN, _lastPlayerIdOwned);
+            GameManager.Instance.Players.CurrentPlayerIdOwned = null;
         }
 
         private void NetworkTick()
@@ -121,6 +148,9 @@ namespace Network
                 clientInstance.Value.NetworkTick();
             }
             if (GameManager.Instance.Players.MyClientInstance == null) return;
+#if UNITY_EDITOR
+            if (Input.GetKey("r")) return;
+#endif
             SendEvent(ClientEventType.INPUT_STREAM, GameManager.Instance.Players.MyClientInstance.LocalCurrentInputState);
         }
 
@@ -135,16 +165,18 @@ namespace Network
             if (_transport.IsConnected)
                 _transport.Send(((int)type) + "|" + JsonConvert.SerializeObject(data));
         }
-        #endregion
-        #region Transport Callbacks
+#endregion
+#region Transport Callbacks
         private void _transport_OnOpen()
         {
-            Debug.LogWarning("Connection open"); 
-            Join(GameManager.Instance.UIManager.GetName());
+            Debug.LogWarning("Connection open");
+            if (_state == NetworkState.RECONNECTING && _lastPlayerIdOwned != null) Rejoin();
+            else Join(GameManager.Instance.UIManager.GetName());
         }
 
         private void _transport_OnClose()
         {
+            if (_state == NetworkState.CONNECTED) Reconnect();
             Debug.LogWarning("Connection closed");
         }
 
@@ -176,6 +208,9 @@ namespace Network
                 case ServerEventType.DESTROY:
                     break;
                 case ServerEventType.GAME_STATE_STREAM:
+#if UNITY_EDITOR
+                    if (Input.GetKey("r")) return;
+#endif
                     ApplyGameState(JsonConvert.DeserializeObject<List<NetworkPlayerGameStateStream>>(json));
                     break;
                 case ServerEventType.PICKUP:
@@ -185,9 +220,11 @@ namespace Network
                 default:
                     break;
             }
+
+            _lastSeenServer = DateTime.Now;
         }
-        #endregion
-        #region Server event applications
+#endregion
+#region Server event applications
         private void ApplyJoined(NetworkPlayerFixedAttributes clientFixedAttributes)
         {
             Debug.LogWarning("New player joined : "+clientFixedAttributes.name);
@@ -196,9 +233,16 @@ namespace Network
 
         private void ApplyInitialGameState(InitialGameState initialGameState)
         {
-            Debug.LogWarning("Connected to a party!");
+            Debug.LogWarning("Connected to a room!");
             State = NetworkState.CONNECTED;
-            GameManager.Instance.Players.ApplyInitialGameState(initialGameState);
+            
+            foreach (var playerAttribute in initialGameState.otherClientsInitialAttributes)
+            {
+                GameManager.Instance.Players.SpawnPlayer(playerAttribute);
+            }
+            GameManager.Instance.Players.SimulationStateStartIndex = initialGameState.simulationStateStartIndex;
+            GameManager.Instance.Players.CurrentPlayerIdOwned = initialGameState.ownedClientID;
+            _lastPlayerIdOwned = GameManager.Instance.Players.CurrentPlayerIdOwned;
         }
 
         private void ApplyGameState(List<NetworkPlayerGameStateStream> simulationState)
@@ -216,6 +260,6 @@ namespace Network
         {
             GameManager.Instance.Players.RemovePlayer(leftPlayerId);
         }
-        #endregion
+#endregion
     }
 }

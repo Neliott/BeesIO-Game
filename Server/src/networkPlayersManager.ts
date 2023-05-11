@@ -31,7 +31,7 @@ class NetworkPlayersManager {
      * Get all the websocket clients
      * @returns The websocket clients list
      */
-    public GetClientsList():iWebSocketClientSend[] {
+    public getClientsList():iWebSocketClientSend[] {
         return Array.from(this._clients.keys());
     }
 
@@ -40,7 +40,7 @@ class NetworkPlayersManager {
      * @param websocket The websocket of the client
      * @returns The network player
      */
-    public GetNetworkPlayer(websocket:iWebSocketClientSend):NetworkPlayer | undefined {
+    public getNetworkPlayer(websocket:iWebSocketClientSend):NetworkPlayer | undefined {
         return this._clients.get(websocket);
     }
 
@@ -49,21 +49,50 @@ class NetworkPlayersManager {
      * @param sender The websocket of the client to assign to a player
      * @param name The name of the client
      */
-    public OnJoin(sender:iWebSocketClientSend,name:string){
+    public onJoin(sender:iWebSocketClientSend,name:string){
         //Store the attributes of other players before the join (to send them to the new player, without the new player attributes)
-        const attributesBeforeJoin = this.GetAllClientsAttributes();
+        const attributesBeforeJoin = this.getAllClientsAttributes();
 
         //Create a new client / spawn attributes
-        const clientId = this.GetNextClientId();
+        const clientId = this.getNextClientId();
         const colorHue:number = Math.round(Random.Range(0,360));
         const networkPlayerFixedAttributes = new NetworkPlayerFixedAttributes(clientId,colorHue,name,/*HexaGrid.GetRandomPlaceOnMap()*/new Position(Random.Range(-10,10),Random.Range(-10,10)));
         this._clients.set(sender,new NetworkPlayer(networkPlayerFixedAttributes));
         
         //Send the initial complete game state to the client
-        this._networkManager.SendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,[],[]));
+        this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,[],[]));
         
         //Inform all other clients that a new client joined
-        this._networkManager.SendGlobalMessage(ServerEventType.JOINED,networkPlayerFixedAttributes);
+        this._networkManager.sendGlobalMessage(ServerEventType.JOINED,networkPlayerFixedAttributes);
+    }
+
+    /**
+     * Reconnect a new client to an old player (with his ID)
+     * @param sender The websocket of the client to assign to a player
+     * @param lastId The ID of the player that is reconnecting
+     */
+    public onRejoin(sender:iWebSocketClientSend,lastId:number){
+        //Store the attributes of other players before the join (to send them to the new player, without the new player attributes)
+        const attributesBeforeJoin = this.getAllClientsAttributes();
+
+        //Reconnect the client
+        for(let [websocket,player] of this._clients){
+            if(player.fixedAttributes.id == lastId){
+                this._clients.delete(websocket);
+                this._clients.set(sender,player);
+                
+                //Immediately update the last seen of the player
+                player.updateLastSeen();
+
+                //Send the initial complete game state to the client
+                this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,player.currentSimulationState.simulationFrame,attributesBeforeJoin,[],[]));
+
+                //Inform all other clients that a new client joined
+                this._networkManager.sendGlobalMessage(ServerEventType.JOINED,this._clients.get(sender)?.fixedAttributes);
+
+                break;
+            }
+        }
     }
 
     /**
@@ -71,43 +100,50 @@ class NetworkPlayersManager {
      * @param sender The websocket of the client that sent the input
      * @param input The new input state of the client
      */
-    public OnInput(sender:iWebSocketClientSend,input:NetworkPlayerInputState){
+    public onInput(sender:iWebSocketClientSend,input:NetworkPlayerInputState){
         const player = this._clients.get(sender);
         if(player == undefined) return;
-        player.EnqueueInputStream(input);
-    }
-
-    /**
-     * Refresh the players states and send the new game state to all the clients
-     */
-    public NetworkTick() {
-        this._clients.forEach((client)=>{
-            client.NetworkTick();
-        });
-        const clients = this.GetGameSimulationStateStream();
-        if(clients.length > 0)
-            this._networkManager.SendGlobalMessage(ServerEventType.GAME_STATE_STREAM,clients);
+        player.enqueueInputStream(input);
     }
     
     /**
      * Removes the client from the list of players
      * @param sender The websocket that left
      */
-    public Leave(sender:WebSocket) {
+    public onLeave(sender:iWebSocketClientSend) {
         const playerDisconnected = this._clients.get(sender);
         if(playerDisconnected == undefined) return;
         this._clients.delete(sender);
-        this._networkManager.SendGlobalMessage(ServerEventType.LEFT,playerDisconnected.fixedAttributes.id);
+        this._networkManager.sendGlobalMessage(ServerEventType.LEFT,playerDisconnected.fixedAttributes.id);
+    }
+
+    /**
+     * Refresh the players states and send the new game state to all the clients
+     */
+    public networkTick() {
+        this._clients.forEach((client)=>{
+            if(client.isEnabled){
+                client.networkTick();
+            }else if(!client.isAppearingOffline){
+                client.isAppearingOffline = true;
+                this._networkManager.sendGlobalMessage(ServerEventType.LEFT,client.fixedAttributes.id);
+            }
+        });
+        const clients = this.getGameSimulationStateStream();
+        if(clients.length > 0)
+            this._networkManager.sendGlobalMessage(ServerEventType.GAME_STATE_STREAM,clients);
     }
     
     /**
      * Get all the clients attributes list
      * @returns The list of all the clients attributes
      */
-    private GetAllClientsAttributes():NetworkPlayerFixedAttributes[] {
+    private getAllClientsAttributes():NetworkPlayerFixedAttributes[] {
         const clientsAttributes : NetworkPlayerFixedAttributes[] = [];
         this._clients.forEach((client)=>{
-            clientsAttributes.push(client.fixedAttributes);
+            if(client.isEnabled){
+                clientsAttributes.push(client.fixedAttributes);
+            }
         });
         return clientsAttributes;
     }
@@ -116,10 +152,12 @@ class NetworkPlayersManager {
      * Get all the clients simulation states list
      * @returns The list of all the clients simulation states
      */
-    private GetGameSimulationStateStream():NetworkPlayerGameStateStream[] {
+    private getGameSimulationStateStream():NetworkPlayerGameStateStream[] {
         const simulationStateStream : NetworkPlayerGameStateStream[] = [];
         this._clients.forEach((client)=>{
-            simulationStateStream.push(new NetworkPlayerGameStateStream(client.fixedAttributes.id,client.currentSimulationState));
+            if(client.isEnabled){
+                simulationStateStream.push(new NetworkPlayerGameStateStream(client.fixedAttributes.id,client.currentSimulationState));
+            }
         });
         return simulationStateStream;
     }
@@ -128,7 +166,7 @@ class NetworkPlayersManager {
      * Get a unique client id for a new client
      * @returns The next client id
      */
-    private GetNextClientId() : number {
+    private getNextClientId() : number {
         return this._nextClientId++;
     }
 }
