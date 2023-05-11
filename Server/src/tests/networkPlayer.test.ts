@@ -11,10 +11,27 @@ describe('NetworkPlayer',() => {
     it('ctor_initialPosition_equals', () => {
         expect(new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(1,0))).currentSimulationState.position.x).toBe(1);
     });
-    it('movement_tick_position_equals', () => {
+    it('movementTick_position_equals', () => {
         let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
         networkPlayer.EnqueueInputStream(new NetworkPlayerInputState(1,0));
         networkPlayer.NetworkTick();
         expect(networkPlayer.currentSimulationState.position.x).toBe(NetworkPlayer.SPEED/NetworkManager.TICK_PER_SECONDS);
+    });
+    it('movementTick_simulationFrame_equals', () => {
+        let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
+        networkPlayer.EnqueueInputStream(new NetworkPlayerInputState(123,0));
+        networkPlayer.NetworkTick();
+        expect(networkPlayer.currentSimulationState.simulationFrame).toBe(123);
+    });
+    it('lastSeen_isEnabled_true', () => {
+        let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
+        expect(networkPlayer.isEnabled).toBe(true);
+    });
+    it('lastSeen_isEnabled_false', () => {
+        let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
+        //TODO
+        setTimeout(() => {
+            expect(networkPlayer.isEnabled).toBe(false);
+        },NetworkManager.CONNECTION_TIMEOUT+1);
     });
 });
