@@ -100,7 +100,7 @@ class NetworkPlayer {
         while (this._inputStreamQueue.length > 0) {
             inputStream = this.dequeueInputStream();
             if(inputStream == undefined) continue;
-            this._currentPosition.Translate(inputStream!.direction,NetworkPlayer.SPEED*NetworkManager.TICK_INTERVAL);
+            this._currentPosition.translate(inputStream!.direction,NetworkPlayer.SPEED*NetworkManager.TICK_INTERVAL);
         }
         if(inputStream == undefined) return;
         this._currentSimulationState.position = this._currentPosition;
