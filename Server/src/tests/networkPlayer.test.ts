@@ -17,14 +17,14 @@ describe('NetworkPlayer',() => {
     });
     it('movementTick_position_equals', () => {
         let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
-        networkPlayer.EnqueueInputStream(new NetworkPlayerInputState(1,0));
-        networkPlayer.NetworkTick();
+        networkPlayer.enqueueInputStream(new NetworkPlayerInputState(1,0));
+        networkPlayer.networkTick();
         expect(networkPlayer.currentSimulationState.position.x).toBe(NetworkPlayer.SPEED/NetworkManager.TICK_PER_SECONDS);
     });
     it('movementTick_simulationFrame_equals', () => {
         let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
-        networkPlayer.EnqueueInputStream(new NetworkPlayerInputState(123,0));
-        networkPlayer.NetworkTick();
+        networkPlayer.enqueueInputStream(new NetworkPlayerInputState(123,0));
+        networkPlayer.networkTick();
         expect(networkPlayer.currentSimulationState.simulationFrame).toBe(123);
     });
     it('lastSeen_isEnabled_true', () => {
@@ -39,13 +39,13 @@ describe('NetworkPlayer',() => {
     it('updateLastSeen_isEnabled_true', async () => {
         let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
         await TestHelper.wait(NetworkManager.CONNECTION_TIMEOUT+10);
-        networkPlayer.UpdateLastSeen();
+        networkPlayer.updateLastSeen();
         expect(networkPlayer.isEnabled).toBe(true);
     });
     it('enqueueInputStream_isEnabled_true', async () => {
         let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
         await TestHelper.wait(NetworkManager.CONNECTION_TIMEOUT+10);
-        networkPlayer.EnqueueInputStream(new NetworkPlayerInputState(1,0));
+        networkPlayer.enqueueInputStream(new NetworkPlayerInputState(1,0));
         expect(networkPlayer.isEnabled).toBe(true);
     });
     it('isAppearingOffline_false', () => {

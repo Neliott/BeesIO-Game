@@ -64,13 +64,13 @@ class NetworkPlayer {
         //Copy the position cause it's a reference type
         this._currentPosition = new Position(fixedAttributes.basePosition.x,fixedAttributes.basePosition.y);
         this._currentSimulationState.position = fixedAttributes.basePosition;
-        this.UpdateLastSeen();
+        this.updateLastSeen();
     }
 
     /**
      * Update the last time the client has been seen (to check if it's still connected)
      */
-    public UpdateLastSeen() {
+    public updateLastSeen() {
         this._lastSeen = Date.now();
         this.isAppearingOffline = false;
     }
@@ -78,27 +78,27 @@ class NetworkPlayer {
     /**
      * Update the state of the player (move it, etc.)
      */
-    public NetworkTick() {
-        this.ProcessInputStreamQueue();
+    public networkTick() {
+        this.processInputStreamQueue();
     }
 
     /**
      * Enqueue a new input stream to be processed on the next tick
      * @param inputStream The input stream to enqueue
      */
-    public EnqueueInputStream(inputStream:NetworkPlayerInputState) {
+    public enqueueInputStream(inputStream:NetworkPlayerInputState) {
         this._inputStreamQueue.push(inputStream);
-        this.UpdateLastSeen();
+        this.updateLastSeen();
     }
     
-    private DequeueInputStream() : NetworkPlayerInputState | undefined {
+    private dequeueInputStream() : NetworkPlayerInputState | undefined {
         return this._inputStreamQueue.shift();
     }
     
-    private ProcessInputStreamQueue() {
+    private processInputStreamQueue() {
         let inputStream:NetworkPlayerInputState | undefined;
         while (this._inputStreamQueue.length > 0) {
-            inputStream = this.DequeueInputStream();
+            inputStream = this.dequeueInputStream();
             if(inputStream == undefined) continue;
             this._currentPosition.Translate(inputStream!.direction,NetworkPlayer.SPEED*NetworkManager.TICK_INTERVAL);
         }

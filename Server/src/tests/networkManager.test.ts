@@ -24,34 +24,34 @@ describe('NetworkManager',() => {
         //Given + When
         let networkManager = new NetworkManager(false);
         //Then
-        expect(networkManager.clientsManager.GetClientsList().length).toBe(0);
+        expect(networkManager.clientsManager.getClientsList().length).toBe(0);
     });
     it('onMessage_join_playerCount_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
         //When
-        networkManager.OnMessage(ws,"0|\"test\"");
+        networkManager.onMessage(ws,"0|\"test\"");
         //Then
-        expect(networkManager.clientsManager.GetClientsList().length).toBe(1);
+        expect(networkManager.clientsManager.getClientsList().length).toBe(1);
     });
     it('onMessage_join_playerName_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
         //When
-        networkManager.OnMessage(ws,"0|\"test\"");
+        networkManager.onMessage(ws,"0|\"test\"");
         //Then
-        expect(networkManager.clientsManager.GetNetworkPlayer(ws)?.fixedAttributes.name).toBe("test");
+        expect(networkManager.clientsManager.getNetworkPlayer(ws)?.fixedAttributes.name).toBe("test");
     });
     it('onMessage_join_playerId_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
         //When
-        networkManager.OnMessage(ws,"0|\"test\"");
+        networkManager.onMessage(ws,"0|\"test\"");
         //Then
-        expect(networkManager.clientsManager.GetNetworkPlayer(ws)?.fixedAttributes.id).toBe(0);
+        expect(networkManager.clientsManager.getNetworkPlayer(ws)?.fixedAttributes.id).toBe(0);
     });
     it('onMessage_join_multiplePlayerId_equal',() => {
         //Given
@@ -59,22 +59,22 @@ describe('NetworkManager',() => {
         let ws = new WebSocketMock();
         let ws2 = new WebSocketMock();
         //When
-        networkManager.OnMessage(ws,"0|\"test\"");
-        networkManager.OnMessage(ws2,"0|\"test2\"");
+        networkManager.onMessage(ws,"0|\"test\"");
+        networkManager.onMessage(ws2,"0|\"test2\"");
         //Then
-        expect(networkManager.clientsManager.GetNetworkPlayer(ws)?.fixedAttributes.id).toBe(0);
-        expect(networkManager.clientsManager.GetNetworkPlayer(ws2)?.fixedAttributes.id).toBe(1);
+        expect(networkManager.clientsManager.getNetworkPlayer(ws)?.fixedAttributes.id).toBe(0);
+        expect(networkManager.clientsManager.getNetworkPlayer(ws2)?.fixedAttributes.id).toBe(1);
     });
     it('onMessage_move_positionx_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
-        networkManager.OnMessage(ws,"0|\"test\"");
-        let networkPlayer = networkManager.clientsManager.GetNetworkPlayer(ws)!;
+        networkManager.onMessage(ws,"0|\"test\"");
+        let networkPlayer = networkManager.clientsManager.getNetworkPlayer(ws)!;
         let initialPosition = networkPlayer.fixedAttributes.basePosition;
         //When
-        networkManager.OnMessage(ws,"2|{\"simulationFrame\":1,\"direction\":0}"); 
-        networkManager.NetworkTick();
+        networkManager.onMessage(ws,"2|{\"simulationFrame\":1,\"direction\":0}"); 
+        networkManager.networkTick();
         //Then
         let currentPosition = networkPlayer.currentSimulationState.position;
         expect(currentPosition.x-initialPosition.x).toBeCloseTo(NetworkPlayer.SPEED/NetworkManager.TICK_PER_SECONDS);
@@ -84,11 +84,11 @@ describe('NetworkManager',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
-        networkManager.OnMessage(ws,"0|\"test\"");
-        let networkPlayer = networkManager.clientsManager.GetNetworkPlayer(ws)!;
+        networkManager.onMessage(ws,"0|\"test\"");
+        let networkPlayer = networkManager.clientsManager.getNetworkPlayer(ws)!;
         //When
-        networkManager.OnMessage(ws,"2|{\"simulationFrame\":1,\"direction\":90}"); 
-        networkManager.NetworkTick();
+        networkManager.onMessage(ws,"2|{\"simulationFrame\":1,\"direction\":90}"); 
+        networkManager.networkTick();
         //Then
         let initialPosition = networkPlayer.fixedAttributes.basePosition;
         let currentPosition = networkPlayer.currentSimulationState.position;
@@ -99,11 +99,11 @@ describe('NetworkManager',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
-        networkManager.OnMessage(ws,"0|\"test\"");
-        let networkPlayer = networkManager.clientsManager.GetNetworkPlayer(ws)!;
+        networkManager.onMessage(ws,"0|\"test\"");
+        let networkPlayer = networkManager.clientsManager.getNetworkPlayer(ws)!;
         //When
-        networkManager.OnMessage(ws,"2|{\"simulationFrame\":1,\"direction\":-45}"); 
-        networkManager.NetworkTick();
+        networkManager.onMessage(ws,"2|{\"simulationFrame\":1,\"direction\":-45}"); 
+        networkManager.networkTick();
         //Then
         let currentPosition = networkPlayer.currentSimulationState.position;
         let initialPosition = networkPlayer.fixedAttributes.basePosition;
@@ -114,12 +114,12 @@ describe('NetworkManager',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
-        networkManager.OnMessage(ws,"0|\"test\"");
-        let networkPlayer = networkManager.clientsManager.GetNetworkPlayer(ws)!;
+        networkManager.onMessage(ws,"0|\"test\"");
+        let networkPlayer = networkManager.clientsManager.getNetworkPlayer(ws)!;
         //When
-        networkManager.OnMessage(ws,"2|{\"simulationFrame\":1,\"direction\":90}"); 
-        networkManager.OnMessage(ws,"2|{\"simulationFrame\":2,\"direction\":90}"); 
-        networkManager.NetworkTick();
+        networkManager.onMessage(ws,"2|{\"simulationFrame\":1,\"direction\":90}"); 
+        networkManager.onMessage(ws,"2|{\"simulationFrame\":2,\"direction\":90}"); 
+        networkManager.networkTick();
         //Then
         let initialPosition = networkPlayer.fixedAttributes.basePosition;
         let currentPosition = networkPlayer.currentSimulationState.position;
@@ -130,10 +130,10 @@ describe('NetworkManager',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
-        networkManager.OnMessage(ws,"0|\"test\"");
+        networkManager.onMessage(ws,"0|\"test\"");
         //When
         await TestHelper.wait(NetworkManager.CONNECTION_TIMEOUT+10);
-        networkManager.NetworkTick();
+        networkManager.networkTick();
         //Then
         expect(ws.dataSent[2]).toBe("2|0");
     });
@@ -141,12 +141,12 @@ describe('NetworkManager',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
-        networkManager.OnMessage(ws,"0|\"test\"");
+        networkManager.onMessage(ws,"0|\"test\"");
         await TestHelper.wait(NetworkManager.CONNECTION_TIMEOUT+10);
-        networkManager.NetworkTick();
+        networkManager.networkTick();
         //When
-        networkManager.OnMessage(ws,"1|0");
-        networkManager.NetworkTick();
+        networkManager.onMessage(ws,"1|0");
+        networkManager.networkTick();
         //Then
         expect(ws.dataSent[3]).toContain("9|");
         expect(ws.dataSent[4]).toContain("0|");
@@ -155,11 +155,11 @@ describe('NetworkManager',() => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
-        networkManager.OnMessage(ws,"0|\"test\"");
-        expect(networkManager.clientsManager.GetClientsList().length).toBe(1);
+        networkManager.onMessage(ws,"0|\"test\"");
+        expect(networkManager.clientsManager.getClientsList().length).toBe(1);
         //When
-        networkManager.OnClose(ws);
+        networkManager.onClose(ws);
         //Then
-        expect(networkManager.clientsManager.GetClientsList().length).toBe(0);
+        expect(networkManager.clientsManager.getClientsList().length).toBe(0);
     });
 });

@@ -38,7 +38,7 @@ class NetworkManager {
         this._clientsManager = new NetworkPlayersManager(this);
         if(initialiseTimer){
             setInterval(()=>{
-                this.NetworkTick();
+                this.networkTick();
             },NetworkManager.TICK_INTERVAL*1000);
         }
     }
@@ -49,9 +49,9 @@ class NetworkManager {
      * @param type The type of the message
      * @param data The additional data of the message
      */
-    public SendMessage(target:iWebSocketClientSend,type:ServerEventType,data:any){
-        console.log("Sending message : "+this.EncodeMessage(type,data));
-        target.send(this.EncodeMessage(type,data));
+    public sendMessage(target:iWebSocketClientSend,type:ServerEventType,data:any){
+        console.log("Sending message : "+this.encodeMessage(type,data));
+        target.send(this.encodeMessage(type,data));
     }
 
     /**
@@ -59,10 +59,10 @@ class NetworkManager {
      * @param type The type of the message
      * @param data The additional data of the message
      */
-    public SendGlobalMessage(type:ServerEventType,data:any){
-        const messageEncoded = this.EncodeMessage(type,data);
+    public sendGlobalMessage(type:ServerEventType,data:any){
+        const messageEncoded = this.encodeMessage(type,data);
         console.log("Sending global message : "+messageEncoded);
-        this._clientsManager.GetClientsList().forEach((wsClient)=>{
+        this._clientsManager.getClientsList().forEach((wsClient)=>{
             wsClient.send(messageEncoded);
         });
     }
@@ -70,20 +70,20 @@ class NetworkManager {
     /**
      * Deserializes the message and calls the appropriate function
      */
-    public OnMessage(sender:iWebSocketClientSend,message:string) {
+    public onMessage(sender:iWebSocketClientSend,message:string) {
         const index = message.indexOf("|");
         const eventType:ClientEventType = parseInt(message.substring(0,index)) as ClientEventType;
         const json = message.substring(index+1);
 
         switch (eventType) {
             case ClientEventType.JOIN:
-                this._clientsManager.OnJoin(sender,JSON.parse(json));
+                this._clientsManager.onJoin(sender,JSON.parse(json));
                 break;
             case ClientEventType.REJOIN:
-                this._clientsManager.OnRejoin(sender,JSON.parse(json));
+                this._clientsManager.onRejoin(sender,JSON.parse(json));
                 break;
             case ClientEventType.INPUT_STREAM:
-                this._clientsManager.OnInput(sender,JSON.parse(json));
+                this._clientsManager.onInput(sender,JSON.parse(json));
                 break;
             default:
                 break;
@@ -94,19 +94,19 @@ class NetworkManager {
      * Removes the client from the list of connected clients
      * @param sender The websocket of the client disconnected
      */
-    public OnClose(sender:iWebSocketClientSend) {
-        this._clientsManager.OnLeave(sender);
+    public onClose(sender:iWebSocketClientSend) {
+        this._clientsManager.onLeave(sender);
     }
 
     /**
      * Tick the network (refresh the game state, etc.)
      * Note : THIS IS PUBLIC ONLY FOR TESTING PURPOSES
      */
-    public NetworkTick(){
-        this._clientsManager.NetworkTick();
+    public networkTick(){
+        this._clientsManager.networkTick();
     }
 
-    private EncodeMessage(type:ServerEventType,data:any):string{
+    private encodeMessage(type:ServerEventType,data:any):string{
         return type.valueOf()+"|"+JSON.stringify(data);
     }
 }
