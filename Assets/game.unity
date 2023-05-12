@@ -5376,4 +5376,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a55c647468247964ba24cb0536e6a27b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _serverUrl: ws://localhost:3000
+  _devServerUrl: ws://localhost:3000
+  _prodServerUrl: wss://gruduc.ddns.net:443/ws

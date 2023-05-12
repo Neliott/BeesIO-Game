@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 namespace Network
 {
@@ -57,7 +56,8 @@ namespace Network
         /// </summary>
         public event Action<NetworkState> OnStateChanged;
 
-        [SerializeField] string _serverUrl;
+        [SerializeField] string _devServerUrl;
+        [SerializeField] string _prodServerUrl;
         ITransport _transport;
         DateTime _lastSeenServer;
         float _clock = 0;
@@ -105,10 +105,12 @@ namespace Network
         /// </summary>
         public void Connect()
         {
-            new Thread(() =>
-            {
-                _transport.Connect(_serverUrl);
-            }).Start();
+            Debug.LogWarning("Connecting");
+#if UNITY_WEBGL && !UNITY_EDITOR
+            _transport.Connect(_prodServerUrl);
+#else
+            _transport.Connect(_devServerUrl);
+#endif
             State = NetworkState.CONNECTING;
         }
 
@@ -118,11 +120,12 @@ namespace Network
             Debug.LogWarning("Connection to server lost! Trying to reconnect.");
             if (!_transport.IsConnected)
             {
-                new Thread(() =>
-                {
-                    _transport.Disconnect();
-                    _transport.Connect(_serverUrl);
-                }).Start();
+                _transport.Disconnect();
+#if UNITY_WEBGL && !UNITY_EDITOR
+                _transport.Connect(_prodServerUrl);
+#else
+                _transport.Connect(_devServerUrl);
+#endif
             }
             else
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using WebSocketSharp;
@@ -34,7 +35,10 @@ namespace Network.Transport
             _ws.OnOpen += _ws_OnOpen;
             _ws.OnError += _ws_OnError;
             _ws.OnClose += _ws_OnClose;
-            _ws.Connect();
+            new Thread(() =>
+            {
+                _ws.Connect();
+            }).Start();
         }
 
         private void _ws_OnClose(object sender, CloseEventArgs e)
@@ -64,7 +68,10 @@ namespace Network.Transport
         /// <inheritdoc/>
         public void Disconnect()
         {
-            _ws.Close();
+            new Thread(() =>
+            {
+                _ws.Close();
+            }).Start();
         }
 
         /// <inheritdoc/>
