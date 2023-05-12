@@ -3,6 +3,7 @@ import ClientEventType from './commonStructures/clientEventType';
 import ServerEventType from './commonStructures/serverEventType';
 import NetworkPlayersManager from './networkPlayersManager';
 import iWebSocketClientSend from './iWebSocketClientSend';
+import HexaGrid from './hexagrid';
 
 /**
  * This manager is used to manage the network (serialize the game state, send it to the clients, receive the inputs, etc.) and the different services managing the game state
@@ -31,11 +32,21 @@ class NetworkManager {
         return this._clientsManager;
     }
 
+    private _hexaGrid : HexaGrid;
+
+    /**
+     * Returns the hexagrid
+     */
+    public get hexaGrid() : HexaGrid {
+        return this._hexaGrid;
+    }
+
     /**
      * Creates a new NetworkManager (new room with services)
      */
     constructor(initialiseTimer:boolean = true) {
         this._clientsManager = new NetworkPlayersManager(this);
+        this._hexaGrid = new HexaGrid(this);
         if(initialiseTimer){
             setInterval(()=>{
                 this.networkTick();

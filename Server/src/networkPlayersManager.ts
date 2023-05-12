@@ -57,7 +57,7 @@ class NetworkPlayersManager {
         const clientId = this.getNextClientId();
         const colorHue:number = Math.round(Random.Range(0,360));
         const networkPlayerFixedAttributes = new NetworkPlayerFixedAttributes(clientId,colorHue,name,/*HexaGrid.GetRandomPlaceOnMap()*/new Position(Random.Range(-10,10),Random.Range(-10,10)));
-        this._clients.set(sender,new NetworkPlayer(networkPlayerFixedAttributes));
+        this._clients.set(sender,new NetworkPlayer(this._networkManager,networkPlayerFixedAttributes));
         
         //Send the initial complete game state to the client
         this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,[],[]));
@@ -90,9 +90,12 @@ class NetworkPlayersManager {
                 //Inform all other clients that a new client joined
                 this._networkManager.sendGlobalMessage(ServerEventType.JOINED,this._clients.get(sender)?.fixedAttributes);
 
-                break;
+                return;
             }
         }
+
+        //If the player was not found, send a game over message
+        this._networkManager.sendMessage(sender,ServerEventType.GAME_OVER,null);
     }
 
     /**

@@ -3,6 +3,8 @@ import NetworkPlayerInputState from "./commonStructures/networkPlayerInputState"
 import Position from "./commonStructures/position";
 import NetworkPlayerSimulationState from "./commonStructures/networkPlayerSimulationState";
 import NetworkManager from "./networkManager";
+import Base from "./base";
+import HexaGrid from "./hexagrid";
 
 /**
  * Represents a player in the network
@@ -52,6 +54,14 @@ class NetworkPlayer {
         this._isAppearingOffline = value;
     }
 
+    private _base : Base;
+    /**
+     * Get the base of this player
+    */
+    public get base() : Base {
+        return this._base;
+    }
+
     private _inputStreamQueue : NetworkPlayerInputState[] = [];
     private _currentPosition : Position = new Position(0,0);
 
@@ -59,12 +69,14 @@ class NetworkPlayer {
      * Creates a new NetworkPlayer
      * @param fixedAttributes The initial fixed attributes of the client
      */
-    constructor(fixedAttributes:NetworkPlayerFixedAttributes) {
+    constructor(networkManager:NetworkManager, fixedAttributes:NetworkPlayerFixedAttributes) {
         this._fixedAttributes = fixedAttributes;
         //Copy the position cause it's a reference type
         this._currentPosition = new Position(fixedAttributes.basePosition.x,fixedAttributes.basePosition.y);
         this._currentSimulationState.position = fixedAttributes.basePosition;
         this.updateLastSeen();
+        //Create the new base
+        this._base = new Base(networkManager,HexaGrid.wordPositionToHexIndexes(fixedAttributes.basePosition));
     }
 
     /**
@@ -80,6 +92,7 @@ class NetworkPlayer {
      */
     public networkTick() {
         this.processInputStreamQueue();
+        this._base.networkTick();
     }
 
     /**
