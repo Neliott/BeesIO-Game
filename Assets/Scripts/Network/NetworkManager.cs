@@ -180,6 +180,8 @@ namespace Network
         private void _transport_OnClose()
         {
             if (State == NetworkState.CONNECTED) Reconnect();
+            else if (State != NetworkState.DISCONNECTING) GameManager.Instance.UIManager.ShowNetworkError();
+            State = NetworkState.NOT_CONNECTED;
             Debug.LogWarning("Connection closed");
         }
 

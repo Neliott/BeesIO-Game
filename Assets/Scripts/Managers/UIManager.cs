@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] Button _dropButton;
     [SerializeField] GameObject _connectionStatusPannel;
     [SerializeField] Text _connectionStatusText;
+    [SerializeField] GameObject _connectionErrorPannel;
 
     Scoreboard _scoreboard;
 
@@ -86,6 +87,17 @@ public class UIManager : MonoBehaviour
         _nameSelectionPannel.SetActive(true);
         _firstPlayPannel.SetActive(false);
         _replayPannel.SetActive(true);
+    }
+
+    /// <summary>
+    /// Show a network error pannel to the user
+    /// </summary>
+    public void ShowNetworkError()
+    {
+        _nameSelectionPannel.SetActive(false);
+        _connectionStatusPannel.SetActive(false);
+        _scoreboard.IsDisplayed = false;
+        _connectionErrorPannel.SetActive(true);
     }
 
     /// <summary>
