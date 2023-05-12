@@ -56,6 +56,7 @@ namespace Network
         /// </summary>
         public event Action<NetworkState> OnStateChanged;
 
+        [SerializeField] bool _forceProdServer;
         [SerializeField] string _devServerUrl;
         [SerializeField] string _prodServerUrl;
         ITransport _transport;
@@ -109,7 +110,7 @@ namespace Network
 #if UNITY_WEBGL && !UNITY_EDITOR
             _transport.Connect(_prodServerUrl);
 #else
-            _transport.Connect(_devServerUrl);
+            _transport.Connect(_forceProdServer? _prodServerUrl:_devServerUrl);
 #endif
             State = NetworkState.CONNECTING;
         }
