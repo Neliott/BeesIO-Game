@@ -29,30 +29,6 @@ public class HexaGrid : MonoBehaviour
     /// </summary>
     public const float SPACING_HEIGHT = 1.75f;
 
-    /// <summary>
-    /// Convert a world spaced position to the nearest hex index
-    /// </summary>
-    /// <param name="worldPosition">The transform position</param>
-    /// <returns>The nearest hextile index</returns>
-    public static Vector2Int WordPositionToHexIndexes(Vector2 worldPosition)
-    {
-        int y = Mathf.RoundToInt((worldPosition.y / SPACING_HEIGHT) + Mathf.Round(MAP_HEIGHT / 2));
-        if (y % 2 == 1) worldPosition.x = worldPosition.x + SPACING_WIDTH / 2;
-        int x = Mathf.RoundToInt((worldPosition.x / SPACING_WIDTH) + Mathf.Round(MAP_WIDTH / 2));
-        return new Vector2Int(x, y);
-    }
-
-    /// <summary>
-    /// Get the center of the hexindex on the map (world position)
-    /// </summary>
-    /// <param name="indexes">The index of the hextile</param>
-    /// <returns>The center world position of the hextile</returns>
-    public static Vector2 HexIndexesToWorldPosition(Vector2Int indexes)
-    {
-        Vector2 worldPosition = new Vector2((indexes.x - Mathf.Round(MAP_WIDTH / 2)) * SPACING_WIDTH, (indexes.y - Mathf.Round(MAP_HEIGHT / 2)) * SPACING_HEIGHT);
-        if (indexes.y % 2 == 1) worldPosition.x = worldPosition.x - SPACING_WIDTH / 2;
-        return worldPosition;
-    }
 
     [SerializeField]
     GameObject _hextilePrefab;
