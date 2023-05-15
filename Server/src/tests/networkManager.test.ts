@@ -150,7 +150,7 @@ describe('NetworkManager',() => {
         await TestHelper.wait(NetworkManager.CONNECTION_TIMEOUT+10);
         networkManager.networkTick();
         //Then
-        expect(ws.dataSent[2]).toBe("2|0");
+        expect(ws.dataSent[2+7]).toBe("2|0");
     });
     it('onMessage_waitAndReconnect_rejoin_sent',async () => {
         //Given
@@ -163,8 +163,8 @@ describe('NetworkManager',() => {
         networkManager.onMessage(ws,"1|0");
         networkManager.networkTick();
         //Then
-        expect(ws.dataSent[3]).toContain("9|");
-        expect(ws.dataSent[4]).toContain("0|");
+        expect(ws.dataSent[3+7]).toContain("9|");
+        expect(ws.dataSent[4+7]).toContain("0|");
     });
     it('onClose_playercount_equal',() => {
         //Given

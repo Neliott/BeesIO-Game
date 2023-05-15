@@ -98,7 +98,8 @@ class NetworkPlayer {
      */
     public networkTick() {
         this.processInputStreamQueue();
-        this._base.networkTick();
+        if(this._base != undefined)
+            this._base.networkTick();
     }
 
     /**

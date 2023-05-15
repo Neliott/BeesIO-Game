@@ -4,6 +4,9 @@ import HexaGrid from "./hexagrid";
 import NetworkManager from "./networkManager";
 import NetworkPlayer from "./networkPlayer";
 
+/**
+ * Represents a base with hexagons that can be upgraded
+ */
 export default class Base{
     private static readonly DEFAULT_BASE_SIZE = 2;
 
@@ -44,6 +47,7 @@ export default class Base{
      */
     public networkTick()
     {
+        this._networkManager.hexaGrid.setHexagonProperty(HexaGrid.wordPositionToHexIndexes(this.owner.currentSimulationState.position),this);
         if (this._upgradesToApply == 0 || this._isDestroyed) return;
         this._upgradesToApply--;
         this.buildNextBaseHexagon();

@@ -5,6 +5,9 @@ import Random from "./commonStructures/random";
 import ServerEventType from "./commonStructures/serverEventType";
 import NetworkManager from "./networkManager";
 
+/**
+ * Represents a hexagongrid on the map that can be possessed by a base
+ */
 export default class HexaGrid{
     /**
      * The percentage of grid to spawn object (do not spawn in border, they will be innaccesible)
@@ -49,8 +52,7 @@ export default class HexaGrid{
     public static wordPositionToHexIndexes(worldPosition:Position) : Position
     {
         const y = Math.round((worldPosition.y / HexaGrid.SPACING_HEIGHT) + Math.round(HexaGrid.MAP_HEIGHT / 2));
-        if (y % 2 == 1) worldPosition.x = worldPosition.x + HexaGrid.SPACING_WIDTH / 2;
-        const x = Math.round((worldPosition.x / HexaGrid.SPACING_WIDTH) + Math.round(HexaGrid.MAP_WIDTH / 2));
+        const x = Math.round(((worldPosition.x + ((y % 2 == 1)?(HexaGrid.SPACING_WIDTH / 2):0)) / HexaGrid.SPACING_WIDTH) + Math.round(HexaGrid.MAP_WIDTH / 2));
         return new Position(x, y);
     }
 
@@ -62,7 +64,7 @@ export default class HexaGrid{
     public static hexIndexesToWorldPosition(indexes:Position):Position
     {
         const worldPosition = new Position((indexes.x - Math.round(HexaGrid.MAP_WIDTH / 2)) * HexaGrid.SPACING_WIDTH, (indexes.y - Math.round(HexaGrid.MAP_HEIGHT / 2)) * HexaGrid.SPACING_HEIGHT);
-        if (indexes.y % 2 == 1) worldPosition.x = worldPosition.x - HexaGrid.SPACING_WIDTH / 2;
+        if (indexes.y % 2 == 1) worldPosition.x = worldPosition.x - (HexaGrid.SPACING_WIDTH / 2);
         return worldPosition;
     }
 
@@ -122,7 +124,6 @@ export default class HexaGrid{
      */
     public setHexagonProperty(position:Position, property:Base)
     {
-        console.log("Set hexagon property : " + position.x + " " + position.y + " to " + property.owner.fixedAttributes.name);
         this._networkManager.sendGlobalMessage(ServerEventType.HEXAGON_PROPERTY_CHANGED, new HexagonPropertyChanged(property?.owner.fixedAttributes.id,position));
         //TODO : Send to client for update local state 
         /*GameManager.Instance.UIManager.Scoreboard.UpdateScores();*/

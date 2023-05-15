@@ -61,7 +61,7 @@ class NetworkManager {
      * @param data The additional data of the message
      */
     public sendMessage(target:iWebSocketClientSend,type:ServerEventType,data:any){
-        console.log("Sending message : "+this.encodeMessage(type,data));
+        //console.log("Sending message : "+this.encodeMessage(type,data));
         target.send(this.encodeMessage(type,data));
     }
 
