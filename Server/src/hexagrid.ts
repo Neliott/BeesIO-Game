@@ -1,5 +1,6 @@
 import Base from "./base";
 import HexagonPropertyChanged from "./commonStructures/hexagonPropertyChanged";
+import NetworkOwnedHexagonList from "./commonStructures/networkOwnedHexagonList";
 import Position from "./commonStructures/position";
 import Random from "./commonStructures/random";
 import ServerEventType from "./commonStructures/serverEventType";
@@ -122,11 +123,10 @@ export default class HexaGrid{
      * @param position The index of the hexagon
      * @param property The new owner or null for remove owner
      */
-    public setHexagonProperty(position:Position, property:Base)
+    public setHexagonProperty(position:Position, property:Base|null)
     {
-        this._networkManager.sendGlobalMessage(ServerEventType.HEXAGON_PROPERTY_CHANGED, new HexagonPropertyChanged(property?.owner.fixedAttributes.id,position));
-        //TODO : Send to client for update local state 
-        /*GameManager.Instance.UIManager.Scoreboard.UpdateScores();*/
+        this._networkManager.sendGlobalMessage(ServerEventType.HEXAGON_PROPERTY_CHANGED, new HexagonPropertyChanged((property == null)?-1:property.owner.fixedAttributes.id,position));
+
         let lastOwner = this.getPropertyOfHexIndex(position);
         if (lastOwner != undefined)
         {
@@ -154,19 +154,34 @@ export default class HexaGrid{
     }
 
     /**
+     * Get the list of all the hexagons owned by players
+     * @returns The list of all the hexagons owned by bases
+     */
+    public getFullOwnedHexagonList():NetworkOwnedHexagonList[]
+    {
+        const list = new Array<NetworkOwnedHexagonList>();
+        this._hexagonsProperties.forEach((value: Position[], key: Base) => {
+            if(value.length != 0)
+                list.push(new NetworkOwnedHexagonList(key.owner.fixedAttributes.id, value));
+        });
+        return list;
+    }
+
+    /**
      * Try to get the base for the given hexagon index
      * @param index The index of hexagon
      * @returns The base if owned or null
      */
     public getPropertyOfHexIndex(index:Position):Base|undefined
     {
-        this._hexagonsProperties.forEach((value: Position[], key: Base) => {
-            value.forEach((position:Position)=>{
-                if(position.equals(index)){
-                    return key;
+        for (let [base, positions] of this._hexagonsProperties) {
+            for (let i = 0; i < positions.length; i++) {
+                if(positions[i].equals(index)){
+                    console.log("Found !");
+                    return base;
                 }
-            });
-        });
+            }
+        }
         return undefined;
     }
 }

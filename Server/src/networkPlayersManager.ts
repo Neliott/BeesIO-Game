@@ -64,7 +64,7 @@ class NetworkPlayersManager {
         this._clients.set(sender,newPlayer);
 
         //Send the initial complete game state to the client
-        this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,[],[],[]));
+        this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,[],[],this._networkManager.hexaGrid.getFullOwnedHexagonList()));
         
         //Inform all other clients that a new client joined
         this._networkManager.sendGlobalMessage(ServerEventType.JOINED,networkPlayerFixedAttributes);
@@ -92,10 +92,7 @@ class NetworkPlayersManager {
                 player.updateLastSeen();
 
                 //Send the initial complete game state to the client
-                this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,player.currentSimulationState.simulationFrame,attributesBeforeJoin,[],[],[]));
-
-                //Inform all other clients that a new client joined
-                this._networkManager.sendGlobalMessage(ServerEventType.JOINED,this._clients.get(sender)?.fixedAttributes);
+                this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,player.currentSimulationState.simulationFrame,attributesBeforeJoin,[],[],this._networkManager.hexaGrid.getFullOwnedHexagonList()));
 
                 return;
             }
@@ -123,6 +120,20 @@ class NetworkPlayersManager {
     public onLeave(sender:iWebSocketClientSend) {
         const playerDisconnected = this._clients.get(sender);
         if(playerDisconnected == undefined) return;
+        console.log("Clearing hexagons");
+        const hexagonsToClear = this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base)!;
+        
+        console.log("Last hexagons list : ",hexagonsToClear);
+        for (let index = 0; index < hexagonsToClear.length; index++) {
+            console.log("Clearing hexagons : ",hexagonsToClear[0]);
+            this._networkManager.hexaGrid.setHexagonProperty(hexagonsToClear[index],null);
+        }
+        console.log("New hexagons list : ",this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base));
+        
+        for(let ownedHexagons of this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base)!){
+            this._networkManager.hexaGrid.setHexagonProperty(ownedHexagons,null);
+        }
+        console.log("New hexagons list : ",this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base));
         this._clients.delete(sender);
         this._networkManager.sendGlobalMessage(ServerEventType.LEFT,playerDisconnected.fixedAttributes.id);
     }
@@ -134,9 +145,6 @@ class NetworkPlayersManager {
         this._clients.forEach((client)=>{
             if(client.isEnabled){
                 client.networkTick();
-            }else if(!client.isAppearingOffline){
-                client.isAppearingOffline = true;
-                this._networkManager.sendGlobalMessage(ServerEventType.LEFT,client.fixedAttributes.id);
             }
         });
         const clients = this.getGameSimulationStateStream();
@@ -151,9 +159,7 @@ class NetworkPlayersManager {
     private getAllClientsAttributes():NetworkPlayerFixedAttributes[] {
         const clientsAttributes : NetworkPlayerFixedAttributes[] = [];
         this._clients.forEach((client)=>{
-            if(client.isEnabled){
-                clientsAttributes.push(client.fixedAttributes);
-            }
+            clientsAttributes.push(client.fixedAttributes);
         });
         return clientsAttributes;
     }
@@ -165,9 +171,7 @@ class NetworkPlayersManager {
     private getGameSimulationStateStream():NetworkPlayerGameStateStream[] {
         const simulationStateStream : NetworkPlayerGameStateStream[] = [];
         this._clients.forEach((client)=>{
-            if(client.isEnabled){
-                simulationStateStream.push(new NetworkPlayerGameStateStream(client.fixedAttributes.id,client.currentSimulationState));
-            }
+            simulationStateStream.push(new NetworkPlayerGameStateStream(client.fixedAttributes.id,client.currentSimulationState));
         });
         return simulationStateStream;
     }

@@ -40,20 +40,6 @@ class NetworkPlayer {
         return this._currentSimulationState;
     }
     
-    private _isAppearingOffline : boolean = false;
-    /**
-     * Is the client appearing offline (has left from the client perspective)
-    */
-    public get isAppearingOffline() : boolean {
-        return this._isAppearingOffline;
-    }
-    /**
-     * Set the client to appear offline (has left from the client perspective)
-     */
-    public set isAppearingOffline(value : boolean) {
-        this._isAppearingOffline = value;
-    }
-
     private _base! : Base;
     /**
      * Get the base of this player
@@ -90,7 +76,6 @@ class NetworkPlayer {
      */
     public updateLastSeen() {
         this._lastSeen = Date.now();
-        this.isAppearingOffline = false;
     }
 
     /**

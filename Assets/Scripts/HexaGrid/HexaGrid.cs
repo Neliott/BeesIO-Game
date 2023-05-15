@@ -142,6 +142,7 @@ public class HexaGrid : MonoBehaviour
     /// <returns>The list or null</returns>
     public List<Vector2Int> GetHexagonsOfBase(Base givenBase)
     {
+        if (!_hexagonsProperties.ContainsKey(givenBase)) _hexagonsProperties[givenBase] = new List<Vector2Int>();
         return new List<Vector2Int>(_hexagonsProperties[givenBase]);
     }
 
