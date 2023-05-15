@@ -47,9 +47,19 @@ namespace Network
         public bool IsMine { get; private set; }
 
         /// <summary>
+        /// Get the base of this player
+        /// </summary>
+        public Base Base { get; private set; }
+
+        /// <summary>
         /// The boty of the player (to apply color to)
         /// </summary>
         [SerializeField] SpriteRenderer _coloredRenderer;
+
+        /// <summary>
+        /// The base prefab model to spawn
+        /// </summary>
+        [SerializeField] Base _basePrefab;
 
         /// <summary>
         /// The last known NetworkPlayerSimulationState provided by the server. 
@@ -94,7 +104,9 @@ namespace Network
         public void NetworkSetup(NetworkPlayerFixedAttributes fixedAttributes)
         {
             FixedAttributes = fixedAttributes;
-            _coloredRenderer.color = Color.HSVToRGB(fixedAttributes.colorHue/360f, 1, 1f);
+            Base = Instantiate(_basePrefab, fixedAttributes.basePosition.ToVector2(), Quaternion.identity);
+            Base.Setup(fixedAttributes);
+            _coloredRenderer.color = Base.Color;
             _lastPositionOnNetworkTick = fixedAttributes.basePosition.ToVector2();
             transform.position = _lastPositionOnNetworkTick;
         }

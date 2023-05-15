@@ -54,7 +54,7 @@ class NetworkPlayer {
         this._isAppearingOffline = value;
     }
 
-    private _base : Base;
+    private _base! : Base;
     /**
      * Get the base of this player
     */
@@ -69,14 +69,20 @@ class NetworkPlayer {
      * Creates a new NetworkPlayer
      * @param fixedAttributes The initial fixed attributes of the client
      */
-    constructor(networkManager:NetworkManager, fixedAttributes:NetworkPlayerFixedAttributes) {
+    constructor(fixedAttributes:NetworkPlayerFixedAttributes) {
         this._fixedAttributes = fixedAttributes;
         //Copy the position cause it's a reference type
         this._currentPosition = new Position(fixedAttributes.basePosition.x,fixedAttributes.basePosition.y);
         this._currentSimulationState.position = fixedAttributes.basePosition;
         this.updateLastSeen();
-        //Create the new base
-        this._base = new Base(networkManager,HexaGrid.wordPositionToHexIndexes(fixedAttributes.basePosition));
+    }
+
+    /**
+     * Create a new base for this player (call after the player has joined the game)
+     * @param networkManager The network manager reference
+     */
+    public createBase(networkManager:NetworkManager){
+        this._base = new Base(networkManager,HexaGrid.wordPositionToHexIndexes(this.fixedAttributes.basePosition),this);
     }
 
     /**

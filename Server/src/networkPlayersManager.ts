@@ -9,6 +9,7 @@ import InitialGameState from "./commonStructures/initialGameState";
 import NetworkPlayerInputState from "./commonStructures/networkPlayerInputState";
 import NetworkPlayerGameStateStream from "./commonStructures/networkPlayerGameStateStream";
 import iWebSocketClientSend from "./iWebSocketClientSend";
+import HexaGrid from "./hexagrid";
 
 /**
  * Manages the players connected to a network manager
@@ -56,14 +57,20 @@ class NetworkPlayersManager {
         //Create a new client / spawn attributes
         const clientId = this.getNextClientId();
         const colorHue:number = Math.round(Random.Range(0,360));
-        const networkPlayerFixedAttributes = new NetworkPlayerFixedAttributes(clientId,colorHue,name,/*HexaGrid.GetRandomPlaceOnMap()*/new Position(Random.Range(-10,10),Random.Range(-10,10)));
-        this._clients.set(sender,new NetworkPlayer(this._networkManager,networkPlayerFixedAttributes));
+        const networkPlayerFixedAttributes = new NetworkPlayerFixedAttributes(clientId,colorHue,name,HexaGrid.getRandomPlaceOnMap());
         
+        //Spawn the new client to the list of clients
+        const newPlayer = new NetworkPlayer(networkPlayerFixedAttributes);
+        this._clients.set(sender,newPlayer);
+
         //Send the initial complete game state to the client
-        this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,[],[]));
+        this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,[],[],[]));
         
         //Inform all other clients that a new client joined
         this._networkManager.sendGlobalMessage(ServerEventType.JOINED,networkPlayerFixedAttributes);
+
+        //Create a base for the new player
+        newPlayer.createBase(this._networkManager);
     }
 
     /**
@@ -85,7 +92,7 @@ class NetworkPlayersManager {
                 player.updateLastSeen();
 
                 //Send the initial complete game state to the client
-                this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,player.currentSimulationState.simulationFrame,attributesBeforeJoin,[],[]));
+                this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,player.currentSimulationState.simulationFrame,attributesBeforeJoin,[],[],[]));
 
                 //Inform all other clients that a new client joined
                 this._networkManager.sendGlobalMessage(ServerEventType.JOINED,this._clients.get(sender)?.fixedAttributes);

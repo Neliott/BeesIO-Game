@@ -30,17 +30,6 @@ public class HexaGrid : MonoBehaviour
     public const float SPACING_HEIGHT = 1.75f;
 
     /// <summary>
-    /// Get a random place on the map
-    /// </summary>
-    /// <returns>A position on the map inside safe bound</returns>
-    public static Vector2 GetRandomPlaceOnMap()
-    {
-        int randomXWithBounds = (int)Random.Range(MAP_SAFE_GRID_OFFSET_X, MAP_WIDTH * MAP_SAFE_GRID_PERCENTAGE);
-        int randomYWithBounds = (int)Random.Range(MAP_SAFE_GRID_OFFSET_Y, MAP_HEIGHT * MAP_SAFE_GRID_PERCENTAGE);
-        return HexIndexesToWorldPosition(new Vector2Int(randomXWithBounds, randomYWithBounds));
-    }
-
-    /// <summary>
     /// Convert a world spaced position to the nearest hex index
     /// </summary>
     /// <param name="worldPosition">The transform position</param>
@@ -63,40 +52,6 @@ public class HexaGrid : MonoBehaviour
         Vector2 worldPosition = new Vector2((indexes.x - Mathf.Round(MAP_WIDTH / 2)) * SPACING_WIDTH, (indexes.y - Mathf.Round(MAP_HEIGHT / 2)) * SPACING_HEIGHT);
         if (indexes.y % 2 == 1) worldPosition.x = worldPosition.x - SPACING_WIDTH / 2;
         return worldPosition;
-    }
-
-    /// <summary>
-    /// Get the list of all the hexagons indexes inside a large hexagon
-    /// </summary>
-    /// <param name="center">The center of the bug hexagon</param>
-    /// <param name="radius">The radius of the hexagon</param>
-    /// <param name="outline">Get only the outile ? (Or also all the positions that fill it)</param>
-    /// <returns>The list of all hextiles positions</returns>
-    public static List<Vector2Int> GetBigHexagonPositions(Vector2Int center, int radius, bool outline)
-    {
-        List<Vector2Int> allPositions = new List<Vector2Int>();
-
-        //This is necessary to shift the upper and lower parts (by one to the left) if you start with an even line (shifted to the right).
-        int xDecal = (center.y + 1) % 2;
-
-        //Loop through the Y axis lines by lines from -radius (-1) to +radius (-1)
-        for (int y = -(radius - 1); y < radius; y++)
-        {
-            int yAbsolute = FasterAbs(y);
-
-            //Used to determine the size of the line to use (large if in the center, small if at the beginning or end)
-            int xLenth = ((radius * 2) - 1) - yAbsolute;
-            int xDrawStart = (int)FasterAbs(Mathf.Floor(y / 2));
-
-            //Increment by one (to draw a full line) if the outline is false OR if the y is starting or ending value.
-            //Else, increment to go directly to last point to draw (if outline ant the y is not the start or end value)
-            int incrementor = ((!outline) || FasterAbs(y) == (radius - 1)) ? 1 : xLenth - 1;
-            for (int x = 0; x < xLenth; x = x + incrementor)
-            {
-                allPositions.Add(new Vector2Int(center.x - (radius - 1) + x + xDrawStart + ((yAbsolute % 2 == 1) ? xDecal : 0), center.y + y));
-            }
-        }
-        return allPositions;
     }
 
     [SerializeField]
@@ -168,7 +123,6 @@ public class HexaGrid : MonoBehaviour
     /// </summary>
     public void Clear()
     {
-        //List<Base> basesToUpdate = new List<Base>();
         foreach (KeyValuePair<Base,List<Vector2Int>> baseHexPositions in _hexagonsProperties)
         {
             foreach (Vector2Int index in baseHexPositions.Value)
@@ -180,16 +134,14 @@ public class HexaGrid : MonoBehaviour
             if (prevCount != 0 && baseHexPositions.Key != null)
                 baseHexPositions.Key.OnHexagonOwnedListChanged();
         }
-        /*foreach (Base baseToUpdate in basesToUpdate)
-        {
-            baseToUpdate.OnHexagonOwnedListChanged();
-        }*/
         _hexagonsProperties.Clear();
         _cachedMaterials.Clear();
     }
 
     /// <summary>
-    /// Set hexagon of a given index to a new property
+    /// Set hexagon of a given index to a new property.
+    /// This method should never be called from a client script (because the changes will only be local). 
+    /// Only information received from the server should be passed to this method to replicate the state. 
     /// </summary>
     /// <param name="position">The index of the hexagon</param>
     /// <param name="property">The new owner or null for remove owner</param>
@@ -210,40 +162,6 @@ public class HexaGrid : MonoBehaviour
         _hexagonsProperties[property].Add(position);
         ChangeHexColor(position, property.Color);
         property.OnHexagonOwnedListChanged();
-    }
-
-    /// <summary>
-    /// Set hexagons of indexes to a new property
-    /// </summary>
-    /// <param name="positions">The indexes of hexagons to change</param>
-    /// <param name="property">The new owner or null for remove owner</param>
-    public void SetHexagonsProperty(List<Vector2Int> positions, Base property)
-    {
-        List<Base> basesToNotify = new List<Base>();
-        foreach (var position in positions)
-        {
-            Base lastOwner = GetPropertyOfHexIndex(position);
-            if(lastOwner != null)
-            {
-                _hexagonsProperties[lastOwner].Remove(position);
-                _hexatilesInstances[position.x][position.y].material = _defaultMaterial; 
-                if (!basesToNotify.Contains(lastOwner))
-                    basesToNotify.Add(lastOwner);
-            }
-            if (property == null) continue;
-            if (!_hexagonsProperties.ContainsKey(property))
-            {
-                _hexagonsProperties[property] = new List<Vector2Int>();
-            }
-            _hexagonsProperties[property].Add(position);
-            ChangeHexColor(position, property.Color);
-            if(!basesToNotify.Contains(property))
-                basesToNotify.Add(property);
-        }
-        foreach (Base baseToNotifyOnce in basesToNotify)
-        {
-            baseToNotifyOnce.OnHexagonOwnedListChanged();
-        }
     }
 
     /// <summary>
@@ -294,27 +212,5 @@ public class HexaGrid : MonoBehaviour
         {
             _hexatilesInstances[hexIndex.x][hexIndex.y].material = cachedMaterial;
         }
-    }
-
-    /// <summary>
-    /// Return the absolute of a number
-    /// </summary>
-    /// <param name="x">The number</param>
-    /// <returns>The absolute of the number</returns>
-    /// <remarks>For some reasons, this is faster than the default Math.Abs method</remarks>
-    static float FasterAbs(float x)
-    {
-        return x < 0 ? x * -1 : x;
-    }
-
-    /// <summary>
-    /// Return the absolute of a number
-    /// </summary>
-    /// <param name="x">The number</param>
-    /// <returns>The absolute of the number</returns>
-    /// <remarks>For some reasons, this is faster than the default Math.Abs method</remarks>
-    static int FasterAbs(int x)
-    {
-        return x < 0 ? x * -1 : x;
     }
 }

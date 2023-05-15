@@ -164,6 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _coloredRenderer: {fileID: 1632954444628165932}
+  _basePrefab: {fileID: 8042596957692475620, guid: 2b1d359ff51270444845ef3b3f792bf5, type: 3}
 --- !u!50 &9059037555347128698
 Rigidbody2D:
   serializedVersion: 4

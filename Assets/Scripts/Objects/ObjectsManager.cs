@@ -114,9 +114,9 @@ public class ObjectsManager : MonoBehaviour
 
     void SpawnObject(GameObject prefab)
     {
-        GameObject instance = Instantiate(prefab, HexaGrid.GetRandomPlaceOnMap(), Quaternion.identity, _spawnedObjectsParent);
+        /*GameObject instance = Instantiate(prefab, HexaGrid.GetRandomPlaceOnMap(), Quaternion.identity, _spawnedObjectsParent);
         PlacableObject placableObject = instance.GetComponent<PlacableObject>();
         placableObject.OnPlaced();
-        _spawnedObjects.Add(placableObject);
+        _spawnedObjects.Add(placableObject);*/
     }
 }

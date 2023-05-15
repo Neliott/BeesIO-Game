@@ -213,6 +213,9 @@ namespace Network
                     break;
                 case ServerEventType.DESTROY:
                     break;
+                case ServerEventType.HEXAGON_PROPERTY_CHANGED:
+                    ApplyHexagonPropertyChanged(JsonConvert.DeserializeObject<HexagonPropertyChanged>(json));
+                    break;
                 case ServerEventType.GAME_STATE_STREAM:
 #if UNITY_EDITOR
                     if (Input.GetKey("r")) return;
@@ -249,6 +252,11 @@ namespace Network
             GameManager.Instance.Players.SimulationStateStartIndex = initialGameState.simulationStateStartIndex;
             GameManager.Instance.Players.CurrentPlayerIdOwned = initialGameState.ownedClientID;
             _lastPlayerIdOwned = GameManager.Instance.Players.CurrentPlayerIdOwned;
+        }
+
+        private void ApplyHexagonPropertyChanged(HexagonPropertyChanged changeInformations)
+        {
+            GameManager.Instance.HexaGrid.SetHexagonProperty(new Vector2Int((int)changeInformations.index.x, (int)changeInformations.index.y), GameManager.Instance.Players.NetworkedClients[changeInformations.newOwner].Base);
         }
 
         private void ApplyGameState(List<NetworkPlayerGameStateStream> simulationState)

@@ -2,6 +2,7 @@ import { EventEmitter } from "events";
 import Position from "./commonStructures/position";
 import HexaGrid from "./hexagrid";
 import NetworkManager from "./networkManager";
+import NetworkPlayer from "./networkPlayer";
 
 export default class Base{
     private static readonly DEFAULT_BASE_SIZE = 2;
@@ -10,6 +11,10 @@ export default class Base{
      * Events emitter (only emitt 'destroyed' when the base has no remaning hexagons)
      */
     public eventEmitter = new EventEmitter()
+    /**
+     * Get the owner of the base
+     */
+    public get owner():NetworkPlayer { return this._owner; }
 
     private _isDestroyed:boolean = false;
     private _upgradesToApply:number = 0;
@@ -18,8 +23,16 @@ export default class Base{
     private _remaningHexagonsForNextStep:Position[] = [];
     private _currentHexagones:Position[] = [];
     private _networkManager:NetworkManager;
+    private _owner:NetworkPlayer;
 
-    constructor(networkManager:NetworkManager,centerIndex:Position){
+    /**
+     * Create a new base
+     * @param networkManager The network manager
+     * @param centerIndex The center of the base
+     * @param owner The owner of the base
+     */
+    constructor(networkManager:NetworkManager,centerIndex:Position,owner:NetworkPlayer){
+        this._owner = owner;
         this._networkManager = networkManager;
         this._baseCenterIndex = centerIndex;
         this._baseLevel = Base.DEFAULT_BASE_SIZE;

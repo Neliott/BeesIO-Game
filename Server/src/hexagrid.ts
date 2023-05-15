@@ -1,4 +1,5 @@
 import Base from "./base";
+import HexagonPropertyChanged from "./commonStructures/hexagonPropertyChanged";
 import Position from "./commonStructures/position";
 import Random from "./commonStructures/random";
 import ServerEventType from "./commonStructures/serverEventType";
@@ -86,7 +87,7 @@ export default class HexaGrid{
 
             //Used to determine the size of the line to use (large if in the center, small if at the beginning or end)
             const xLenth = ((radius * 2) - 1) - yAbsolute;
-            const xDrawStart = Math.round(Math.abs(Math.floor(y / 2)));
+            const xDrawStart = Math.floor(Math.abs(y / 2));
 
             //Increment by one (to draw a full line) if the outline is false OR if the y is starting or ending value.
             //Else, increment to go directly to last poconst to draw (if outline ant the y is not the start or end value)
@@ -121,8 +122,8 @@ export default class HexaGrid{
      */
     public setHexagonProperty(position:Position, property:Base)
     {
-        console.log("Set hexagon property : " + position.x + " " + position.y + " to " + property?.toString());
-        //this._networkManager.sendGlobalMessage(ServerEventType.HEXAGON_PROPERTY_CHANGED, new HexagonPropertyChangedMessage(position, property?.id));
+        console.log("Set hexagon property : " + position.x + " " + position.y + " to " + property.owner.fixedAttributes.name);
+        this._networkManager.sendGlobalMessage(ServerEventType.HEXAGON_PROPERTY_CHANGED, new HexagonPropertyChanged(property?.owner.fixedAttributes.id,position));
         //TODO : Send to client for update local state 
         /*GameManager.Instance.UIManager.Scoreboard.UpdateScores();*/
         let lastOwner = this.getPropertyOfHexIndex(position);

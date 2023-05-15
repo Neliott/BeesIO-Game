@@ -88,7 +88,7 @@ public class BotPlayer : Player
                 if (pickedUpObjects[0] is Pollen) _target = _base;
                 //if (pickedUpObjects[0] is Pesticide) _target = GetNearestOtherBase();
                 //Using cached positions to not compute the NearestValidPlacablePosition at every frames
-                _lastCachedBasePosition = ((Base)_target).GetNearestValidPlacablePosition(transform.position);
+                //_lastCachedBasePosition = ((Base)_target).GetNearestValidPlacablePosition(transform.position);
             }
             else
             {
