@@ -257,6 +257,7 @@ namespace Network
         private void ApplyHexagonPropertyChanged(HexagonPropertyChanged changeInformations)
         {
             GameManager.Instance.HexaGrid.SetHexagonProperty(new Vector2Int((int)changeInformations.index.x, (int)changeInformations.index.y), GameManager.Instance.Players.NetworkedClients[changeInformations.newOwner].Base);
+            GameManager.Instance.UIManager.Scoreboard.UpdateScores();
         }
 
         private void ApplyGameState(List<NetworkPlayerGameStateStream> simulationState)

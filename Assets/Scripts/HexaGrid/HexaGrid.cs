@@ -129,10 +129,7 @@ public class HexaGrid : MonoBehaviour
             {
                 _hexatilesInstances[index.x][index.y].material = _defaultMaterial;
             }
-            int prevCount = baseHexPositions.Value.Count;
             baseHexPositions.Value.Clear();
-            if (prevCount != 0 && baseHexPositions.Key != null)
-                baseHexPositions.Key.OnHexagonOwnedListChanged();
         }
         _hexagonsProperties.Clear();
         _cachedMaterials.Clear();
@@ -152,7 +149,6 @@ public class HexaGrid : MonoBehaviour
         {
             _hexagonsProperties[lastOwner].Remove(position);
             _hexatilesInstances[position.x][position.y].material = _defaultMaterial;
-            lastOwner.OnHexagonOwnedListChanged();
         }
         if (property == null) return;
         if (!_hexagonsProperties.ContainsKey(property))
@@ -161,7 +157,6 @@ public class HexaGrid : MonoBehaviour
         }
         _hexagonsProperties[property].Add(position);
         ChangeHexColor(position, property.Color);
-        property.OnHexagonOwnedListChanged();
     }
 
     /// <summary>
