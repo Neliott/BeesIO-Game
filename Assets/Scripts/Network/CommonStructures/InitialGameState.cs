@@ -25,5 +25,9 @@
         /// The list of objects owned by the client.
         /// </summary>
         public NetworkOwnedObjectsList[] ownedObjects;
+        /// <summary>
+        /// The list of hexagons owned by clients.
+        /// </summary>
+        public NetworkOwnedHexagonList[] ownedHexagons;
     }
 }
