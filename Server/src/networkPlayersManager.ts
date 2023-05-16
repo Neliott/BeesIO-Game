@@ -64,7 +64,7 @@ class NetworkPlayersManager {
         this._clients.set(sender,newPlayer);
 
         //Send the initial complete game state to the client
-        this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,[],[],this._networkManager.hexaGrid.getFullOwnedHexagonList()));
+        this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,this._networkManager.objectsManager.getAllObjectsSpawnAttributes(),[],this._networkManager.hexaGrid.getFullOwnedHexagonList()));
         
         //Inform all other clients that a new client joined
         this._networkManager.sendGlobalMessage(ServerEventType.JOINED,networkPlayerFixedAttributes);
@@ -92,7 +92,7 @@ class NetworkPlayersManager {
                 player.updateLastSeen();
 
                 //Send the initial complete game state to the client
-                this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,player.currentSimulationState.simulationFrame,attributesBeforeJoin,[],[],this._networkManager.hexaGrid.getFullOwnedHexagonList()));
+                this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,player.currentSimulationState.simulationFrame,attributesBeforeJoin,this._networkManager.objectsManager.getAllObjectsSpawnAttributes(),[],this._networkManager.hexaGrid.getFullOwnedHexagonList()));
 
                 return;
             }

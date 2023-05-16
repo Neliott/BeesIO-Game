@@ -3,7 +3,7 @@
  */
 export default class Random {
     /**
-     * Generates a random number between min and max.
+     * Generates a random number between min and max (inclusive).
      * @param min The minimum value of the random number.
      * @param max The maximum value of the random number.
      * @returns The random number.
