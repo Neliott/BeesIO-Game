@@ -1,3 +1,4 @@
+import NetworkOwnedHexagonList from "./networkOwnedHexagonList";
 import NetworkOwnedObjectsList from "./networkOwnedObjectsList";
 import NetworkPlayerFixedAttributes from "./networkPlayerFixedAttributes";
 
@@ -22,9 +23,13 @@ export default class InitialGameState {
      */
     public objects:NetworkOwnedObjectsList[];
     /**
-     * The list of objects owned by the client.
+     * The list of objects owned by clients.
      */
     public ownedObjects:NetworkOwnedObjectsList[];
+    /**
+     * The list of hexagons owned by clients.
+     */
+    public ownedHexagons:NetworkOwnedHexagonList[];
     /**
      * The constructor for the InitialGameState class.
      * @param ownedClientID The id of the client that owns this state.
@@ -32,12 +37,14 @@ export default class InitialGameState {
      * @param otherClientsInitialAttributes The initial attributes of the other clients.
      * @param objects The list of objects in the game.
      * @param ownedObjects The list of objects owned by the client.
+     * @param ownedHexagons The list of hexagons owned by clients.
      */
-    constructor(ownedClientID:number, simulationStateStartIndex:number, otherClientsInitialAttributes:NetworkPlayerFixedAttributes[], objects:NetworkOwnedObjectsList[], ownedObjects:NetworkOwnedObjectsList[]) {
+    constructor(ownedClientID:number, simulationStateStartIndex:number, otherClientsInitialAttributes:NetworkPlayerFixedAttributes[], objects:NetworkOwnedObjectsList[], ownedObjects:NetworkOwnedObjectsList[], ownedHexagons:NetworkOwnedHexagonList[]) {
         this.ownedClientID = ownedClientID;
         this.simulationStateStartIndex = simulationStateStartIndex;
         this.otherClientsInitialAttributes = otherClientsInitialAttributes;
         this.objects = objects;
         this.ownedObjects = ownedObjects;
+        this.ownedHexagons = ownedHexagons;
     }
 }

@@ -141,7 +141,7 @@ describe('NetworkManager',() => {
         expect(currentPosition.x-initialPosition.x).toBeCloseTo(0);
         expect(currentPosition.y-initialPosition.y).toBeCloseTo(0);
     });
-    it('onMessage_wait_fakeLeave_sent',async () => {
+    it('onMessage_wait_isEnabledPlayer_false',async () => {
         //Given
         let networkManager = new NetworkManager(false);
         let ws = new WebSocketMock();
@@ -150,7 +150,7 @@ describe('NetworkManager',() => {
         await TestHelper.wait(NetworkManager.CONNECTION_TIMEOUT+10);
         networkManager.networkTick();
         //Then
-        expect(ws.dataSent[2]).toBe("2|0");
+        expect(networkManager.clientsManager.getNetworkPlayer(ws)?.isEnabled).toBeFalsy();
     });
     it('onMessage_waitAndReconnect_rejoin_sent',async () => {
         //Given
@@ -163,8 +163,7 @@ describe('NetworkManager',() => {
         networkManager.onMessage(ws,"1|0");
         networkManager.networkTick();
         //Then
-        expect(ws.dataSent[3]).toContain("9|");
-        expect(ws.dataSent[4]).toContain("0|");
+        expect(ws.dataSent[10]).toContain("9|");
     });
     it('onClose_playercount_equal',() => {
         //Given

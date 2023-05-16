@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
+using Network;
 using System.Linq;
+using NetworkPlayer = Network.NetworkPlayer;
 
 public class Scoreboard : MonoBehaviour
 {
@@ -31,23 +32,22 @@ public class Scoreboard : MonoBehaviour
     public void UpdateScores()
     {
         if (!_isDisplayed) return;
-        //TODO
         //Order players by score
-        /*List<Player> playersOredered = GameManager.Instance.Players.NetworkedClients.OrderByDescending(player => player.Value.Base.Score).ToList();
+        List<NetworkPlayer> playersOredered = GameManager.Instance.Players.NetworkedClients.Values.OrderByDescending(player => GameManager.Instance.HexaGrid.GetHexagonsOfBase(player.Base).Count).ToList();
 
         //Display scores
         for (int i = 0; i < _names.Length; i++)
         {
             if (i < playersOredered.Count)
             {
-                _names[i].text = playersOredered[i].Base.Name;
-                _scores[i].text = playersOredered[i].Base.Score + " pts";
+                _names[i].text = playersOredered[i].FixedAttributes.name;
+                _scores[i].text = GameManager.Instance.HexaGrid.GetHexagonsOfBase(playersOredered[i].Base).Count + " pts";
             }
             else
             {
                 _names[i].text = "";
                 _scores[i].text = "";
             }
-        }*/
+        }
     }
 }

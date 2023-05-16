@@ -7,7 +7,7 @@ public class Pollen : PickupObject
     /// <summary>
     /// Drop the pollen (if on base, add it)
     /// </summary>
-    public override void Drop()
+    /*public override void Drop()
     {
         if (_owner == null) return;//Todo : Fix owner null
         Vector2Int indexes = HexaGrid.WordPositionToHexIndexes(_owner.transform.position);
@@ -18,5 +18,5 @@ public class Pollen : PickupObject
             OnDestroyNeeded();
         }
         base.Drop();
-    }
+    }*/
 }

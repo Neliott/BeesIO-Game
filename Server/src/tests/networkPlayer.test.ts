@@ -48,13 +48,4 @@ describe('NetworkPlayer',() => {
         networkPlayer.enqueueInputStream(new NetworkPlayerInputState(1,0));
         expect(networkPlayer.isEnabled).toBe(true);
     });
-    it('isAppearingOffline_false', () => {
-        let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
-        expect(networkPlayer.isAppearingOffline).toBe(false);
-    });
-    it('isAppearingOffline_true', () => {
-        let networkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
-        networkPlayer.isAppearingOffline = true;
-        expect(networkPlayer.isAppearingOffline).toBe(true);
-    });
 });

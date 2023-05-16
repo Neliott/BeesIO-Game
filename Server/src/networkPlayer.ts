@@ -3,6 +3,8 @@ import NetworkPlayerInputState from "./commonStructures/networkPlayerInputState"
 import Position from "./commonStructures/position";
 import NetworkPlayerSimulationState from "./commonStructures/networkPlayerSimulationState";
 import NetworkManager from "./networkManager";
+import Base from "./base";
+import HexaGrid from "./hexagrid";
 
 /**
  * Represents a player in the network
@@ -38,18 +40,12 @@ class NetworkPlayer {
         return this._currentSimulationState;
     }
     
-    private _isAppearingOffline : boolean = false;
+    private _base! : Base;
     /**
-     * Is the client appearing offline (has left from the client perspective)
+     * Get the base of this player
     */
-    public get isAppearingOffline() : boolean {
-        return this._isAppearingOffline;
-    }
-    /**
-     * Set the client to appear offline (has left from the client perspective)
-     */
-    public set isAppearingOffline(value : boolean) {
-        this._isAppearingOffline = value;
+    public get base() : Base {
+        return this._base;
     }
 
     private _inputStreamQueue : NetworkPlayerInputState[] = [];
@@ -68,11 +64,18 @@ class NetworkPlayer {
     }
 
     /**
+     * Create a new base for this player (call after the player has joined the game)
+     * @param networkManager The network manager reference
+     */
+    public createBase(networkManager:NetworkManager){
+        this._base = new Base(networkManager,HexaGrid.wordPositionToHexIndexes(this.fixedAttributes.basePosition),this);
+    }
+
+    /**
      * Update the last time the client has been seen (to check if it's still connected)
      */
     public updateLastSeen() {
         this._lastSeen = Date.now();
-        this.isAppearingOffline = false;
     }
 
     /**
@@ -80,6 +83,8 @@ class NetworkPlayer {
      */
     public networkTick() {
         this.processInputStreamQueue();
+        if(this._base != undefined)
+            this._base.networkTick();
     }
 
     /**

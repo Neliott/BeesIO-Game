@@ -89,6 +89,7 @@ public class PlayersManager : MonoBehaviour
     /// <param name="playerId">The id of the player to destroy</param>
     public void RemovePlayer(int playerId)
     {
+        if (!_networkedClients.ContainsKey(playerId)) return;
         Destroy(_networkedClients[playerId].gameObject);
         _networkedClients.Remove(playerId);
     }

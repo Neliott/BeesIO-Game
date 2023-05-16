@@ -9,6 +9,6 @@ export default class Random {
      * @returns The random number.
      */
     public static Range(min:number,max:number):number{
-        return (Math.random()*(max-min))+min;
+        return Math.round((Math.random()*(max-min))+min);
     }
 }

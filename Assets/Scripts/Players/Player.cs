@@ -39,7 +39,7 @@ public abstract class Player : MonoBehaviour
     /// </summary>
     public virtual void Setup(string name)
     {
-        _pickupController = GetComponent<PickupController>();
+        /*_pickupController = GetComponent<PickupController>();
 
         _mover = GetComponent<Mover>();
         _mover.Speed = 6.5f;
@@ -50,7 +50,7 @@ public abstract class Player : MonoBehaviour
         _base = baseGo.GetComponent<Base>();
         _base.Setup(name);
         _base.OnBaseDestroyed += OnBaseDestroyed;
-        _coloredRenderer.color = _base.Color;
+        _coloredRenderer.color = _base.Color;*/
     }
 
     protected virtual void OnBaseDestroyed()
@@ -62,6 +62,6 @@ public abstract class Player : MonoBehaviour
 
     private void OnDestroy()
     {
-        _base.OnBaseDestroyed -= OnBaseDestroyed;
+        //_base.OnBaseDestroyed -= OnBaseDestroyed;
     }
 }
