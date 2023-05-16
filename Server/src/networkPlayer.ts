@@ -16,6 +16,10 @@ class NetworkPlayer {
      */
     public static SPEED : number = 6.5;
 
+    private static readonly ZONE_EXCEEDING_TOLERANCE : number = 3;
+    private static readonly MAX_X_POSITION : number= (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5) * HexaGrid.MAP_WIDTH) + NetworkPlayer.ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_WIDTH;
+    private static readonly MAX_Y_POSITION : number= (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5) * HexaGrid.MAP_HEIGHT) + NetworkPlayer.ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_HEIGHT;
+
     private _lastSeen : number = 0;
     /**
      * Returns true if the client has been seen in the last CLIENT_TIMEOUT milliseconds
@@ -105,11 +109,31 @@ class NetworkPlayer {
         while (this._inputStreamQueue.length > 0) {
             inputStream = this.dequeueInputStream();
             this._currentPosition.translate(inputStream!.direction,NetworkPlayer.SPEED*NetworkManager.TICK_INTERVAL);
+            this.restrictPositionInsideMapBounds(this._currentPosition);
         }
         if(inputStream == undefined) return;
         this._currentSimulationState.position = this._currentPosition;
         this._currentSimulationState.direction = inputStream!.direction;
         this._currentSimulationState.simulationFrame = inputStream!.simulationFrame;
+    }
+    
+    private restrictPositionInsideMapBounds(position:Position)
+    {
+        if (position.x > NetworkPlayer.MAX_X_POSITION)
+        {
+            position.x = NetworkPlayer.MAX_X_POSITION;
+        }else if (position.x < -NetworkPlayer.MAX_X_POSITION)
+        {
+            position.x = -NetworkPlayer.MAX_X_POSITION;
+        }
+
+        if (position.y > NetworkPlayer.MAX_Y_POSITION)
+        {
+            position.y = NetworkPlayer.MAX_Y_POSITION;
+        }else if (position.y < -NetworkPlayer.MAX_Y_POSITION)
+        {
+            position.y = -NetworkPlayer.MAX_Y_POSITION;
+        }
     }
 }
 

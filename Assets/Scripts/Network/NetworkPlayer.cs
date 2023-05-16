@@ -10,6 +10,18 @@ namespace Network
     public class NetworkPlayer : MonoBehaviour
     {
         /// <summary>
+        /// The zone exceeding tolerance (block the player inside the grid)
+        /// </summary>
+        const int ZONE_EXCEEDING_TOLERANCE = 3;
+        /// <summary>
+        /// The max x position the player can move to
+        /// </summary>
+        const float MAX_X_POSITION = (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5f) * HexaGrid.MAP_WIDTH) + ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_WIDTH;
+        /// <summary>
+        /// The max y position the player can move to
+        /// </summary>
+        const float MAX_Y_POSITION = (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5f) * HexaGrid.MAP_HEIGHT) + ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_HEIGHT;
+        /// <summary>
         /// The maximum cache size for both the ClientInputState and NetworkPlayerSimulationState caches. This correspond to 10 seconds caching at 10 network ticks / second.
         /// </summary>
         const int STATE_CACHE_SIZE = 100;
@@ -373,6 +385,29 @@ namespace Network
         void Move(float deltaTime)
         {
             transform.position += transform.right * SPEED * deltaTime;
+            transform.position = GetPositionInsideMapBounds(transform.position);
+        }
+
+        Vector2 GetPositionInsideMapBounds(Vector2 position)
+        {
+            if (position.x > MAX_X_POSITION)
+            {
+                position.x = MAX_X_POSITION;
+            }
+            else if (position.x < -MAX_X_POSITION)
+            {
+                position.x = -MAX_X_POSITION;
+            }
+
+            if (position.y > MAX_Y_POSITION)
+            {
+                position.y = MAX_Y_POSITION;
+            }
+            else if (position.y < -MAX_Y_POSITION)
+            {
+                position.y = -MAX_Y_POSITION;
+            }
+            return position;
         }
 
         /// <summary>
