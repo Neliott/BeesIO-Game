@@ -34,7 +34,6 @@ describe('Hexagrid',() => {
         expect(actualIndex.y).toBe(expectedHexIndex.y);
     });
     it('wordPositionToHexIndexes_shiftedY_equals', () => {
-        console.log("MARKER!");
         //Given
         const expectedWorldPosition:Position = new Position(0, HexaGrid.SPACING_HEIGHT);
         const expectedHexIndex:Position = new Position(HexaGrid.MAP_WIDTH / 2 + 1, (HexaGrid.MAP_HEIGHT / 2) + 1);

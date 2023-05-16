@@ -177,7 +177,6 @@ export default class HexaGrid{
         for (let [base, positions] of this._hexagonsProperties) {
             for (let i = 0; i < positions.length; i++) {
                 if(positions[i].equals(index)){
-                    console.log("Found !");
                     return base;
                 }
             }
