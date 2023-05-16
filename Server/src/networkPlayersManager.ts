@@ -120,20 +120,13 @@ class NetworkPlayersManager {
     public onLeave(sender:iWebSocketClientSend) {
         const playerDisconnected = this._clients.get(sender);
         if(playerDisconnected == undefined) return;
-        console.log("Clearing hexagons");
         const hexagonsToClear = this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base)!;
-        
-        console.log("Last hexagons list : ",hexagonsToClear);
-        for (let index = 0; index < hexagonsToClear.length; index++) {
-            console.log("Clearing hexagons : ",hexagonsToClear[0]);
-            this._networkManager.hexaGrid.setHexagonProperty(hexagonsToClear[index],null);
+        while(hexagonsToClear.length > 0){
+            this._networkManager.hexaGrid.setHexagonProperty(hexagonsToClear[0],null);
         }
-        console.log("New hexagons list : ",this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base));
-        
         for(let ownedHexagons of this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base)!){
             this._networkManager.hexaGrid.setHexagonProperty(ownedHexagons,null);
         }
-        console.log("New hexagons list : ",this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base));
         this._clients.delete(sender);
         this._networkManager.sendGlobalMessage(ServerEventType.LEFT,playerDisconnected.fixedAttributes.id);
     }

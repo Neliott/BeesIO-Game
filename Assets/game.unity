@@ -5922,5 +5922,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _forceProdServer: 0
-  _devServerUrl: ws://10.229.32.54:3000
+  _devServerUrl: ws://localhost:3000
   _prodServerUrl: wss://beesio.glitch.me
