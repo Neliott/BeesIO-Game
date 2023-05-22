@@ -15,7 +15,8 @@ namespace Network
             get { return _spawnedObjects; }
         }
 
-        [SerializeField] GameObject[] _objectsPrefabs;
+        [SerializeField] NetworkObject[] _objectsPrefabs;
+        [SerializeField] Transform _spawnedObjectsParent;
 
         /// <summary>
         /// Spawn a new object with given attributes
@@ -23,8 +24,9 @@ namespace Network
         /// <param name="attribute">The attributes provided by the server</param>
         public void SpawnObject(NetworkObjectSpawnAttributes attribute)
         {
-            GameObject newObject = Instantiate(_objectsPrefabs[(int)attribute.type], attribute.position.ToVector2(), Quaternion.Euler(new Vector3(0, 0, attribute.direction)));
-            _spawnedObjects.Add(attribute.id, newObject.GetComponent<NetworkObject>());
+            NetworkObject newObject = Instantiate(_objectsPrefabs[(int)attribute.type], attribute.position.ToVector2(), Quaternion.Euler(new Vector3(0, 0, attribute.direction)), _spawnedObjectsParent);
+            newObject.Setup(attribute);
+            _spawnedObjects.Add(attribute.id, newObject);
         }
 
         /// <summary>
@@ -37,12 +39,15 @@ namespace Network
         }
 
         /// <summary>
-        /// 
+        /// Destroy a spawned objet by his id
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">The object's unique identifier</param>
         public void DestroyObject(int id)
         {
-
+            if (_spawnedObjects.ContainsKey(id))
+            {
+                Destroy(_spawnedObjects[id].gameObject);
+            }
         }
     }
 }

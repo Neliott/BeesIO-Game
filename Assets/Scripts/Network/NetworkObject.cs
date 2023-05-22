@@ -5,14 +5,37 @@ namespace Network
 {
     public class NetworkObject : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
+        private NetworkObjectSpawnAttributes _spawnAttributes;
+
+        /// <summary>
+        /// Get the initial spawn attributes
+        /// </summary>
+        public NetworkObjectSpawnAttributes SpawnAttributes
+        {
+            get { return _spawnAttributes; }
+        }
+
+        /// <summary>
+        /// Setup the new network object with initial spawn attributes
+        /// </summary>
+        /// <param name="spawnAttributes">The attributes</param>
+        public void Setup(NetworkObjectSpawnAttributes spawnAttributes)
+        {
+            _spawnAttributes = spawnAttributes;
+        }
+
+        /// <summary>
+        /// Method called when the object is picked up
+        /// </summary>
+        public virtual void OnPickup()
         {
 
         }
 
-        // Update is called once per frame
-        void Update()
+        /// <summary>
+        /// Method called when the object is droped
+        /// </summary>
+        public virtual void OnDrop(Position newPosition)
         {
 
         }

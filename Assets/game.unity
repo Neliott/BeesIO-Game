@@ -5767,9 +5767,9 @@ GameObject:
   - component: {fileID: 2136466681}
   - component: {fileID: 2136466686}
   - component: {fileID: 2136466682}
-  - component: {fileID: 2136466683}
   - component: {fileID: 2136466684}
   - component: {fileID: 2136466685}
+  - component: {fileID: 2136466687}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -5836,23 +5836,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _networkPrefab: {fileID: 4083879031900954678, guid: 70af4b113cef0e347913813bce8d63cd, type: 3}
   _playerTracker: {fileID: 466243031}
---- !u!114 &2136466683
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2136466678}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ddec8e336b288e44c97c0440d6c39278, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _objectsToSpawn:
-  - {fileID: 2667070909013261332, guid: b95e2a4b1463f624b87fd19c921e3f8a, type: 3}
-  - {fileID: 2667070909013261332, guid: 34e708430b91c164996ddfb0febb05b8, type: 3}
-  _flower: {fileID: 3076046974477128820, guid: c9561772764474b408e0a8254b38e75b, type: 3}
-  _spawnedObjectsParent: {fileID: 21806322}
 --- !u!114 &2136466684
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5924,3 +5907,21 @@ MonoBehaviour:
   _forceProdServer: 0
   _devServerUrl: ws://localhost:3000
   _prodServerUrl: wss://beesio.glitch.me
+--- !u!114 &2136466687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2136466678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e06a4e3c294987545b37f134c6c21501, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _objectsPrefabs:
+  - {fileID: 8719509743331719719, guid: c9561772764474b408e0a8254b38e75b, type: 3}
+  - {fileID: 3119089974728260269, guid: b95e2a4b1463f624b87fd19c921e3f8a, type: 3}
+  - {fileID: 3119089974728260269, guid: 34e708430b91c164996ddfb0febb05b8, type: 3}
+  - {fileID: 1192706018266134448, guid: 39415ca816c898f4085a5336991c9bb8, type: 3}
+  _spawnedObjectsParent: {fileID: 21806322}

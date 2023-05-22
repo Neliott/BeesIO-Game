@@ -210,8 +210,13 @@ namespace Network
                     ApplyLeft(JsonConvert.DeserializeObject<int>(json));
                     break;
                 case ServerEventType.SPAWN:
+                    GameManager.Instance.ObjectsManager.SpawnObject(JsonConvert.DeserializeObject<NetworkObjectSpawnAttributes>(json));
+                    break;
+                case ServerEventType.SPAWN_UNMANAGED:
+                    GameManager.Instance.ObjectsManager.SpawnParticule(JsonConvert.DeserializeObject<NetworkObjectSpawnAttributes>(json));
                     break;
                 case ServerEventType.DESTROY:
+                    GameManager.Instance.ObjectsManager.DestroyObject(JsonConvert.DeserializeObject<int>(json));
                     break;
                 case ServerEventType.HEXAGON_PROPERTY_CHANGED:
                     ApplyHexagonPropertyChanged(JsonConvert.DeserializeObject<HexagonPropertyChanged>(json));
@@ -256,6 +261,10 @@ namespace Network
                 {
                     GameManager.Instance.HexaGrid.SetHexagonProperty(new Vector2Int((int)hexagonPosition.x, (int)hexagonPosition.y), baseToAddHexagons);
                 }
+            }
+            foreach (var objectAttribute in initialGameState.objects)
+            {
+                GameManager.Instance.ObjectsManager.SpawnObject(objectAttribute);
             }
             GameManager.Instance.Players.SimulationStateStartIndex = initialGameState.simulationStateStartIndex;
             GameManager.Instance.Players.CurrentPlayerIdOwned = initialGameState.ownedClientID;

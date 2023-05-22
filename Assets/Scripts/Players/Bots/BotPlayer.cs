@@ -26,7 +26,7 @@ public class BotPlayer : Player
         _risk = Random.Range(0.3f, 0.9f);
     }
 
-    void Update()
+    /*void Update()
     {
         if (IsNeedingANewTarget())
         {
@@ -40,7 +40,7 @@ public class BotPlayer : Player
         Move(targetWorldPosition);
         CheckTargetAccomplishement(targetWorldPosition);
         TryToPickup();
-    }
+    }*/
 
     /// <summary>
     /// Is the current target expired or not valid ? Do we need to choose an other ?
@@ -62,7 +62,7 @@ public class BotPlayer : Player
     /// <summary>
     /// Choose a new target based on the general state of the bot
     /// </summary>
-    void ChooseNewTarget()
+    /*void ChooseNewTarget()
     {
         List<PickupObject> pickedUpObjects = _pickupController.GetPickedUpObjects();
 
@@ -112,7 +112,7 @@ public class BotPlayer : Player
         {
             _target = GetNearObject<Pesticide>();
         }
-    }
+    }*/
 
     /// <summary>
     /// Change direction to match the target direction
@@ -134,7 +134,7 @@ public class BotPlayer : Player
     /// Check if the target is reached
     /// </summary>
     /// <param name="targetWorldPosition">The target real world position</param>
-    void CheckTargetAccomplishement(Vector3 targetWorldPosition)
+    /*void CheckTargetAccomplishement(Vector3 targetWorldPosition)
     {
         float distanceFromTarget = Vector3.Distance(transform.position, targetWorldPosition);
         if (distanceFromTarget < DROP_DISTANCE_TOLERANCE)
@@ -147,12 +147,12 @@ public class BotPlayer : Player
 
             ChooseNewTarget();
         }
-    }
+    }*/
     
     /// <summary>
     /// Try to pickup any objects compatible on the current position
     /// </summary>
-    void TryToPickup()
+    /*void TryToPickup()
     {
         PickupObject pickup = _pickupController.GetCompatiblePickableObject();
         if (pickup != null)
@@ -160,7 +160,7 @@ public class BotPlayer : Player
             _pickupController.PickupLastObject();
             ChooseNewTarget();
         }
-    }
+    }*/
 
     /// <summary>
     /// Get the nearest base of an other player
@@ -189,7 +189,7 @@ public class BotPlayer : Player
     /// Return a pesticide if he is in the BASE_PESTICIDE_RISK_RADIUS
     /// </summary>
     /// <returns>Return a problematic pesticide for the base or null is not found in the radius</returns>
-    Pesticide PesticideEndangeringBase()
+    /*Pesticide PesticideEndangeringBase()
     {
         List<PlacableObject> pesticides = GameManager.Instance.ObjectsManager.GetSpawnedObjectsByType<Pesticide>();
         foreach (var pesticideToTest in pesticides)
@@ -199,14 +199,14 @@ public class BotPlayer : Player
             return (Pesticide)pesticideToTest;
         }
         return null;
-    }
+    }*/
 
     /// <summary>
     /// Get a object of a given type that is near (not necessary the nearest to randomise the behavior)
     /// </summary>
     /// <typeparam name="T">The type of object targetted</typeparam>
     /// <returns>The object found or null if no matches</returns>
-    PlacableObject GetNearObject<T>() where T : PlacableObject
+    /*PlacableObject GetNearObject<T>() where T : PlacableObject
     {
         //Get the list of objects by the distance
         List<PlacableObject> objectsByDistance = GameManager.Instance.ObjectsManager.GetSpawnedObjectsByType<T>().OrderBy(point => Vector3.Distance(transform.position, point.transform.position)).ToList();
@@ -221,5 +221,5 @@ public class BotPlayer : Player
             return objectToTest;
         }
         return null;
-    }
+    }*/
 }

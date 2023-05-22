@@ -9,7 +9,7 @@
         GAME_OVER,
         LEFT,
         SPAWN,
-        SPAWN_UNMANAGER,
+        SPAWN_UNMANAGED,
         DESTROY,
         PICKUP,
         DROP,

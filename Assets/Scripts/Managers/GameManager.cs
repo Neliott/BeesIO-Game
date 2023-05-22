@@ -6,7 +6,7 @@ using Network;
 
 [RequireComponent(typeof(HexaGrid))]
 [RequireComponent(typeof(PlayersManager))]
-[RequireComponent(typeof(ObjectsManager))]
+[RequireComponent(typeof(NetworkObjectsManager))]
 [RequireComponent(typeof(UIManager))]
 [RequireComponent(typeof(NetworkManager))]
 public class GameManager : MonoBehaviour
@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Get the objects manager / spawner
     /// </summary>
-    public ObjectsManager ObjectsManager { get => _objectsManager; }
+    public NetworkObjectsManager ObjectsManager { get => _objectsManager; }
 
     /// <summary>
     /// Get the User Interface manager (HUD)
@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
 
     HexaGrid _hexaGrid;
     PlayersManager _players;
-    ObjectsManager _objectsManager;
+    NetworkObjectsManager _objectsManager;
     UIManager _uiManager;
     NetworkManager _networkManager;
 
@@ -54,9 +54,6 @@ public class GameManager : MonoBehaviour
     {
         _hexaGrid.Clear();
         _networkManager.Connect();
-        /*_objectsManager.CanSpanwObjects = true;
-        _players.SpawnControlledPlayer();
-        _players.CanSpawnBots = true;*/
     }
 
     private void Awake()
@@ -64,7 +61,7 @@ public class GameManager : MonoBehaviour
         Instance = this;
         _hexaGrid = GetComponent<HexaGrid>();
         _players = GetComponent<PlayersManager>();
-        _objectsManager = GetComponent<ObjectsManager>();
+        _objectsManager = GetComponent<NetworkObjectsManager>();
         _uiManager = GetComponent<UIManager>();
         _networkManager = GetComponent<NetworkManager>();
         _hexaGrid.Generate();
@@ -77,8 +74,6 @@ public class GameManager : MonoBehaviour
 
     private void GameOver()
     {
-        _objectsManager.CanSpanwObjects = false;
-        //_players.CanSpawnBots = false;
         _hexaGrid.Clear();
         _uiManager.ShowGameOver();
     }
