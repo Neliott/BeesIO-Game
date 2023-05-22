@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Network
@@ -108,6 +109,43 @@ namespace Network
         /// </summary>
         float _currentDirection;
 
+        /// <summary>
+        /// The list of objects that can be picked up
+        /// </summary>
+        List<NetworkObject> _currentObjectToPickup = new List<NetworkObject>();
+
+        /// <summary>
+        /// The objects currently picked up
+        /// </summary>
+        List<NetworkObject> _pickedUpObjects = new List<NetworkObject>();
+
+        #region MonoBehaviourCallbacks
+        /// <summary>
+        /// Update this player for every tick
+        /// </summary>
+        void Update()
+        {
+            if (IsMine) LocalExtrapolation();
+            else ProxyExtrapolation();
+            VerifyObjectInputs();
+            if (_pickedUpObjects.Count > 0) 
+                UpdatePickedUpObjectsPosition();
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            NetworkObject pickupObject = collision.GetComponent<NetworkObject>();
+            if (pickupObject == null || _currentObjectToPickup.Contains(pickupObject) || _pickedUpObjects.Contains(pickupObject) || pickupObject.Owner != null) return;
+            _currentObjectToPickup.Add(pickupObject);
+        }
+
+        private void OnTriggerExit2D(Collider2D collision)
+        {
+            NetworkObject pickupObject = collision.GetComponent<NetworkObject>();
+            if (pickupObject == null) return;
+            _currentObjectToPickup.Remove(pickupObject);
+        }
+        #endregion
         #region Network Input
         /// <summary>
         /// Setup the network client
@@ -274,14 +312,6 @@ namespace Network
         }
         #endregion
         #region Movement implementation
-        /// <summary>
-        /// Update this player (this is used to extrapolate the current informations to have more smoothness)
-        /// </summary>
-        void Update()
-        {
-            if (IsMine) LocalExtrapolation();
-            else ProxyExtrapolation();
-        }
 
         /// <summary>
         /// Compute the next frames with fresh inputs (only the local owned client)
@@ -417,6 +447,101 @@ namespace Network
         void SetDirection(float direction)
         {
             transform.rotation = Quaternion.Euler(new Vector3(0, 0, direction));
+        }
+        #endregion
+        #region Objects Pickup
+        /// <summary>
+        /// Can this player pickup a compatible object ? (Method only for preview)
+        /// </summary>
+        /// <returns>True if a compatible object is near</returns>
+        public bool CanPickupObject()
+        {
+            if (_currentObjectToPickup.Count == 0) return false;
+            if (_pickedUpObjects.Count == 0)
+            {
+                return true;
+            }
+            else
+            {
+                for (int i = _currentObjectToPickup.Count - 1; i >= 0; i--)
+                {
+                    if (_currentObjectToPickup[i].SpawnAttributes.type == _pickedUpObjects[0].SpawnAttributes.type)
+                        return true;
+                }
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Get the currently picked up objects
+        /// </summary>
+        /// <returns>The list</returns>
+        public List<NetworkObject> PickedUpObjects()
+        {
+            return _pickedUpObjects;
+        }
+
+        /// <summary>
+        /// Attach the given network object to that player
+        /// </summary>
+        /// <param name="networkObject">The object to attach (follow)</param>
+        public void AttachObject(NetworkObject networkObject)
+        {
+            _pickedUpObjects.Add(networkObject);
+            _currentObjectToPickup.Remove(networkObject);
+            networkObject.OnPickup(this);
+        }
+
+        /// <summary>
+        /// Detach all the objects 
+        /// </summary>
+        /// <returns>The list of detached objects</returns>
+        public void DetachAllObjects()
+        {
+            foreach (var pickupObject in _pickedUpObjects)
+            {
+                //pickupObject.OnDrop();
+            }
+            _pickedUpObjects.Clear();
+        }
+
+        void VerifyObjectInputs()
+        {
+            if (Input.GetKeyDown("e") || Input.GetMouseButtonDown(0))
+            {
+                if(CanPickupObject())
+                    GameManager.Instance.NetworkManager.SendPickupRequest();
+            }
+            if (Input.GetKeyDown("q") || Input.GetMouseButtonDown(1))
+            {
+                if(_pickedUpObjects.Count > 0)
+                    GameManager.Instance.NetworkManager.SendDropRequest();
+            }
+        }
+
+        void UpdatePickedUpObjectsPosition()
+        {
+            for (int i = 0; i < _pickedUpObjects.Count; i++)
+            {
+                if (i == 0) _pickedUpObjects[i].transform.position = GetNewPosition(transform.position, _pickedUpObjects[i].transform.position);
+                else _pickedUpObjects[i].transform.position = GetNewPosition(_pickedUpObjects[i - 1].transform.position, _pickedUpObjects[i].transform.position);
+            }
+        }
+
+        /// <summary>
+        /// Get a new position to follow the input
+        /// </summary>
+        /// <param name="input">The input (like a player or a previous node)</param>
+        /// <param name="currentPosition">The current position</param>
+        /// <returns>The new calculated position</returns>
+        /// <remarks>Based on https://processing.org/examples/follow3.html </remarks>
+        Vector2 GetNewPosition(Vector2 input, Vector2 currentPosition)
+        {
+            Vector2 direction = input - currentPosition;
+            float angle = Mathf.Atan2(direction.y, direction.x);
+            float newX = input.x - (Mathf.Cos(angle) * 1);
+            float newY = input.y - (Mathf.Sin(angle) * 1);
+            return new Vector2(newX, newY);
         }
         #endregion
     }

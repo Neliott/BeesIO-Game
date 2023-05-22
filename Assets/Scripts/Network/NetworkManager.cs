@@ -115,6 +115,22 @@ namespace Network
             State = NetworkState.CONNECTING;
         }
 
+        /// <summary>
+        /// Send a pickup request to the server
+        /// </summary>
+        public void SendPickupRequest()
+        {
+            SendEvent(ClientEventType.PICKUP);
+        }
+
+        /// <summary>
+        /// Send a drop request to the server
+        /// </summary>
+        public void SendDropRequest()
+        {
+            SendEvent(ClientEventType.DROP);
+        }
+
         private void Reconnect()
         {
             State = NetworkState.RECONNECTING;

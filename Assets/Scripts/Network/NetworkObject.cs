@@ -15,6 +15,17 @@ namespace Network
             get { return _spawnAttributes; }
         }
 
+        private NetworkPlayer _owner;
+
+        /// <summary>
+        /// Get the current owner of this object
+        /// </summary>
+        public NetworkPlayer Owner
+        {
+            get { return _owner; }
+        }
+
+
         /// <summary>
         /// Setup the new network object with initial spawn attributes
         /// </summary>
@@ -27,9 +38,9 @@ namespace Network
         /// <summary>
         /// Method called when the object is picked up
         /// </summary>
-        public virtual void OnPickup()
+        public virtual void OnPickup(NetworkPlayer owner)
         {
-
+            _owner = owner;
         }
 
         /// <summary>
@@ -37,7 +48,7 @@ namespace Network
         /// </summary>
         public virtual void OnDrop(Position newPosition)
         {
-
+            _owner = null;
         }
     }
 }

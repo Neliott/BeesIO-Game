@@ -47,7 +47,6 @@ export default class Base{
      */
     public networkTick()
     {
-        this._networkManager.hexaGrid.setHexagonProperty(HexaGrid.wordPositionToHexIndexes(this.owner.currentSimulationState.position),this);
         if (this._upgradesToApply == 0 || this._isDestroyed) return;
         this._upgradesToApply--;
         this.buildNextBaseHexagon();
