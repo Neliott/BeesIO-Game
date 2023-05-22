@@ -132,6 +132,10 @@ class NetworkPlayersManager {
         for(let ownedHexagons of this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base)!){
             this._networkManager.hexaGrid.setHexagonProperty(ownedHexagons,null);
         }
+        playerDisconnected.pickupNetworkObjects.forEach((networkObject)=>{
+            //TODO : Drop better
+            networkObject.drop();
+        });
         this._clients.delete(sender);
         this._networkManager.sendGlobalMessage(ServerEventType.LEFT,playerDisconnected.fixedAttributes.id);
     }
