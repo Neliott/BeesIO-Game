@@ -13,15 +13,15 @@ export default class NetworkObjectsManager {
     /**
      *  The target number of objects in the map
      */
-    public static readonly TARGET_OBJECTS_AMOUNT:number = 75;
+    public static TARGET_OBJECTS_AMOUNT:number = 75;
     /**
      * The number of flowers to spawn
      */
-    public static readonly FLOWERS_AMOUNT:number = 15;
+    public static FLOWERS_AMOUNT:number = 15;
     /**
-     *  Spawn objects every 1/rate seconds if needed
+     *  Spawn objects every interval
      */
-    public static readonly SPAWN_OBJECTS_RATE:number = 1.5;
+    public static SPAWN_OBJECTS_INTERVAL:number = 1.5;
 
     private _networkManager:NetworkManager;
     private _objets:NetworkObject[] = [];
@@ -45,7 +45,7 @@ export default class NetworkObjectsManager {
             this._objets[i].networkTick();
         }
         this._clock += NetworkManager.TICK_INTERVAL;
-        if(this._clock >= NetworkObjectsManager.SPAWN_OBJECTS_RATE){
+        if(this._clock >= NetworkObjectsManager.SPAWN_OBJECTS_INTERVAL){
             this._clock = 0;
             if(this._objets.length < NetworkObjectsManager.TARGET_OBJECTS_AMOUNT){
                 this.spawnRandomPickableObject();

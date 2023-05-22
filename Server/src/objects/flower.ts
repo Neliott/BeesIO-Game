@@ -7,13 +7,13 @@ import NetworkObject from "./networkObject";
 import NetworkObjectsManager from "./networkObjectsManager";
 
 export default class Flower extends NetworkObject{
-    private static readonly FLOWER_SPAWN_POSITIONS:Position[] = [new Position(0,0.5),new Position(-0.4,-0.25),new Position(0.4,-0.25)];
-    private static readonly FLOWER_SPAWN_ROTATIONS:number[] = [0,18,-18];
-    private static readonly MAX_SPAWN_TIME = 15;
-    private static readonly MIN_SPAWN_TIME = 5;
+    public static readonly FLOWER_SPAWN_POSITIONS:Position[] = [new Position(0,0.5),new Position(-0.4,-0.25),new Position(0.4,-0.25)];
+    public static readonly FLOWER_SPAWN_ROTATIONS:number[] = [0,18,-18];
+    public static MAX_SPAWN_TIME = 15;
+    public static MIN_SPAWN_TIME = 5;
     
     private _spawnedPollens:(NetworkObject|null)[] = [null,null,null];
-    private _clock:number = 0;
+    private _clock:number = Flower.MAX_SPAWN_TIME;
     private _networkObjectManager:NetworkObjectsManager;
 
     /**
