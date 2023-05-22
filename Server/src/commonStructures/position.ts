@@ -44,6 +44,23 @@ export default class Position {
     }
 
     /**
+     * Add the other position to this one
+     * @param other The other position to add
+     */
+    public add(other:Position){
+        this.x += other.x;
+        this.y += other.y;
+    }
+
+    /**
+     * Get a clone of this position (other object)
+     * @returns A clone of this position
+     */
+    public clone():Position{
+        return new Position(this.x,this.y);
+    }
+
+    /**
      * Get the distance between two positions
      * @param one The first position
      * @param two The second position

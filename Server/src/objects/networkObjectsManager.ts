@@ -1,11 +1,13 @@
-import NetworkObjectSpawnAttributes from "./commonStructures/networkObjectSpawnAttributes";
-import NetworkObjectType from "./commonStructures/networkObjectType";
-import Position from "./commonStructures/position";
-import Random from "./commonStructures/random";
-import ServerEventType from "./commonStructures/serverEventType";
-import HexaGrid from "./hexagrid";
-import NetworkManager from "./networkManager";
+import NetworkObjectSpawnAttributes from "../commonStructures/networkObjectSpawnAttributes";
+import NetworkObjectType from "../commonStructures/networkObjectType";
+import Position from "../commonStructures/position";
+import ServerEventType from "../commonStructures/serverEventType";
+import HexaGrid from "../hexagrid";
+import NetworkManager from "../networkManager";
+import Flower from "./flower";
 import NetworkObject from "./networkObject";
+import Pesticide from "./pesticide";
+import Pollen from "./pollen";
 
 export default class NetworkObjectsManager {
     /**
@@ -39,6 +41,9 @@ export default class NetworkObjectsManager {
      * Update the state of the network objects
      */
     public networkTick() {
+        for (let i = 0; i < this._objets.length; i++) {
+            this._objets[i].networkTick();
+        }
         this._clock += NetworkManager.TICK_INTERVAL;
         if(this._clock >= NetworkObjectsManager.SPAWN_OBJECTS_RATE){
             this._clock = 0;
@@ -81,6 +86,45 @@ export default class NetworkObjectsManager {
         }
         return spawnAttributes;
     }
+
+    /**
+     * Spawn a NetworkObject on the map
+     * @param type The type of the object to spawn
+     * @param position The position of the object to spawn
+     * @returns 
+     */
+    public spawnObject(type:NetworkObjectType,position:Position, rotation:number):NetworkObject {
+        let spawnAttributes:NetworkObjectSpawnAttributes = new NetworkObjectSpawnAttributes(this.getNextId(),type,position,rotation);
+        let newObject:NetworkObject;
+        switch(type){
+            case NetworkObjectType.POLLEN:
+                newObject = new Pollen(spawnAttributes);
+                break;
+            case NetworkObjectType.PESTICIDE:
+                newObject = new Pesticide(spawnAttributes);
+                break;
+            case NetworkObjectType.FLOWER:
+                newObject = new Flower(this,spawnAttributes);
+                break;
+            default:
+                newObject = new NetworkObject(spawnAttributes);
+                break;
+        }
+        this._objets.push(newObject);
+        this._networkManager.sendGlobalMessage(ServerEventType.SPAWN,spawnAttributes);
+        return newObject;
+    }
+
+    /**
+     * Spawn a unmanaged object on the map
+     * @param type The type of the object to spawn
+     * @param position The position of the object to spawn
+     * @param rotation The rotation of the object to spawn
+     */
+    public spawnParticule(type:NetworkObjectType,position:Position, rotation:number) {
+        let spawnAttributes:NetworkObjectSpawnAttributes = new NetworkObjectSpawnAttributes(-1,type,position,rotation);
+        this._networkManager.sendGlobalMessage(ServerEventType.SPAWN_UNMANAGED,spawnAttributes);
+    }
     
     private startSpawningObject()
     {
@@ -91,20 +135,12 @@ export default class NetworkObjectsManager {
         }
         for (let i = 0; i < NetworkObjectsManager.FLOWERS_AMOUNT; i++)
         {
-            this.spawnObject(NetworkObjectType.FLOWER);
+            this.spawnObject(NetworkObjectType.FLOWER,HexaGrid.getRandomPlaceOnMap(),0);
         }
     }
 
     private spawnRandomPickableObject(){
-        this.spawnObject((Math.random() > 0.6)?NetworkObjectType.POLLEN:NetworkObjectType.PESTICIDE);
-    }
-
-    private spawnObject(type:NetworkObjectType) {
-        let position:Position = HexaGrid.getRandomPlaceOnMap();
-        let spawnAttributes:NetworkObjectSpawnAttributes = new NetworkObjectSpawnAttributes(this.getNextId(),type,position,0);
-        let newObject:NetworkObject = new NetworkObject(spawnAttributes);
-        this._objets.push(newObject);
-        this._networkManager.sendGlobalMessage(ServerEventType.SPAWN,spawnAttributes);
+        this.spawnObject((Math.random() > 0.6)?NetworkObjectType.POLLEN:NetworkObjectType.PESTICIDE,HexaGrid.getRandomPlaceOnMap(),0);
     }
     
     /**

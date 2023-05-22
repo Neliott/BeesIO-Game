@@ -1,5 +1,5 @@
-import NetworkObjectSpawnAttributes from "./commonStructures/networkObjectSpawnAttributes";
-import Position from "./commonStructures/position";
+import NetworkObjectSpawnAttributes from "../commonStructures/networkObjectSpawnAttributes";
+import Position from "../commonStructures/position";
 
 export default class NetworkObject{
     private _spawnAttributes : NetworkObjectSpawnAttributes;
@@ -32,4 +32,14 @@ export default class NetworkObject{
         this._spawnAttributes = spawnAttributes;
         this._currentPosition = spawnAttributes.position;
     }
+
+    /**
+     * Update the state of the network object
+     */
+    public networkTick() {}
+
+    /**
+     * Called when the object is drop
+     */
+    public drop(){}
 }

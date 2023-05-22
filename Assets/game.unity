@@ -5921,7 +5921,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _objectsPrefabs:
   - {fileID: 8719509743331719719, guid: c9561772764474b408e0a8254b38e75b, type: 3}
-  - {fileID: 3119089974728260269, guid: b95e2a4b1463f624b87fd19c921e3f8a, type: 3}
-  - {fileID: 3119089974728260269, guid: 34e708430b91c164996ddfb0febb05b8, type: 3}
+  - {fileID: 643132602, guid: b95e2a4b1463f624b87fd19c921e3f8a, type: 3}
+  - {fileID: 4658824875717595808, guid: 34e708430b91c164996ddfb0febb05b8, type: 3}
   - {fileID: 1192706018266134448, guid: 39415ca816c898f4085a5336991c9bb8, type: 3}
   _spawnedObjectsParent: {fileID: 21806322}

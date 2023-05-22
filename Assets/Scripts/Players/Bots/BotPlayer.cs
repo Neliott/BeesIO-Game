@@ -54,7 +54,7 @@ public class BotPlayer : Player
         if (_target is PickupObject && (((PickupObject)_target).Owner != null) && ((PickupObject)_target).Owner != _pickupController) return true;
 
         //The flower target has no more pollen
-        if (_target is Flower && ((Flower)_target).HasPollen() == false) return true;
+        //if (_target is Flower && ((Flower)_target).HasPollen() == false) return true;
 
         return false;
     }
