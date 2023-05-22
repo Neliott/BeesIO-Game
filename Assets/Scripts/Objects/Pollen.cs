@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pollen : PickupObject
+public class Pollen : Network.NetworkObject
 {
     /// <summary>
     /// Drop the pollen (if on base, add it)

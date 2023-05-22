@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pesticide : PickupObject
+public class Pesticide : Network.NetworkObject
 {
     const int MINIMUM_RADIUS = 2;
     const int MAXIMUM_RADIUS = 4;
@@ -20,12 +20,12 @@ public class Pesticide : PickupObject
     /// <summary>
     /// Drop the pesticide and start the clock
     /// </summary>
-    public override void Drop()
+    /*public override void Drop()
     {
         if (_owner == null) return; //Todo : Fix owner null
         _isClockTicking = true;
         base.Drop();
-    }
+    }/*/
 
     private void Update()
     {
@@ -47,6 +47,6 @@ public class Pesticide : PickupObject
         //GameManager.Instance.HexaGrid.SetHexagonsProperty(allHexsToExplode, null);
         GameObject effect = Instantiate(_explosionEffect, transform.position, Quaternion.identity);
         effect.transform.localScale = radius * Vector3.one * 1.5f;
-        OnDestroyNeeded();
+        //OnDestroyNeeded();
     }
 }

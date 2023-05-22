@@ -1,11 +1,17 @@
+import InitialGameState from "../commonStructures/initialGameState";
 import Position from "../commonStructures/position";
 import NetworkManager from "../networkManager";
 import NetworkPlayer from "../networkPlayer";
+import Flower from "../objects/flower";
+import NetworkObjectsManager from "../objects/networkObjectsManager";
 import TestHelper from "./testHelper";
 import WebSocketMock from "./webSocketMock";
 
 describe('NetworkManager',() => {
     beforeAll(() => {
+        Flower.MAX_SPAWN_TIME = 3600;
+        Flower.MIN_SPAWN_TIME = 3600;
+        NetworkObjectsManager.SPAWN_OBJECTS_INTERVAL = 3600;
         NetworkManager.CONNECTION_TIMEOUT = 100;
     });
     it('ctor_works', () => {
@@ -44,6 +50,16 @@ describe('NetworkManager',() => {
         //Then
         expect(networkManager.clientsManager.getNetworkPlayer(ws)?.fixedAttributes.name).toBe("test");
     });
+    it('onMessage_join_initialObjectListCount_equal',() => {
+        //Given
+        let networkManager = new NetworkManager(false);
+        let ws = new WebSocketMock();
+        //When
+        networkManager.onMessage(ws,"0|\"test\"");
+        //Then
+        let initialStateReceived = JSON.parse(ws.dataSent[0].substring(2)) as InitialGameState;
+        expect(initialStateReceived.objects.length).toBe(NetworkObjectsManager.TARGET_OBJECTS_AMOUNT+NetworkObjectsManager.FLOWERS_AMOUNT);
+    });
     it('onMessage_join_playerId_equal',() => {
         //Given
         let networkManager = new NetworkManager(false);
@@ -64,6 +80,18 @@ describe('NetworkManager',() => {
         //Then
         expect(networkManager.clientsManager.getNetworkPlayer(ws)?.fixedAttributes.id).toBe(0);
         expect(networkManager.clientsManager.getNetworkPlayer(ws2)?.fixedAttributes.id).toBe(1);
+    });
+    it('onMessage_networkTick_flowerSpawnNumber_equal',() => {
+        //Given
+        Flower.MAX_SPAWN_TIME = 0;
+        Flower.MIN_SPAWN_TIME = 0;
+        let networkManager = new NetworkManager(false);
+        let ws = new WebSocketMock();
+        networkManager.onMessage(ws,"0|\"test\"");
+        //When
+        networkManager.networkTick();
+        //Then
+        expect(ws.dataSent.filter(x => x.startsWith("3|")).length).toBe(NetworkObjectsManager.FLOWERS_AMOUNT);
     });
     it('onMessage_move_positionX_equal',() => {
         //Given
@@ -163,7 +191,7 @@ describe('NetworkManager',() => {
         networkManager.onMessage(ws,"1|0");
         networkManager.networkTick();
         //Then
-        expect(ws.dataSent[10]).toContain("9|");
+        expect(ws.dataSent.filter(x => x.startsWith("9|")).length).toBe(2);
     });
     it('onClose_playercount_equal',() => {
         //Given
@@ -186,4 +214,5 @@ describe('NetworkManager',() => {
         //Then
         expect(networkManager.clientsManager.getClientsList().length).toBe(1);
     });
+    //TODO: Test spawnParticule + object auto regeneration
 });

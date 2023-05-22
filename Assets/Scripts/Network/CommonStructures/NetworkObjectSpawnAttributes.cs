@@ -6,9 +6,9 @@
     public class NetworkObjectSpawnAttributes
     {
         /// <summary>
-        /// The id of the object that is being spawned.
+        /// THe unique identifier of the object
         /// </summary>
-        public int objectType;
+        public int id;
         /// <summary>
         /// The type of the object that is being spawned.
         /// </summary>

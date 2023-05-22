@@ -20,7 +20,7 @@
         /// <summary>
         /// The list of objects in the game.
         /// </summary>
-        public NetworkOwnedObjectsList[] objects;
+        public NetworkObjectSpawnAttributes[] objects;
         /// <summary>
         /// The list of objects owned by the client.
         /// </summary>
