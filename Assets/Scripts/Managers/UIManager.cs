@@ -113,8 +113,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ClickedPickupButton()
     {
-        //TODO
-        //GameManager.Instance.Players.MyClientInstance.PickupController.PickupLastObject();
+        GameManager.Instance.NetworkManager.SendPickupRequest();
     }
 
     /// <summary>
@@ -122,8 +121,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ClickedDropButton()
     {
-        //TODO
-        //GameManager.Instance.Players.MyClientInstance.PickupController.Drop();
+        GameManager.Instance.NetworkManager.SendDropRequest();
     }
 
     /// <summary>
