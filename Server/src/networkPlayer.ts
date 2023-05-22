@@ -5,6 +5,7 @@ import NetworkPlayerSimulationState from "./commonStructures/networkPlayerSimula
 import NetworkManager from "./networkManager";
 import Base from "./base";
 import HexaGrid from "./hexagrid";
+import NetworkObject from "./objects/networkObject";
 
 /**
  * Represents a player in the network
@@ -42,6 +43,14 @@ class NetworkPlayer {
      */
     public get currentSimulationState() : NetworkPlayerSimulationState {
         return this._currentSimulationState;
+    }
+
+    private _pickupNetworkObjects : NetworkObject[] = [];
+    /**
+     * Get list of network objects picked up by this player
+     */
+    public get pickupNetworkObjects() : NetworkObject[] {
+        return this._pickupNetworkObjects;
     }
     
     private _base! : Base;
@@ -98,6 +107,15 @@ class NetworkPlayer {
     public enqueueInputStream(inputStream:NetworkPlayerInputState) {
         this._inputStreamQueue.push(inputStream);
         this.updateLastSeen();
+    }
+
+    /**
+     * Add a network object to the picked up list
+     * @param networkObject The network object to pickup
+     */
+    public pickup(networkObject:NetworkObject) {
+        networkObject.pickup();
+        this._pickupNetworkObjects.push(networkObject);
     }
     
     private dequeueInputStream() : NetworkPlayerInputState | undefined {

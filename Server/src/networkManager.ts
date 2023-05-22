@@ -107,6 +107,12 @@ class NetworkManager {
             case ClientEventType.INPUT_STREAM:
                 this._clientsManager.onInput(sender,JSON.parse(json));
                 break;
+            case ClientEventType.PICKUP:
+                this._clientsManager.onPickup(sender);
+                break;
+            case ClientEventType.DROP:
+                this._clientsManager.onDrop(sender);
+                break;
         }
     }
 

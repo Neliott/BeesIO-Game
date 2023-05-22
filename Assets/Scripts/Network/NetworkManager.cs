@@ -244,6 +244,7 @@ namespace Network
                     ApplyGameState(JsonConvert.DeserializeObject<List<NetworkPlayerGameStateStream>>(json));
                     break;
                 case ServerEventType.PICKUP:
+                    ApplyOwnedHexagons(JsonConvert.DeserializeObject<NetworkOwnedObjectsList>(json));
                     break;
                 case ServerEventType.DROP:
                     break;
@@ -285,6 +286,15 @@ namespace Network
             GameManager.Instance.Players.SimulationStateStartIndex = initialGameState.simulationStateStartIndex;
             GameManager.Instance.Players.CurrentPlayerIdOwned = initialGameState.ownedClientID;
             _lastPlayerIdOwned = GameManager.Instance.Players.CurrentPlayerIdOwned;
+        }
+
+        private void ApplyOwnedHexagons(NetworkOwnedObjectsList list)
+        {
+            NetworkPlayer playerToAdd = GameManager.Instance.Players.NetworkedClients[list.playerId];
+            foreach (var objectID in list.ownedObjects)
+            {
+                playerToAdd.AttachObject(GameManager.Instance.ObjectsManager.SpawnedObjects[objectID]);
+            }
         }
 
         private void ApplyHexagonPropertyChanged(HexagonPropertyChanged changeInformations)

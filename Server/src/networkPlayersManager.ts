@@ -10,11 +10,16 @@ import NetworkPlayerInputState from "./commonStructures/networkPlayerInputState"
 import NetworkPlayerGameStateStream from "./commonStructures/networkPlayerGameStateStream";
 import iWebSocketClientSend from "./iWebSocketClientSend";
 import HexaGrid from "./hexagrid";
+import NetworkObject from "./objects/networkObject";
+import NetworkOwnedObjectsList from "./commonStructures/networkOwnedObjectsList";
+import NetworkObjectType from "./commonStructures/networkObjectType";
 
 /**
  * Manages the players connected to a network manager
  */
 class NetworkPlayersManager {
+    private static readonly MAX_PICKUP_DISTANCE : number = 2;
+
     private _networkManager : NetworkManager;
     private _clients : Map<iWebSocketClientSend,NetworkPlayer>;
     private _nextClientId : number = 0;
@@ -129,6 +134,35 @@ class NetworkPlayersManager {
         }
         this._clients.delete(sender);
         this._networkManager.sendGlobalMessage(ServerEventType.LEFT,playerDisconnected.fixedAttributes.id);
+    }
+
+    /**
+     * Try to add a object to the player that sent the pickup request
+     * @param sender The websocket of the client that sent the pickup request
+     */
+    public onPickup(sender:iWebSocketClientSend){
+        const player = this._clients.get(sender);
+        if(player == undefined) return;
+        let nearestObject : NetworkObject|null = null;
+        if(player.pickupNetworkObjects.length == 0)
+            nearestObject = this._networkManager.objectsManager.getNearestObject(player.currentSimulationState.position,[NetworkObjectType.POLLEN,NetworkObjectType.PESTICIDE],false)
+        else
+            nearestObject = this._networkManager.objectsManager.getNearestObject(player.currentSimulationState.position,[player.pickupNetworkObjects[0].spawnAttributes.type],false);
+        if(nearestObject == null) return;
+        if(nearestObject.IsPickedUp) return;
+        if(Position.distance(player.currentSimulationState.position,nearestObject.currentPosition) > NetworkPlayersManager.MAX_PICKUP_DISTANCE) return;
+        player.pickup(nearestObject);
+        this._networkManager.sendGlobalMessage(ServerEventType.PICKUP,new NetworkOwnedObjectsList(player.fixedAttributes.id,[nearestObject.spawnAttributes.id]));
+    }
+
+    /**
+     * Remove all owned objects of the player that sent the drop request
+     * @param sender The websocket of the client that sent the drop request
+     */
+    public onDrop(sender:iWebSocketClientSend){
+        const player = this._clients.get(sender);
+        if(player == undefined) return;
+        
     }
 
     /**

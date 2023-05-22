@@ -23,6 +23,17 @@ export default class NetworkObject{
     public set currentPosition(v : Position) {
         this._currentPosition = v;
     }
+
+    
+    private _isPickedUp : boolean = false;
+
+    /**
+     * Get if the object is currently picked up
+     */
+    public get IsPickedUp() : boolean {
+        return this._isPickedUp;
+    }
+    
     
     /**
      * Creates a new NetworkObject
@@ -39,7 +50,16 @@ export default class NetworkObject{
     public networkTick() {}
 
     /**
+     * Called when the object is picked up
+     */
+    public pickup(){
+        this._isPickedUp = true;
+    }
+
+    /**
      * Called when the object is drop
      */
-    public drop(){}
+    public drop(){
+        this._isPickedUp = false;
+    }
 }
