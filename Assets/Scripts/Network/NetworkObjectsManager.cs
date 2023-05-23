@@ -47,6 +47,7 @@ namespace Network
             if (_spawnedObjects.ContainsKey(id))
             {
                 Destroy(_spawnedObjects[id].gameObject);
+                _spawnedObjects.Remove(id);
             }
         }
     }

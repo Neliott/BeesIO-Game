@@ -131,6 +131,18 @@ export default class NetworkObjectsManager {
         let spawnAttributes:NetworkObjectSpawnAttributes = new NetworkObjectSpawnAttributes(-1,type,position,rotation);
         this._networkManager.sendGlobalMessage(ServerEventType.SPAWN_UNMANAGED,spawnAttributes);
     }
+
+    /**
+     * Remove the given object from the map
+     * @param object The object to destroy
+     */
+    public applyDestroyObject(object:NetworkObject){
+        let index:number = this._objets.indexOf(object);
+        if(index != -1){
+            this._objets.splice(index,1);
+            this._networkManager.sendGlobalMessage(ServerEventType.DESTROY,object.spawnAttributes.id);
+        }
+    }
     
     private startSpawningObject()
     {

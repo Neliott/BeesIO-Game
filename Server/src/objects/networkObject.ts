@@ -77,4 +77,8 @@ export default class NetworkObject{
         this._owner = null;
         this._spawnAttributes.position = this._currentPosition;
     }
+
+    protected destroy(){
+        this._networkManager.objectsManager.applyDestroyObject(this);
+    }
 }
