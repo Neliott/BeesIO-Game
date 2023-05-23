@@ -96,6 +96,7 @@ class NetworkPlayer {
      */
     public networkTick() {
         this.processInputStreamQueue();
+        if(this._pickupNetworkObjects.length > 0) this.updatePickedUpObjectsPosition();
         if(this._base != undefined)
             this._base.networkTick();
     }
@@ -152,6 +153,29 @@ class NetworkPlayer {
         {
             position.y = -NetworkPlayer.MAX_Y_POSITION;
         }
+    }
+
+    private updatePickedUpObjectsPosition()
+    {
+        for(let i=0;i<this._pickupNetworkObjects.length;i++){
+            if(i==0) this._pickupNetworkObjects[i].currentPosition = this.getNewPosition(this._currentPosition,this._pickupNetworkObjects[i].currentPosition);
+            else this._pickupNetworkObjects[i].currentPosition = this.getNewPosition(this._pickupNetworkObjects[i-1].currentPosition,this._pickupNetworkObjects[i].currentPosition);
+        }
+    }
+
+    /// <summary>
+    /// Get a new position to follow the input
+    /// </summary>
+    /// <param name="input">The input (like a player or a previous node)</param>
+    /// <param name="currentPosition">The current position</param>
+    /// <returns>The new calculated position</returns>
+    /// <remarks>Based on https://processing.org/examples/follow3.html </remarks>
+    private getNewPosition(input:Position, currentPosition:Position):Position
+    {
+        let angleInRadians = Math.atan2(input.y-currentPosition.y, input.x-currentPosition.x);
+        let newX = input.x - Math.cos(angleInRadians) * 1;
+        let newY = input.y - Math.sin(angleInRadians) * 1;
+        return new Position(newX, newY);
     }
 }
 
