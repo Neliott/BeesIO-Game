@@ -1,8 +1,8 @@
 import { EventEmitter } from "events";
 import Position from "./commonStructures/position";
 import HexaGrid from "./hexagrid";
-import NetworkManager from "./networkManager";
 import NetworkPlayer from "./networkPlayer";
+import iNetworkManager from "./iNetworkManager";
 
 /**
  * Represents a base with hexagons that can be upgraded
@@ -25,7 +25,7 @@ export default class Base{
     private _baseCenterIndex : Position;
     private _remaningHexagonsForNextStep:Position[] = [];
     private _currentHexagones:Position[] = [];
-    private _networkManager:NetworkManager;
+    private _networkManager:iNetworkManager;
     private _owner:NetworkPlayer;
 
     /**
@@ -34,7 +34,7 @@ export default class Base{
      * @param centerIndex The center of the base
      * @param owner The owner of the base
      */
-    constructor(networkManager:NetworkManager,centerIndex:Position,owner:NetworkPlayer){
+    constructor(networkManager:iNetworkManager,centerIndex:Position,owner:NetworkPlayer){
         this._owner = owner;
         this._networkManager = networkManager;
         this._baseCenterIndex = centerIndex;

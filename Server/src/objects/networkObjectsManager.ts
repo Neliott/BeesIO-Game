@@ -3,6 +3,7 @@ import NetworkObjectType from "../commonStructures/networkObjectType";
 import Position from "../commonStructures/position";
 import ServerEventType from "../commonStructures/serverEventType";
 import HexaGrid from "../hexagrid";
+import iNetworkManager from "../iNetworkManager";
 import NetworkManager from "../networkManager";
 import Flower from "./flower";
 import NetworkObject from "./networkObject";
@@ -23,7 +24,7 @@ export default class NetworkObjectsManager {
      */
     public static SPAWN_OBJECTS_INTERVAL:number = 1.5;
 
-    private _networkManager:NetworkManager;
+    private _networkManager:iNetworkManager;
     private _objets:NetworkObject[] = [];
     private _clock:number = 0;
     private _nextId:number = 0;
@@ -32,7 +33,7 @@ export default class NetworkObjectsManager {
      * The constructor of the class NetworkObjectsManager
      * @param networkManager The network manager reference
      */
-    constructor(networkManager:NetworkManager) {
+    constructor(networkManager:iNetworkManager) {
         this._networkManager = networkManager;
         this.startSpawningObject();
     }
@@ -68,7 +69,9 @@ export default class NetworkObjectsManager {
             types.forEach(type => {
                 if(object.spawnAttributes.type === type){
                     let distance:number = Position.distance(object.currentPosition,position);
-                    if(distance < nearestDistance && (acceptPickedUp || !object.IsPickedUp)){ 
+                    console.log(object.spawnAttributes.id+" "+object.isPickedUp+" "+acceptPickedUp+" "+distance+" "+nearestDistance);
+                    if(distance < nearestDistance && (acceptPickedUp || !object.isPickedUp)){ 
+                        console.log("New nearest object found : "+object.spawnAttributes.type+" "+distance);
                         nearestDistance = distance;
                         nearestObject = object;
                     }

@@ -29,7 +29,7 @@ export default class NetworkObject{
     /**
      * Get if the object is currently picked up
      */
-    public get IsPickedUp() : boolean {
+    public get isPickedUp() : boolean {
         return this._isPickedUp;
     }
 
@@ -38,7 +38,7 @@ export default class NetworkObject{
     /**
      * Get if the object has already moved in the map at least once
      */
-    public get HasAlreadyMoved() : boolean {
+    public get hasAlreadyMoved() : boolean {
         return this._hasAlreadyMoved;
     }
     

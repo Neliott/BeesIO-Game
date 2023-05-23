@@ -6,6 +6,7 @@ import NetworkManager from "./networkManager";
 import Base from "./base";
 import HexaGrid from "./hexagrid";
 import NetworkObject from "./objects/networkObject";
+import iNetworkManager from "./iNetworkManager";
 
 /**
  * Represents a player in the network
@@ -18,8 +19,16 @@ class NetworkPlayer {
     public static SPEED : number = 6.5;
 
     private static readonly ZONE_EXCEEDING_TOLERANCE : number = 3;
-    private static readonly MAX_X_POSITION : number= (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5) * HexaGrid.MAP_WIDTH) + NetworkPlayer.ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_WIDTH;
-    private static readonly MAX_Y_POSITION : number= (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5) * HexaGrid.MAP_HEIGHT) + NetworkPlayer.ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_HEIGHT;
+    /**
+     * The maximum distance from the center of the map the player can go
+     * ONLY PUBLIC FOR TESTING
+     */
+    public static readonly MAX_X_POSITION : number= (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5) * HexaGrid.MAP_WIDTH) + NetworkPlayer.ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_WIDTH;
+    /**
+     * The maximum distance from the center of the map the player can go
+     * ONLY PUBLIC FOR TESTING
+     */
+    public static readonly MAX_Y_POSITION : number= (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5) * HexaGrid.MAP_HEIGHT) + NetworkPlayer.ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_HEIGHT;
 
     private _lastSeen : number = 0;
     /**
@@ -80,7 +89,7 @@ class NetworkPlayer {
      * Create a new base for this player (call after the player has joined the game)
      * @param networkManager The network manager reference
      */
-    public createBase(networkManager:NetworkManager){
+    public createBase(networkManager:iNetworkManager){
         this._base = new Base(networkManager,HexaGrid.wordPositionToHexIndexes(this.fixedAttributes.basePosition),this);
     }
 

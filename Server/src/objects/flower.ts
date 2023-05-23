@@ -35,7 +35,7 @@ export default class Flower extends NetworkObject{
 
     private tryToSpawnPollen():void{
         for (let i = 0; i < this._spawnedPollens.length; i++) {
-            if(this._spawnedPollens[i] == null || this._spawnedPollens[i]?.HasAlreadyMoved){
+            if(this._spawnedPollens[i] == null || this._spawnedPollens[i]?.hasAlreadyMoved){
                 this.spawnPollenAt(i);
                 return;
             }

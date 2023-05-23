@@ -4,7 +4,7 @@ import NetworkOwnedHexagonList from "./commonStructures/networkOwnedHexagonList"
 import Position from "./commonStructures/position";
 import Random from "./commonStructures/random";
 import ServerEventType from "./commonStructures/serverEventType";
-import NetworkManager from "./networkManager";
+import iNetworkManager from "./iNetworkManager";
 
 /**
  * Represents a hexagongrid on the map that can be possessed by a base
@@ -108,13 +108,13 @@ export default class HexaGrid{
      */
     private _hexagonsProperties : Map<Base, Position[]> = new Map();
 
-    private _networkManager : NetworkManager;
+    private _networkManager : iNetworkManager;
 
     /**
      * Create a new hexagon grid
      * @param networkManager The network manager
      */
-    constructor(networkManager:NetworkManager){
+    constructor(networkManager:iNetworkManager){
         this._networkManager = networkManager;
     }
 

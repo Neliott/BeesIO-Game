@@ -3,7 +3,6 @@ import Random from "./commonStructures/random";
 import NetworkPlayerFixedAttributes from "./commonStructures/networkPlayerFixedAttributes";
 import NetworkPlayer from "./networkPlayer";
 import Position from "./commonStructures/position";
-import NetworkManager from "./networkManager";
 import ServerEventType from "./commonStructures/serverEventType";
 import InitialGameState from "./commonStructures/initialGameState";
 import NetworkPlayerInputState from "./commonStructures/networkPlayerInputState";
@@ -13,6 +12,7 @@ import HexaGrid from "./hexagrid";
 import NetworkObject from "./objects/networkObject";
 import NetworkOwnedObjectsList from "./commonStructures/networkOwnedObjectsList";
 import NetworkObjectType from "./commonStructures/networkObjectType";
+import iNetworkManager from "./iNetworkManager";
 
 /**
  * Manages the players connected to a network manager
@@ -20,7 +20,7 @@ import NetworkObjectType from "./commonStructures/networkObjectType";
 class NetworkPlayersManager {
     private static readonly MAX_PICKUP_DISTANCE : number = 2;
 
-    private _networkManager : NetworkManager;
+    private _networkManager : iNetworkManager;
     private _clients : Map<iWebSocketClientSend,NetworkPlayer>;
     private _nextClientId : number = 0;
 
@@ -28,7 +28,7 @@ class NetworkPlayersManager {
      * Creates a new NetworkPlayersManager
      * @param networkManager The network manager
      */
-    constructor(networkManager:NetworkManager) {
+    constructor(networkManager:iNetworkManager) {
         this._networkManager = networkManager;
         this._clients = new Map<WebSocket,NetworkPlayer>();
     }
@@ -70,7 +70,7 @@ class NetworkPlayersManager {
 
         //Send the initial complete game state to the client
         this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,this._networkManager.objectsManager.getAllObjectsSpawnAttributes(),this.getAllPickupObjects(),this._networkManager.hexaGrid.getFullOwnedHexagonList()));
-        
+
         //Inform all other clients that a new client joined
         this._networkManager.sendGlobalMessage(ServerEventType.JOINED,networkPlayerFixedAttributes);
 
@@ -150,7 +150,7 @@ class NetworkPlayersManager {
         else
             nearestObject = this._networkManager.objectsManager.getNearestObject(player.currentSimulationState.position,[player.pickupNetworkObjects[0].spawnAttributes.type],false);
         if(nearestObject == null) return;
-        if(nearestObject.IsPickedUp) return;
+        if(nearestObject.isPickedUp) return;
         if(Position.distance(player.currentSimulationState.position,nearestObject.currentPosition) > NetworkPlayersManager.MAX_PICKUP_DISTANCE) return;
         player.pickup(nearestObject);
         this._networkManager.sendGlobalMessage(ServerEventType.PICKUP,new NetworkOwnedObjectsList(player.fixedAttributes.id,[nearestObject.spawnAttributes.id]));
