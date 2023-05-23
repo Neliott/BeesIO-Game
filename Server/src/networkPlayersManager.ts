@@ -13,6 +13,8 @@ import NetworkObject from "./objects/networkObject";
 import NetworkOwnedObjectsList from "./commonStructures/networkOwnedObjectsList";
 import NetworkObjectType from "./commonStructures/networkObjectType";
 import iNetworkManager from "./iNetworkManager";
+import NetworkDropAttributes from "./commonStructures/networkDropAttributes";
+import NetworkObjectDropAttributes from "./commonStructures/networkObjectDropAttributes";
 
 /**
  * Manages the players connected to a network manager
@@ -125,6 +127,7 @@ class NetworkPlayersManager {
     public onLeave(sender:iWebSocketClientSend) {
         const playerDisconnected = this._clients.get(sender);
         if(playerDisconnected == undefined) return;
+        this.onDrop(sender);
         const hexagonsToClear = this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base)!;
         while(hexagonsToClear.length > 0){
             this._networkManager.hexaGrid.setHexagonProperty(hexagonsToClear[0],null);
@@ -132,7 +135,6 @@ class NetworkPlayersManager {
         for(let ownedHexagons of this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base)!){
             this._networkManager.hexaGrid.setHexagonProperty(ownedHexagons,null);
         }
-        //TODO : Drop
         this._clients.delete(sender);
         this._networkManager.sendGlobalMessage(ServerEventType.LEFT,playerDisconnected.fixedAttributes.id);
     }
@@ -162,8 +164,13 @@ class NetworkPlayersManager {
      */
     public onDrop(sender:iWebSocketClientSend){
         const player = this._clients.get(sender);
-        if(player == undefined) return;
-        
+        if(player == undefined || player.pickupNetworkObjects.length == 0) return;
+        let objectsDropped = player.drop();
+        let objectsDroppedAttributes = objectsDropped.map((object)=>{
+            return new NetworkObjectDropAttributes(object.spawnAttributes.position,object.spawnAttributes.id)
+        });
+        let dropAttributes = new NetworkDropAttributes(player.fixedAttributes.id,objectsDroppedAttributes);
+        this._networkManager.sendGlobalMessage(ServerEventType.DROP,dropAttributes);
     }
 
     /**

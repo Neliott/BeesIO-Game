@@ -247,6 +247,7 @@ namespace Network
                     ApplyPickedUpObjects(JsonConvert.DeserializeObject<NetworkOwnedObjectsList>(json));
                     break;
                 case ServerEventType.DROP:
+                    ApplyDropObjects(JsonConvert.DeserializeObject<NetworkDropAttributes>(json));
                     break;
                 default:
                     break;
@@ -299,6 +300,16 @@ namespace Network
             foreach (var objectID in list.ownedObjects)
             {
                 playerToAdd.AttachObject(GameManager.Instance.ObjectsManager.SpawnedObjects[objectID]);
+            }
+        }
+
+        private void ApplyDropObjects(NetworkDropAttributes networkDropAttributes)
+        {
+            if (GameManager.Instance.Players.NetworkedClients.ContainsKey(networkDropAttributes.playerId))
+                GameManager.Instance.Players.NetworkedClients[networkDropAttributes.playerId].DetachAllObjects();
+            foreach (var objectDropAttribute in networkDropAttributes.objectsDropped)
+            {
+                GameManager.Instance.ObjectsManager.SpawnedObjects[objectDropAttribute.objectID].OnDrop(objectDropAttribute.newPosition);
             }
         }
 

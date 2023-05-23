@@ -127,6 +127,19 @@ class NetworkPlayer {
         networkObject.pickup();
         this._pickupNetworkObjects.push(networkObject);
     }
+
+    /**
+     * Drop all the network objects picked up by this player
+     * @returns The list of network objects dropped
+     */
+    public drop():NetworkObject[]{
+        for(let i = 0; i < this._pickupNetworkObjects.length; i++) {
+            this._pickupNetworkObjects[i].drop();
+        }
+        let networkObjectsDroped = this._pickupNetworkObjects;
+        this._pickupNetworkObjects = [];
+        return networkObjectsDroped;
+    }
     
     private dequeueInputStream() : NetworkPlayerInputState | undefined {
         return this._inputStreamQueue.shift();

@@ -70,7 +70,7 @@ export default class NetworkObject{
      * Called when the object is drop
      */
     public drop(){
-        console.log("Drop "+this._spawnAttributes.id);
         this._isPickedUp = false;
+        this._spawnAttributes.position = this._currentPosition;
     }
 }

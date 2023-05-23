@@ -49,6 +49,7 @@ namespace Network
         public virtual void OnDrop(Position newPosition)
         {
             _owner = null;
+            transform.position = newPosition.ToVector2();
         }
     }
 }
