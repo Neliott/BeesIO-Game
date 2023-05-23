@@ -5906,7 +5906,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _forceProdServer: 0
   _devServerUrl: ws://localhost:3000
-  _prodServerUrl: ws://localhost:3000
+  _prodServerUrl: wss://beesio.glitch.me
 --- !u!114 &2136466687
 MonoBehaviour:
   m_ObjectHideFlags: 0
