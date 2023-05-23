@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+
 namespace Network
 {
     public class NetworkObject : MonoBehaviour
@@ -25,6 +27,9 @@ namespace Network
             get { return _owner; }
         }
 
+        [SerializeField] UnityEvent _onPickup;
+        [SerializeField] UnityEvent _onDrop;
+
 
         /// <summary>
         /// Setup the new network object with initial spawn attributes
@@ -41,6 +46,8 @@ namespace Network
         public virtual void OnPickup(NetworkPlayer owner)
         {
             _owner = owner;
+            _onPickup?.Invoke();
+            transform.localScale = Vector3.one * 0.7f;
         }
 
         /// <summary>
@@ -50,6 +57,8 @@ namespace Network
         {
             _owner = null;
             transform.position = newPosition.ToVector2();
+            _onDrop?.Invoke();
+            transform.localScale = Vector3.one;
         }
     }
 }

@@ -63,7 +63,7 @@ class NetworkPlayersManager {
 
         //Create a new client / spawn attributes
         const clientId = this.getNextClientId();
-        const colorHue:number = Math.round(Random.Range(0,360));
+        const colorHue:number = Math.round(Random.range(0,360));
         const networkPlayerFixedAttributes = new NetworkPlayerFixedAttributes(clientId,colorHue,name,HexaGrid.getRandomPlaceOnMap());
         
         //Spawn the new client to the list of clients
