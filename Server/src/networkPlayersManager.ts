@@ -119,7 +119,7 @@ class NetworkPlayersManager {
     }
     
     /**
-     * Removes the client from the list of players
+     * Removes the client from the list of players (and unregister associated objects)
      * @param sender The websocket that left
      */
     public onLeave(sender:iWebSocketClientSend) {
@@ -132,10 +132,7 @@ class NetworkPlayersManager {
         for(let ownedHexagons of this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base)!){
             this._networkManager.hexaGrid.setHexagonProperty(ownedHexagons,null);
         }
-        playerDisconnected.pickupNetworkObjects.forEach((networkObject)=>{
-            //TODO : Drop better
-            networkObject.drop();
-        });
+        //TODO : Drop
         this._clients.delete(sender);
         this._networkManager.sendGlobalMessage(ServerEventType.LEFT,playerDisconnected.fixedAttributes.id);
     }

@@ -24,7 +24,6 @@ export default class NetworkObject{
         this._currentPosition = v;
     }
 
-    
     private _isPickedUp : boolean = false;
 
     /**
@@ -32,6 +31,15 @@ export default class NetworkObject{
      */
     public get IsPickedUp() : boolean {
         return this._isPickedUp;
+    }
+
+    private _hasAlreadyMoved : boolean = false;
+
+    /**
+     * Get if the object has already moved in the map at least once
+     */
+    public get HasAlreadyMoved() : boolean {
+        return this._hasAlreadyMoved;
     }
     
     
@@ -53,13 +61,16 @@ export default class NetworkObject{
      * Called when the object is picked up
      */
     public pickup(){
+        console.log("Picked up "+this._spawnAttributes.id);
         this._isPickedUp = true;
+        this._hasAlreadyMoved = true;
     }
 
     /**
      * Called when the object is drop
      */
     public drop(){
+        console.log("Drop "+this._spawnAttributes.id);
         this._isPickedUp = false;
     }
 }
