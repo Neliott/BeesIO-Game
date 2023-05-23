@@ -69,7 +69,7 @@ class NetworkPlayersManager {
         this._clients.set(sender,newPlayer);
 
         //Send the initial complete game state to the client
-        this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,this._networkManager.objectsManager.getAllObjectsSpawnAttributes(),[],this._networkManager.hexaGrid.getFullOwnedHexagonList()));
+        this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,this._networkManager.objectsManager.getAllObjectsSpawnAttributes(),this.getAllPickupObjects(),this._networkManager.hexaGrid.getFullOwnedHexagonList()));
         
         //Inform all other clients that a new client joined
         this._networkManager.sendGlobalMessage(ServerEventType.JOINED,networkPlayerFixedAttributes);
@@ -97,7 +97,7 @@ class NetworkPlayersManager {
                 player.updateLastSeen();
 
                 //Send the initial complete game state to the client
-                this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,player.currentSimulationState.simulationFrame,attributesBeforeJoin,this._networkManager.objectsManager.getAllObjectsSpawnAttributes(),[],this._networkManager.hexaGrid.getFullOwnedHexagonList()));
+                this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,player.currentSimulationState.simulationFrame,attributesBeforeJoin,this._networkManager.objectsManager.getAllObjectsSpawnAttributes(),this.getAllPickupObjects(),this._networkManager.hexaGrid.getFullOwnedHexagonList()));
 
                 return;
             }
@@ -190,6 +190,18 @@ class NetworkPlayersManager {
             clientsAttributes.push(client.fixedAttributes);
         });
         return clientsAttributes;
+    }
+
+    /**
+     * Get all clients identifiers pickup objects list (object id list)
+     * @returns The list of all currently picked up objects by clients
+     */
+    private getAllPickupObjects() : NetworkOwnedObjectsList[]{
+        const pickupObjects : NetworkOwnedObjectsList[] = [];
+        this._clients.forEach((client)=>{
+            pickupObjects.push(new NetworkOwnedObjectsList(client.fixedAttributes.id,client.pickupNetworkObjects.map((pickupObject)=>{return pickupObject.spawnAttributes.id})));
+        });
+        return pickupObjects;
     }
     
     /**
