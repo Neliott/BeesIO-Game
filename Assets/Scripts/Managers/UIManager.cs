@@ -63,9 +63,8 @@ public class UIManager : MonoBehaviour
         _dropButton.gameObject.SetActive(hasControlledPlayer);
         if (hasControlledPlayer)
         {
-            //TODO
-            /*_pickupButton.interactable = GameManager.Instance.Players.MyClientInstance.PickupController.GetCompatiblePickableObject() != null;
-            _dropButton.interactable = GameManager.Instance.Players.MyClientInstance.PickupController.GetPickedUpObjects().Count > 0;*/
+            _pickupButton.interactable = GameManager.Instance.Players.MyClientInstance.CanPickupObject();
+            _dropButton.interactable = GameManager.Instance.Players.MyClientInstance.PickedUpObjects().Count > 0;
         }
     }
 
@@ -114,8 +113,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ClickedPickupButton()
     {
-        //TODO
-        //GameManager.Instance.Players.MyClientInstance.PickupController.PickupLastObject();
+        GameManager.Instance.NetworkManager.SendPickupRequest();
     }
 
     /// <summary>
@@ -123,8 +121,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     public void ClickedDropButton()
     {
-        //TODO
-        //GameManager.Instance.Players.MyClientInstance.PickupController.Drop();
+        GameManager.Instance.NetworkManager.SendDropRequest();
     }
 
     /// <summary>

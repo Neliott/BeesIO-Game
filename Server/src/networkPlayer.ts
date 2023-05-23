@@ -5,6 +5,8 @@ import NetworkPlayerSimulationState from "./commonStructures/networkPlayerSimula
 import NetworkManager from "./networkManager";
 import Base from "./base";
 import HexaGrid from "./hexagrid";
+import NetworkObject from "./objects/networkObject";
+import iNetworkManager from "./iNetworkManager";
 
 /**
  * Represents a player in the network
@@ -17,8 +19,16 @@ class NetworkPlayer {
     public static SPEED : number = 6.5;
 
     private static readonly ZONE_EXCEEDING_TOLERANCE : number = 3;
-    private static readonly MAX_X_POSITION : number= (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5) * HexaGrid.MAP_WIDTH) + NetworkPlayer.ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_WIDTH;
-    private static readonly MAX_Y_POSITION : number= (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5) * HexaGrid.MAP_HEIGHT) + NetworkPlayer.ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_HEIGHT;
+    /**
+     * The maximum distance from the center of the map the player can go
+     * ONLY PUBLIC FOR TESTING
+     */
+    public static readonly MAX_X_POSITION : number= (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5) * HexaGrid.MAP_WIDTH) + NetworkPlayer.ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_WIDTH;
+    /**
+     * The maximum distance from the center of the map the player can go
+     * ONLY PUBLIC FOR TESTING
+     */
+    public static readonly MAX_Y_POSITION : number= (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5) * HexaGrid.MAP_HEIGHT) + NetworkPlayer.ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_HEIGHT;
 
     private _lastSeen : number = 0;
     /**
@@ -42,6 +52,14 @@ class NetworkPlayer {
      */
     public get currentSimulationState() : NetworkPlayerSimulationState {
         return this._currentSimulationState;
+    }
+
+    private _pickupNetworkObjects : NetworkObject[] = [];
+    /**
+     * Get list of network objects picked up by this player
+     */
+    public get pickupNetworkObjects() : NetworkObject[] {
+        return this._pickupNetworkObjects;
     }
     
     private _base! : Base;
@@ -71,7 +89,7 @@ class NetworkPlayer {
      * Create a new base for this player (call after the player has joined the game)
      * @param networkManager The network manager reference
      */
-    public createBase(networkManager:NetworkManager){
+    public createBase(networkManager:iNetworkManager){
         this._base = new Base(networkManager,HexaGrid.wordPositionToHexIndexes(this.fixedAttributes.basePosition),this);
     }
 
@@ -87,6 +105,7 @@ class NetworkPlayer {
      */
     public networkTick() {
         this.processInputStreamQueue();
+        if(this._pickupNetworkObjects.length > 0) this.updatePickedUpObjectsPosition();
         if(this._base != undefined)
             this._base.networkTick();
     }
@@ -98,6 +117,15 @@ class NetworkPlayer {
     public enqueueInputStream(inputStream:NetworkPlayerInputState) {
         this._inputStreamQueue.push(inputStream);
         this.updateLastSeen();
+    }
+
+    /**
+     * Add a network object to the picked up list
+     * @param networkObject The network object to pickup
+     */
+    public pickup(networkObject:NetworkObject) {
+        networkObject.pickup();
+        this._pickupNetworkObjects.push(networkObject);
     }
     
     private dequeueInputStream() : NetworkPlayerInputState | undefined {
@@ -134,6 +162,29 @@ class NetworkPlayer {
         {
             position.y = -NetworkPlayer.MAX_Y_POSITION;
         }
+    }
+
+    private updatePickedUpObjectsPosition()
+    {
+        for(let i=0;i<this._pickupNetworkObjects.length;i++){
+            if(i==0) this._pickupNetworkObjects[i].currentPosition = this.getNewPosition(this._currentPosition,this._pickupNetworkObjects[i].currentPosition);
+            else this._pickupNetworkObjects[i].currentPosition = this.getNewPosition(this._pickupNetworkObjects[i-1].currentPosition,this._pickupNetworkObjects[i].currentPosition);
+        }
+    }
+
+    /// <summary>
+    /// Get a new position to follow the input
+    /// </summary>
+    /// <param name="input">The input (like a player or a previous node)</param>
+    /// <param name="currentPosition">The current position</param>
+    /// <returns>The new calculated position</returns>
+    /// <remarks>Based on https://processing.org/examples/follow3.html </remarks>
+    private getNewPosition(input:Position, currentPosition:Position):Position
+    {
+        let angleInRadians = Math.atan2(input.y-currentPosition.y, input.x-currentPosition.x);
+        let newX = input.x - Math.cos(angleInRadians) * 1;
+        let newY = input.y - Math.sin(angleInRadians) * 1;
+        return new Position(newX, newY);
     }
 }
 

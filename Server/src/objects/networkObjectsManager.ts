@@ -3,6 +3,7 @@ import NetworkObjectType from "../commonStructures/networkObjectType";
 import Position from "../commonStructures/position";
 import ServerEventType from "../commonStructures/serverEventType";
 import HexaGrid from "../hexagrid";
+import iNetworkManager from "../iNetworkManager";
 import NetworkManager from "../networkManager";
 import Flower from "./flower";
 import NetworkObject from "./networkObject";
@@ -23,7 +24,7 @@ export default class NetworkObjectsManager {
      */
     public static SPAWN_OBJECTS_INTERVAL:number = 1.5;
 
-    private _networkManager:NetworkManager;
+    private _networkManager:iNetworkManager;
     private _objets:NetworkObject[] = [];
     private _clock:number = 0;
     private _nextId:number = 0;
@@ -32,7 +33,7 @@ export default class NetworkObjectsManager {
      * The constructor of the class NetworkObjectsManager
      * @param networkManager The network manager reference
      */
-    constructor(networkManager:NetworkManager) {
+    constructor(networkManager:iNetworkManager) {
         this._networkManager = networkManager;
         this.startSpawningObject();
     }
@@ -56,21 +57,26 @@ export default class NetworkObjectsManager {
     /**
      * Get the nearest object of the given type
      * @param position The position to search in proximity
-     * @param type The type of the object to search
+     * @param types The types of the objects to search (accepted types)
+     * @param acceptPickedUp Dont take into account the picked up objects
      * @returns The nearest object of the given type
      */
-    public getNearestObject(position:Position,type:NetworkObjectType):NetworkObject|null {
+    public getNearestObject(position:Position,types:NetworkObjectType[],acceptPickedUp:boolean):NetworkObject|null {
         let nearestObject:NetworkObject|null = null;
         let nearestDistance:number = Number.MAX_VALUE;
         for (let i = 0; i < this._objets.length; i++) {
             let object:NetworkObject = this._objets[i];
-            if(object.spawnAttributes.type === type){
-                let distance:number = Position.distance(object.currentPosition,position);
-                if(distance < nearestDistance){
-                    nearestDistance = distance;
-                    nearestObject = object;
+            types.forEach(type => {
+                if(object.spawnAttributes.type === type){
+                    let distance:number = Position.distance(object.currentPosition,position);
+                    console.log(object.spawnAttributes.id+" "+object.isPickedUp+" "+acceptPickedUp+" "+distance+" "+nearestDistance);
+                    if(distance < nearestDistance && (acceptPickedUp || !object.isPickedUp)){ 
+                        console.log("New nearest object found : "+object.spawnAttributes.type+" "+distance);
+                        nearestDistance = distance;
+                        nearestObject = object;
+                    }
                 }
-            }
+            });
         }
         return nearestObject;
     }

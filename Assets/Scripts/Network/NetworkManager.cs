@@ -115,6 +115,22 @@ namespace Network
             State = NetworkState.CONNECTING;
         }
 
+        /// <summary>
+        /// Send a pickup request to the server
+        /// </summary>
+        public void SendPickupRequest()
+        {
+            SendEvent(ClientEventType.PICKUP);
+        }
+
+        /// <summary>
+        /// Send a drop request to the server
+        /// </summary>
+        public void SendDropRequest()
+        {
+            SendEvent(ClientEventType.DROP);
+        }
+
         private void Reconnect()
         {
             State = NetworkState.RECONNECTING;
@@ -228,6 +244,7 @@ namespace Network
                     ApplyGameState(JsonConvert.DeserializeObject<List<NetworkPlayerGameStateStream>>(json));
                     break;
                 case ServerEventType.PICKUP:
+                    ApplyPickedUpObjects(JsonConvert.DeserializeObject<NetworkOwnedObjectsList>(json));
                     break;
                 case ServerEventType.DROP:
                     break;
@@ -266,9 +283,23 @@ namespace Network
             {
                 GameManager.Instance.ObjectsManager.SpawnObject(objectAttribute);
             }
+            foreach (var playerObjectList in initialGameState.ownedObjects)
+            {
+                ApplyPickedUpObjects(playerObjectList);
+            }
             GameManager.Instance.Players.SimulationStateStartIndex = initialGameState.simulationStateStartIndex;
             GameManager.Instance.Players.CurrentPlayerIdOwned = initialGameState.ownedClientID;
             _lastPlayerIdOwned = GameManager.Instance.Players.CurrentPlayerIdOwned;
+        }
+
+        private void ApplyPickedUpObjects(NetworkOwnedObjectsList list)
+        {
+            if (list.ownedObjects.Length == 0) return;
+            NetworkPlayer playerToAdd = GameManager.Instance.Players.NetworkedClients[list.playerId];
+            foreach (var objectID in list.ownedObjects)
+            {
+                playerToAdd.AttachObject(GameManager.Instance.ObjectsManager.SpawnedObjects[objectID]);
+            }
         }
 
         private void ApplyHexagonPropertyChanged(HexagonPropertyChanged changeInformations)

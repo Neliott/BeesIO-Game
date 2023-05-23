@@ -3,19 +3,24 @@ import Random from "./commonStructures/random";
 import NetworkPlayerFixedAttributes from "./commonStructures/networkPlayerFixedAttributes";
 import NetworkPlayer from "./networkPlayer";
 import Position from "./commonStructures/position";
-import NetworkManager from "./networkManager";
 import ServerEventType from "./commonStructures/serverEventType";
 import InitialGameState from "./commonStructures/initialGameState";
 import NetworkPlayerInputState from "./commonStructures/networkPlayerInputState";
 import NetworkPlayerGameStateStream from "./commonStructures/networkPlayerGameStateStream";
 import iWebSocketClientSend from "./iWebSocketClientSend";
 import HexaGrid from "./hexagrid";
+import NetworkObject from "./objects/networkObject";
+import NetworkOwnedObjectsList from "./commonStructures/networkOwnedObjectsList";
+import NetworkObjectType from "./commonStructures/networkObjectType";
+import iNetworkManager from "./iNetworkManager";
 
 /**
  * Manages the players connected to a network manager
  */
 class NetworkPlayersManager {
-    private _networkManager : NetworkManager;
+    private static readonly MAX_PICKUP_DISTANCE : number = 2;
+
+    private _networkManager : iNetworkManager;
     private _clients : Map<iWebSocketClientSend,NetworkPlayer>;
     private _nextClientId : number = 0;
 
@@ -23,7 +28,7 @@ class NetworkPlayersManager {
      * Creates a new NetworkPlayersManager
      * @param networkManager The network manager
      */
-    constructor(networkManager:NetworkManager) {
+    constructor(networkManager:iNetworkManager) {
         this._networkManager = networkManager;
         this._clients = new Map<WebSocket,NetworkPlayer>();
     }
@@ -64,8 +69,8 @@ class NetworkPlayersManager {
         this._clients.set(sender,newPlayer);
 
         //Send the initial complete game state to the client
-        this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,this._networkManager.objectsManager.getAllObjectsSpawnAttributes(),[],this._networkManager.hexaGrid.getFullOwnedHexagonList()));
-        
+        this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(clientId,0,attributesBeforeJoin,this._networkManager.objectsManager.getAllObjectsSpawnAttributes(),this.getAllPickupObjects(),this._networkManager.hexaGrid.getFullOwnedHexagonList()));
+
         //Inform all other clients that a new client joined
         this._networkManager.sendGlobalMessage(ServerEventType.JOINED,networkPlayerFixedAttributes);
 
@@ -92,7 +97,7 @@ class NetworkPlayersManager {
                 player.updateLastSeen();
 
                 //Send the initial complete game state to the client
-                this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,player.currentSimulationState.simulationFrame,attributesBeforeJoin,this._networkManager.objectsManager.getAllObjectsSpawnAttributes(),[],this._networkManager.hexaGrid.getFullOwnedHexagonList()));
+                this._networkManager.sendMessage(sender,ServerEventType.INITIAL_GAME_STATE,new InitialGameState(lastId,player.currentSimulationState.simulationFrame,attributesBeforeJoin,this._networkManager.objectsManager.getAllObjectsSpawnAttributes(),this.getAllPickupObjects(),this._networkManager.hexaGrid.getFullOwnedHexagonList()));
 
                 return;
             }
@@ -114,7 +119,7 @@ class NetworkPlayersManager {
     }
     
     /**
-     * Removes the client from the list of players
+     * Removes the client from the list of players (and unregister associated objects)
      * @param sender The websocket that left
      */
     public onLeave(sender:iWebSocketClientSend) {
@@ -127,8 +132,38 @@ class NetworkPlayersManager {
         for(let ownedHexagons of this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base)!){
             this._networkManager.hexaGrid.setHexagonProperty(ownedHexagons,null);
         }
+        //TODO : Drop
         this._clients.delete(sender);
         this._networkManager.sendGlobalMessage(ServerEventType.LEFT,playerDisconnected.fixedAttributes.id);
+    }
+
+    /**
+     * Try to add a object to the player that sent the pickup request
+     * @param sender The websocket of the client that sent the pickup request
+     */
+    public onPickup(sender:iWebSocketClientSend){
+        const player = this._clients.get(sender);
+        if(player == undefined) return;
+        let nearestObject : NetworkObject|null = null;
+        if(player.pickupNetworkObjects.length == 0)
+            nearestObject = this._networkManager.objectsManager.getNearestObject(player.currentSimulationState.position,[NetworkObjectType.POLLEN,NetworkObjectType.PESTICIDE],false)
+        else
+            nearestObject = this._networkManager.objectsManager.getNearestObject(player.currentSimulationState.position,[player.pickupNetworkObjects[0].spawnAttributes.type],false);
+        if(nearestObject == null) return;
+        if(nearestObject.isPickedUp) return;
+        if(Position.distance(player.currentSimulationState.position,nearestObject.currentPosition) > NetworkPlayersManager.MAX_PICKUP_DISTANCE) return;
+        player.pickup(nearestObject);
+        this._networkManager.sendGlobalMessage(ServerEventType.PICKUP,new NetworkOwnedObjectsList(player.fixedAttributes.id,[nearestObject.spawnAttributes.id]));
+    }
+
+    /**
+     * Remove all owned objects of the player that sent the drop request
+     * @param sender The websocket of the client that sent the drop request
+     */
+    public onDrop(sender:iWebSocketClientSend){
+        const player = this._clients.get(sender);
+        if(player == undefined) return;
+        
     }
 
     /**
@@ -155,6 +190,18 @@ class NetworkPlayersManager {
             clientsAttributes.push(client.fixedAttributes);
         });
         return clientsAttributes;
+    }
+
+    /**
+     * Get all clients identifiers pickup objects list (object id list)
+     * @returns The list of all currently picked up objects by clients
+     */
+    private getAllPickupObjects() : NetworkOwnedObjectsList[]{
+        const pickupObjects : NetworkOwnedObjectsList[] = [];
+        this._clients.forEach((client)=>{
+            pickupObjects.push(new NetworkOwnedObjectsList(client.fixedAttributes.id,client.pickupNetworkObjects.map((pickupObject)=>{return pickupObject.spawnAttributes.id})));
+        });
+        return pickupObjects;
     }
     
     /**

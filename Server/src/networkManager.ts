@@ -1,15 +1,15 @@
-import WebSocket = require('ws');
 import ClientEventType from './commonStructures/clientEventType';
 import ServerEventType from './commonStructures/serverEventType';
 import NetworkPlayersManager from './networkPlayersManager';
 import iWebSocketClientSend from './iWebSocketClientSend';
 import HexaGrid from './hexagrid';
 import NetworkObjectsManager from './objects/networkObjectsManager';
+import iNetworkManager from './iNetworkManager';
 
 /**
  * This manager is used to manage the network (serialize the game state, send it to the clients, receive the inputs, etc.) and the different services managing the game state
  */
-class NetworkManager {
+class NetworkManager implements iNetworkManager {
     /**
      * The time in milliseconds before a client is considered disconnected
      * This is not readonly because it can be changed for the tests
@@ -106,6 +106,12 @@ class NetworkManager {
                 break;
             case ClientEventType.INPUT_STREAM:
                 this._clientsManager.onInput(sender,JSON.parse(json));
+                break;
+            case ClientEventType.PICKUP:
+                this._clientsManager.onPickup(sender);
+                break;
+            case ClientEventType.DROP:
+                this._clientsManager.onDrop(sender);
                 break;
         }
     }
