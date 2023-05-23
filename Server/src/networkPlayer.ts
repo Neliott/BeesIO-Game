@@ -124,7 +124,7 @@ class NetworkPlayer {
      * @param networkObject The network object to pickup
      */
     public pickup(networkObject:NetworkObject) {
-        networkObject.pickup();
+        networkObject.pickup(this);
         this._pickupNetworkObjects.push(networkObject);
     }
 
