@@ -24,7 +24,6 @@ export default class Base{
     private _baseLevel:number;
     private _baseCenterIndex : Position;
     private _remaningHexagonsForNextStep:Position[] = [];
-    private _currentHexagones:Position[] = [];
     private _networkManager:iNetworkManager;
     private _owner:NetworkPlayer;
 
@@ -61,7 +60,7 @@ export default class Base{
     {
         let minDistance = Number.MAX_SAFE_INTEGER;
         let nearestPosition = new Position(0,0);
-        this._currentHexagones.forEach((hexagon)=>{
+        this._networkManager.hexaGrid.getHexagonsOfBase(this)?.forEach((hexagon)=>{
             let hexagonPosition = HexaGrid.hexIndexesToWorldPosition(hexagon);
             let distance = Position.distance(position, hexagonPosition);
             if (distance < minDistance)
@@ -85,16 +84,18 @@ export default class Base{
     /**
      * Make checks when the list of owned hexagones changes
      */
-    public onHexagonOwnedListChanged()
+    public addHexagonToReconstruct(position:Position)
     {
-        let hexagons = this._networkManager.hexaGrid.getHexagonsOfBase(this)!;
-        let difference = this._currentHexagones.filter(x => !hexagons.includes(x));
-        this._remaningHexagonsForNextStep.unshift(...difference);
-        this._currentHexagones = hexagons;
-        if (this._currentHexagones.length == 0 && !this._isDestroyed) {
-            this.eventEmitter.emit('destroyed');
-            this._isDestroyed = true;
-        }
+        this._remaningHexagonsForNextStep.push(position);
+    }
+
+    /**
+     * destroy the base
+     */
+    public destroy() {
+        if(this._isDestroyed) return;
+        this.eventEmitter.emit('destroyed');
+        this._isDestroyed = true;
     }
 
     private buildNextBaseHexagon()
@@ -105,8 +106,7 @@ export default class Base{
             this._baseLevel++;
             this._remaningHexagonsForNextStep = HexaGrid.getBigHexagonPositions(this._baseCenterIndex, this._baseLevel, true);
         }
-        this._networkManager.hexaGrid.setHexagonProperty(this._remaningHexagonsForNextStep[0], this);
-        this._remaningHexagonsForNextStep.splice(0,1);
+        this._networkManager.hexaGrid.setHexagonProperty(this._remaningHexagonsForNextStep.pop()!, this);
     }
 
     private fillBase(radius:number)

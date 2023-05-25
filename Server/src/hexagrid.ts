@@ -125,14 +125,15 @@ export default class HexaGrid{
      */
     public setHexagonProperty(position:Position, property:Base|null)
     {
-        this._networkManager.sendGlobalMessage(ServerEventType.HEXAGON_PROPERTY_CHANGED, new HexagonPropertyChanged((property == null)?-1:property.owner.fixedAttributes.id,position));
-
         let lastOwner = this.getPropertyOfHexIndex(position);
+        if(lastOwner != undefined || property != null)
+            this._networkManager.sendGlobalMessage(ServerEventType.HEXAGON_PROPERTY_CHANGED, new HexagonPropertyChanged((property == null)?-1:property.owner.fixedAttributes.id,position));
+
         if (lastOwner != undefined)
         {
             const positions = this._hexagonsProperties.get(lastOwner);
-            positions?.splice(positions.indexOf(position, 0),1);
-            lastOwner.onHexagonOwnedListChanged();
+            positions!.splice(positions!.findIndex((pos)=>pos.equals(position)),1);
+            lastOwner.addHexagonToReconstruct(position);
         }
         if (property == null) return;
         if (!this._hexagonsProperties.has(property))
@@ -140,7 +141,6 @@ export default class HexaGrid{
             this._hexagonsProperties.set(property, []);
         }
         this._hexagonsProperties.get(property)!.push(position);
-        property.onHexagonOwnedListChanged();
     }
 
     /**
