@@ -20,7 +20,7 @@ import NetworkObjectDropAttributes from "./commonStructures/networkObjectDropAtt
  * Manages the players connected to a network manager
  */
 class NetworkPlayersManager {
-    private static readonly MAX_PICKUP_DISTANCE : number = 2;
+    private static readonly MAX_PICKUP_DISTANCE : number = 2.5;
 
     private _networkManager : iNetworkManager;
     private _clients : Map<iWebSocketClientSend,NetworkPlayer>;
