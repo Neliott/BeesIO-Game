@@ -104,16 +104,16 @@ export default class NetworkObjectsManager {
         let newObject:NetworkObject;
         switch(type){
             case NetworkObjectType.POLLEN:
-                newObject = new Pollen(spawnAttributes);
+                newObject = new Pollen(this._networkManager,spawnAttributes);
                 break;
             case NetworkObjectType.PESTICIDE:
-                newObject = new Pesticide(spawnAttributes);
+                newObject = new Pesticide(this._networkManager,spawnAttributes);
                 break;
             case NetworkObjectType.FLOWER:
-                newObject = new Flower(this,spawnAttributes);
+                newObject = new Flower(this._networkManager,spawnAttributes);
                 break;
             default:
-                newObject = new NetworkObject(spawnAttributes);
+                newObject = new NetworkObject(this._networkManager,spawnAttributes);
                 break;
         }
         this._objets.push(newObject);
@@ -130,6 +130,18 @@ export default class NetworkObjectsManager {
     public spawnParticule(type:NetworkObjectType,position:Position, rotation:number) {
         let spawnAttributes:NetworkObjectSpawnAttributes = new NetworkObjectSpawnAttributes(-1,type,position,rotation);
         this._networkManager.sendGlobalMessage(ServerEventType.SPAWN_UNMANAGED,spawnAttributes);
+    }
+
+    /**
+     * Remove the given object from the map
+     * @param object The object to destroy
+     */
+    public applyDestroyObject(object:NetworkObject){
+        let index:number = this._objets.indexOf(object);
+        if(index != -1){
+            this._objets.splice(index,1);
+            this._networkManager.sendGlobalMessage(ServerEventType.DESTROY,object.spawnAttributes.id);
+        }
     }
     
     private startSpawningObject()

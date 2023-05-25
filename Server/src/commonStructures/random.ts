@@ -8,7 +8,7 @@ export default class Random {
      * @param max The maximum value of the random number.
      * @returns The random number.
      */
-    public static Range(min:number,max:number):number{
+    public static range(min:number,max:number):number{
         return Math.round((Math.random()*(max-min))+min);
     }
 }

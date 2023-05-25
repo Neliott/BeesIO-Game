@@ -90,8 +90,22 @@ public class PlayersManager : MonoBehaviour
     public void RemovePlayer(int playerId)
     {
         if (!_networkedClients.ContainsKey(playerId)) return;
+        Destroy(_networkedClients[playerId].Base.gameObject);
         Destroy(_networkedClients[playerId].gameObject);
         _networkedClients.Remove(playerId);
+    }
+
+    /// <summary>
+    /// Remove all the clients from the list and the map
+    /// </summary>
+    public void DestroyAll()
+    {
+        foreach (var client in _networkedClients)
+        {
+            Destroy(client.Value.Base.gameObject);
+            Destroy(client.Value.gameObject);
+        }
+        _networkedClients.Clear();
     }
 
     private void FinalizePlayerSetup()

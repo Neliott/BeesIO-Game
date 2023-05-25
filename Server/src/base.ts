@@ -3,6 +3,7 @@ import Position from "./commonStructures/position";
 import HexaGrid from "./hexagrid";
 import NetworkPlayer from "./networkPlayer";
 import iNetworkManager from "./iNetworkManager";
+import ServerEventType from "./commonStructures/serverEventType";
 
 /**
  * Represents a base with hexagons that can be upgraded
@@ -10,10 +11,6 @@ import iNetworkManager from "./iNetworkManager";
 export default class Base{
     private static readonly DEFAULT_BASE_SIZE = 2;
 
-    /**
-     * Events emitter (only emitt 'destroyed' when the base has no remaning hexagons)
-     */
-    public eventEmitter = new EventEmitter()
     /**
      * Get the owner of the base
      */
@@ -24,7 +21,6 @@ export default class Base{
     private _baseLevel:number;
     private _baseCenterIndex : Position;
     private _remaningHexagonsForNextStep:Position[] = [];
-    private _currentHexagones:Position[] = [];
     private _networkManager:iNetworkManager;
     private _owner:NetworkPlayer;
 
@@ -61,7 +57,7 @@ export default class Base{
     {
         let minDistance = Number.MAX_SAFE_INTEGER;
         let nearestPosition = new Position(0,0);
-        this._currentHexagones.forEach((hexagon)=>{
+        this._networkManager.hexaGrid.getHexagonsOfBase(this)?.forEach((hexagon)=>{
             let hexagonPosition = HexaGrid.hexIndexesToWorldPosition(hexagon);
             let distance = Position.distance(position, hexagonPosition);
             if (distance < minDistance)
@@ -83,18 +79,25 @@ export default class Base{
     }
     
     /**
-     * Make checks when the list of owned hexagones changes
+     * Make checks when the list of owned hexagones changed negatively
      */
-    public onHexagonOwnedListChanged()
+    public addHexagonToReconstruct(position:Position,newCount:number)
     {
-        let hexagons = this._networkManager.hexaGrid.getHexagonsOfBase(this)!;
-        let difference = this._currentHexagones.filter(x => !hexagons.includes(x));
-        this._remaningHexagonsForNextStep.unshift(...difference);
-        this._currentHexagones = hexagons;
-        if (this._currentHexagones.length == 0 && !this._isDestroyed) {
-            this.eventEmitter.emit('destroyed');
-            this._isDestroyed = true;
-        }
+        if(newCount == 0){
+            this.destroy(); 
+            return;
+        } 
+        this._remaningHexagonsForNextStep.push(position);
+    }
+
+    /**
+     * destroy the base
+     */
+    public destroy() {
+        if(this._isDestroyed) return;
+        this._networkManager.sendGlobalMessage(ServerEventType.GAME_OVER, this._owner.fixedAttributes.id);
+        this._networkManager.clientsManager.removePlayer(this._owner, true);
+        this._isDestroyed = true;
     }
 
     private buildNextBaseHexagon()
@@ -105,8 +108,7 @@ export default class Base{
             this._baseLevel++;
             this._remaningHexagonsForNextStep = HexaGrid.getBigHexagonPositions(this._baseCenterIndex, this._baseLevel, true);
         }
-        this._networkManager.hexaGrid.setHexagonProperty(this._remaningHexagonsForNextStep[0], this);
-        this._remaningHexagonsForNextStep.splice(0,1);
+        this._networkManager.hexaGrid.setHexagonProperty(this._remaningHexagonsForNextStep.pop()!, this);
     }
 
     private fillBase(radius:number)

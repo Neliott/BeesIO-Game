@@ -26,6 +26,7 @@ namespace Network
         {
             NetworkObject newObject = Instantiate(_objectsPrefabs[(int)attribute.type], attribute.position.ToVector2(), Quaternion.Euler(new Vector3(0, 0, attribute.direction)), _spawnedObjectsParent);
             newObject.Setup(attribute);
+            newObject.transform.localScale = attribute.scale*Vector3.one;
             _spawnedObjects.Add(attribute.id, newObject);
         }
 
@@ -35,7 +36,7 @@ namespace Network
         /// <param name="attribute">The attributes provided by the server</param>
         public void SpawnParticule(NetworkObjectSpawnAttributes attribute)
         {
-            Instantiate(_objectsPrefabs[(int)attribute.type], attribute.position.ToVector2(), Quaternion.Euler(new Vector3(0, 0, attribute.direction)));
+            Instantiate(_objectsPrefabs[(int)attribute.type], attribute.position.ToVector2(), Quaternion.Euler(new Vector3(0, 0, attribute.direction))).transform.localScale = attribute.scale * Vector3.one;
         }
 
         /// <summary>
@@ -46,8 +47,25 @@ namespace Network
         {
             if (_spawnedObjects.ContainsKey(id))
             {
+                if (_spawnedObjects[id].Owner != null)
+                    _spawnedObjects[id].Owner.PickedUpObjects().Remove(_spawnedObjects[id]);
                 Destroy(_spawnedObjects[id].gameObject);
+                _spawnedObjects.Remove(id);
             }
+        }
+
+        /// <summary>
+        /// Destroy all the objects
+        /// </summary>
+        public void DestroyAll()
+        {
+            foreach (var obj in _spawnedObjects)
+            {
+                if (obj.Value.Owner != null)
+                    obj.Value.Owner.PickedUpObjects().Remove(obj.Value);
+                Destroy(obj.Value.gameObject);
+            }
+            _spawnedObjects.Clear();
         }
     }
 }

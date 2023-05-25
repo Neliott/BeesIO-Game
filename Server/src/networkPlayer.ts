@@ -124,8 +124,22 @@ class NetworkPlayer {
      * @param networkObject The network object to pickup
      */
     public pickup(networkObject:NetworkObject) {
-        networkObject.pickup();
+        networkObject.pickup(this);
         this._pickupNetworkObjects.push(networkObject);
+    }
+
+    /**
+     * Drop all the network objects picked up by this player
+     * @returns The list of network objects dropped
+     */
+    public drop():NetworkObject[]{
+        let length = this._pickupNetworkObjects.length;//We need to store the length because the array will be modified
+        for(let i = 0; i < length; i++) {
+            this._pickupNetworkObjects[i-(length-this._pickupNetworkObjects.length)].drop();
+        }
+        let networkObjectsDroped = this._pickupNetworkObjects;
+        this._pickupNetworkObjects = [];
+        return networkObjectsDroped;
     }
     
     private dequeueInputStream() : NetworkPlayerInputState | undefined {

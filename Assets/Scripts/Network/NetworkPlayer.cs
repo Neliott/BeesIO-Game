@@ -495,13 +495,8 @@ namespace Network
         /// <summary>
         /// Detach all the objects 
         /// </summary>
-        /// <returns>The list of detached objects</returns>
         public void DetachAllObjects()
         {
-            foreach (var pickupObject in _pickedUpObjects)
-            {
-                //pickupObject.OnDrop();
-            }
             _pickedUpObjects.Clear();
         }
 

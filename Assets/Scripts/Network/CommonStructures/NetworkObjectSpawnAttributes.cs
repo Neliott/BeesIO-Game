@@ -21,5 +21,9 @@
         /// The direction of the object that is being spawned.
         /// </summary>
         public float direction;
+        /// <summary>
+        /// The scale of the object that is being spawned.
+        /// </summary>
+        public float scale;
     }
 }
