@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class BotPlayer : Player
+public class BotPlayer /*: Player*/
 {
-    const float SMOOTH_DIRECTION = 10;
+    /*const float SMOOTH_DIRECTION = 10;
     const float DROP_DISTANCE_TOLERANCE = .35f;
     const int NEAR_OBJECT_ERROR = 2;
     const float BASE_PESTICIDE_RISK_RADIUS = 7f;
@@ -24,7 +24,7 @@ public class BotPlayer : Player
         base.Setup(name);
         _passivity = Random.Range(0.3f, 0.8f);
         _risk = Random.Range(0.3f, 0.9f);
-    }
+    }*/
 
     /*void Update()
     {
@@ -46,7 +46,7 @@ public class BotPlayer : Player
     /// Is the current target expired or not valid ? Do we need to choose an other ?
     /// </summary>
     /// <returns>True if the target need to be changed</returns>
-    bool IsNeedingANewTarget()
+    /*bool IsNeedingANewTarget()
     {
         if (_target == null) return true;
 
@@ -57,7 +57,7 @@ public class BotPlayer : Player
         //if (_target is Flower && ((Flower)_target).HasPollen() == false) return true;
 
         return false;
-    }
+    }*/
 
     /// <summary>
     /// Choose a new target based on the general state of the bot
@@ -118,7 +118,7 @@ public class BotPlayer : Player
     /// Change direction to match the target direction
     /// </summary>
     /// <param name="targetWorldPosition">The target to move to</param>
-    void Move(Vector3 targetWorldPosition)
+    /*void Move(Vector3 targetWorldPosition)
     {
         Vector3 targetRelativeDirection = targetWorldPosition-transform.position;
 
@@ -129,7 +129,7 @@ public class BotPlayer : Player
         float smothAngle = Mathf.SmoothDampAngle(_mover.Direction, angle, ref _velocity, SMOOTH_DIRECTION * Time.deltaTime);
         _mover.Direction = smothAngle;
     }
-
+    */
     /// <summary>
     /// Check if the target is reached
     /// </summary>
