@@ -85,7 +85,11 @@ namespace Network
         {
             if (State != NetworkState.CONNECTED) return;
 
-            if ((DateTime.Now - _lastSeenServer).TotalMilliseconds > CONNECTION_TIMEOUT) Reconnect();
+            if ((DateTime.Now - _lastSeenServer).TotalMilliseconds > CONNECTION_TIMEOUT)
+            {
+                DestroyAllNetworkObjects();
+                Reconnect();
+            }
 
             _clock += Time.deltaTime;
             while (_clock > CLIENT_TICK_INTERVAL)
@@ -150,6 +154,14 @@ namespace Network
             }
         }
 
+        private void DestroyAllNetworkObjects()
+        {
+            GameManager.Instance.Players.CurrentPlayerIdOwned = null;
+            GameManager.Instance.Players.DestroyAll();
+            GameManager.Instance.ObjectsManager.DestroyAll();
+            GameManager.Instance.HexaGrid.Clear();
+        }
+
         private void Join(string name)
         {
             SendEvent(ClientEventType.JOIN, name);
@@ -196,6 +208,7 @@ namespace Network
 
         private void _transport_OnClose()
         {
+            DestroyAllNetworkObjects();
             if (State == NetworkState.CONNECTED) Reconnect();
             else if (State != NetworkState.DISCONNECTING) GameManager.Instance.UIManager.ShowNetworkError();
             State = NetworkState.NOT_CONNECTED;
@@ -223,7 +236,10 @@ namespace Network
                     ApplyInitialGameState(JsonConvert.DeserializeObject<InitialGameState>(json));
                     break;
                 case ServerEventType.LEFT:
-                    ApplyLeft(JsonConvert.DeserializeObject<int>(json));
+                    ApplyLeft(JsonConvert.DeserializeObject<int>(json),false);
+                    break;
+                case ServerEventType.GAME_OVER:
+                    ApplyLeft(JsonConvert.DeserializeObject<int>(json),true);
                     break;
                 case ServerEventType.SPAWN:
                     GameManager.Instance.ObjectsManager.SpawnObject(JsonConvert.DeserializeObject<NetworkObjectSpawnAttributes>(json));
@@ -331,8 +347,17 @@ namespace Network
             }
         }
 
-        private void ApplyLeft(int leftPlayerId)
+        private void ApplyLeft(int leftPlayerId,bool isGameover)
         {
+            if(GameManager.Instance.Players.CurrentPlayerIdOwned == leftPlayerId)
+            {
+                GameManager.Instance.Players.CurrentPlayerIdOwned = null;
+                _lastPlayerIdOwned = null;
+                State = NetworkState.DISCONNECTING;
+                _transport.Disconnect();
+                if (isGameover) GameManager.Instance.UIManager.ShowGameOver();
+                else GameManager.Instance.UIManager.ShowNameSelection();
+            }
             GameManager.Instance.Players.RemovePlayer(leftPlayerId);
         }
 #endregion

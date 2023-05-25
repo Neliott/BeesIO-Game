@@ -3,6 +3,7 @@ import Position from "./commonStructures/position";
 import HexaGrid from "./hexagrid";
 import NetworkPlayer from "./networkPlayer";
 import iNetworkManager from "./iNetworkManager";
+import ServerEventType from "./commonStructures/serverEventType";
 
 /**
  * Represents a base with hexagons that can be upgraded
@@ -10,10 +11,6 @@ import iNetworkManager from "./iNetworkManager";
 export default class Base{
     private static readonly DEFAULT_BASE_SIZE = 2;
 
-    /**
-     * Events emitter (only emitt 'destroyed' when the base has no remaning hexagons)
-     */
-    public eventEmitter = new EventEmitter()
     /**
      * Get the owner of the base
      */
@@ -82,10 +79,14 @@ export default class Base{
     }
     
     /**
-     * Make checks when the list of owned hexagones changes
+     * Make checks when the list of owned hexagones changed negatively
      */
-    public addHexagonToReconstruct(position:Position)
+    public addHexagonToReconstruct(position:Position,newCount:number)
     {
+        if(newCount == 0){
+            this.destroy(); 
+            return;
+        } 
         this._remaningHexagonsForNextStep.push(position);
     }
 
@@ -94,7 +95,8 @@ export default class Base{
      */
     public destroy() {
         if(this._isDestroyed) return;
-        this.eventEmitter.emit('destroyed');
+        this._networkManager.sendGlobalMessage(ServerEventType.GAME_OVER, this._owner.fixedAttributes.id);
+        this._networkManager.clientsManager.removePlayer(this._owner, true);
         this._isDestroyed = true;
     }
 

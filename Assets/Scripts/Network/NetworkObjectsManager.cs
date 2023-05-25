@@ -53,5 +53,19 @@ namespace Network
                 _spawnedObjects.Remove(id);
             }
         }
+
+        /// <summary>
+        /// Destroy all the objects
+        /// </summary>
+        public void DestroyAll()
+        {
+            foreach (var obj in _spawnedObjects)
+            {
+                if (obj.Value.Owner != null)
+                    obj.Value.Owner.PickedUpObjects().Remove(obj.Value);
+                Destroy(obj.Value.gameObject);
+            }
+            _spawnedObjects.Clear();
+        }
     }
 }

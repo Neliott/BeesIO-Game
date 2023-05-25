@@ -127,16 +127,26 @@ class NetworkPlayersManager {
     public onLeave(sender:iWebSocketClientSend) {
         const playerDisconnected = this._clients.get(sender);
         if(playerDisconnected == undefined) return;
+        this.removePlayer(playerDisconnected,false);
+    }
+
+    /**
+     * Remove the player from the list of players and send a game over message to the client
+     * @param player The player to remove (game over)
+     * @param isGameOver If the game is over for this player (or he just left)
+     */
+    public removePlayer(player:NetworkPlayer,isGameOver:boolean){
+        let sender : iWebSocketClientSend = this.getWebSocketByPlayer(player)!;
         this.onDrop(sender);
-        const hexagonsToClear = this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base)!;
+        const hexagonsToClear = this._networkManager.hexaGrid.getHexagonsOfBase(player.base)!;
         while(hexagonsToClear.length > 0){
             this._networkManager.hexaGrid.setHexagonProperty(hexagonsToClear[0],null);
         }
-        for(let ownedHexagons of this._networkManager.hexaGrid.getHexagonsOfBase(playerDisconnected.base)!){
+        for(let ownedHexagons of this._networkManager.hexaGrid.getHexagonsOfBase(player.base)!){
             this._networkManager.hexaGrid.setHexagonProperty(ownedHexagons,null);
         }
         this._clients.delete(sender);
-        this._networkManager.sendGlobalMessage(ServerEventType.LEFT,playerDisconnected.fixedAttributes.id);
+        this._networkManager.sendGlobalMessage(isGameOver?ServerEventType.GAME_OVER:ServerEventType.LEFT,player.fixedAttributes.id);
     }
 
     /**
@@ -185,6 +195,20 @@ class NetworkPlayersManager {
         const clients = this.getGameSimulationStateStream();
         if(clients.length > 0)
             this._networkManager.sendGlobalMessage(ServerEventType.GAME_STATE_STREAM,clients);
+    }
+
+    /**
+     * Find the websocket of a player by its reference
+     * @param player The player to find
+     * @returns The websocket of the player or undefined if not found
+     */
+    private getWebSocketByPlayer(player:NetworkPlayer):iWebSocketClientSend | undefined {
+        for (const [key, value] of this._clients.entries()) {
+            if(value === player){
+                return key;
+            }
+        }
+        return undefined;
     }
     
     /**

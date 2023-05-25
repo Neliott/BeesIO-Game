@@ -133,7 +133,7 @@ export default class HexaGrid{
         {
             const positions = this._hexagonsProperties.get(lastOwner);
             positions!.splice(positions!.findIndex((pos)=>pos.equals(position)),1);
-            lastOwner.addHexagonToReconstruct(position);
+            lastOwner.addHexagonToReconstruct(position,positions!.length);
         }
         if (property == null) return;
         if (!this._hexagonsProperties.has(property))
