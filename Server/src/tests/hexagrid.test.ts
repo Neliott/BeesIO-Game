@@ -5,7 +5,7 @@ import HexaGrid from "../hexagrid";
 describe('Hexagrid',() => {
     it('spacesTransformationTwoWays_positionIndex_equals', () => {
         //Given
-        const expectedHexIndex:Position= new Position(Random.Range(0, 200), Random.Range(0, 200));
+        const expectedHexIndex:Position= new Position(Random.range(0, 200), Random.range(0, 200));
         //When
         const worldPosition:Position = HexaGrid.hexIndexesToWorldPosition(expectedHexIndex);
         const actualIndex:Position = HexaGrid.wordPositionToHexIndexes(worldPosition);

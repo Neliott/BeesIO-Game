@@ -133,8 +133,9 @@ class NetworkPlayer {
      * @returns The list of network objects dropped
      */
     public drop():NetworkObject[]{
-        for(let i = 0; i < this._pickupNetworkObjects.length; i++) {
-            this._pickupNetworkObjects[i].drop();
+        let length = this._pickupNetworkObjects.length;//We need to store the length because the array will be modified
+        for(let i = 0; i < length; i++) {
+            this._pickupNetworkObjects[i-(length-this._pickupNetworkObjects.length)].drop();
         }
         let networkObjectsDroped = this._pickupNetworkObjects;
         this._pickupNetworkObjects = [];

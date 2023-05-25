@@ -47,6 +47,8 @@ namespace Network
         {
             if (_spawnedObjects.ContainsKey(id))
             {
+                if (_spawnedObjects[id].Owner != null)
+                    _spawnedObjects[id].Owner.PickedUpObjects().Remove(_spawnedObjects[id]);
                 Destroy(_spawnedObjects[id].gameObject);
                 _spawnedObjects.Remove(id);
             }

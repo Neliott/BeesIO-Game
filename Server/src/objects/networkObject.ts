@@ -80,5 +80,8 @@ export default class NetworkObject{
 
     protected destroy(){
         this._networkManager.objectsManager.applyDestroyObject(this);
+        if(this._owner !== null){
+            this._owner.pickupNetworkObjects.splice(this._owner.pickupNetworkObjects.indexOf(this),1);
+        }
     }
 }

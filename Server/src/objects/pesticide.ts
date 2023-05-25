@@ -11,9 +11,12 @@ export default class Pesticide extends NetworkObject{
     private static readonly MAXIMUM_RADIUS:number = 4;
     private static readonly SECONDS_BEFORE_EXPLOSION:number = 10;
 
+    private _timeout:NodeJS.Timeout|null = null;
+
     public override drop(): void {
         super.drop();
-        setTimeout(()=>{
+        if(this._timeout != null) return;
+        this._timeout = setTimeout(()=>{
             this.explode()
         }, Pesticide.SECONDS_BEFORE_EXPLOSION*1000);
     }

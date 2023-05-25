@@ -309,7 +309,8 @@ namespace Network
                 GameManager.Instance.Players.NetworkedClients[networkDropAttributes.playerId].DetachAllObjects();
             foreach (var objectDropAttribute in networkDropAttributes.objectsDropped)
             {
-                GameManager.Instance.ObjectsManager.SpawnedObjects[objectDropAttribute.objectID].OnDrop(objectDropAttribute.newPosition);
+                if(GameManager.Instance.ObjectsManager.SpawnedObjects.ContainsKey(objectDropAttribute.objectID))
+                    GameManager.Instance.ObjectsManager.SpawnedObjects[objectDropAttribute.objectID].OnDrop(objectDropAttribute.newPosition);
             }
         }
 
