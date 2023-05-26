@@ -9,42 +9,47 @@ import NetworkManagerMock from "./networkManagerMock";
 describe('NetworkObject',() => {
     it('ctor_works', () => {
         //Given + When
-        let object:NetworkObject = new NetworkObject(new NetworkManagerMock(),new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
+        let managerMock = new NetworkManagerMock();
+        let object:NetworkObject = new NetworkObject(managerMock,new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
         //Then
         expect(object).not.toBeNull();
     })
     it('pickup_hasAlreadyMoved_true', () => {
         //Given
-        let object:NetworkObject = new NetworkObject(new NetworkManagerMock(),new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
-        let player:NetworkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(0,0,"",new Position(0,0)));
+        let managerMock = new NetworkManagerMock();
+        let object:NetworkObject = new NetworkObject(managerMock,new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
+        let player:NetworkPlayer = new NetworkPlayer(managerMock,new NetworkPlayerFixedAttributes(0,0,"",new Position(0,0)));
         //When
         object.pickup(player);
         //Then
         expect(object.hasAlreadyMoved).toBe(true);
     })
-    it('pickup_isPickedUp_true', () => {
+    it('pickup_owner_equal', () => {
         //Given
-        let object:NetworkObject = new NetworkObject(new NetworkManagerMock(),new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
-        let player:NetworkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(0,0,"",new Position(0,0)));
+        let managerMock = new NetworkManagerMock();
+        let object:NetworkObject = new NetworkObject(managerMock,new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
+        let player:NetworkPlayer = new NetworkPlayer(managerMock,new NetworkPlayerFixedAttributes(0,0,"",new Position(0,0)));
         //When
         object.pickup(player);
         //Then
-        expect(object.isPickedUp).toBe(true);
+        expect(object.owner).toBe(player);
     })
-    it('drop_isPickedUp_false', () => {
+    it('drop_owner_null', () => {
         //Given
-        let object:NetworkObject = new NetworkObject(new NetworkManagerMock(),new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
-        let player:NetworkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(0,0,"",new Position(0,0)));
+        let managerMock = new NetworkManagerMock();
+        let object:NetworkObject = new NetworkObject(managerMock,new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
+        let player:NetworkPlayer = new NetworkPlayer(managerMock,new NetworkPlayerFixedAttributes(0,0,"",new Position(0,0)));
         object.pickup(player);
         //When
         object.drop();
         //Then
-        expect(object.isPickedUp).toBe(false);
+        expect(object.owner).toBeNull();
     })
     it('drop_hasAlreadyMoved_true', () => {
         //Given
-        let object:NetworkObject = new NetworkObject(new NetworkManagerMock(),new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
-        let player:NetworkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(0,0,"",new Position(0,0)));
+        let managerMock = new NetworkManagerMock();
+        let object:NetworkObject = new NetworkObject(managerMock,new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
+        let player:NetworkPlayer = new NetworkPlayer(managerMock,new NetworkPlayerFixedAttributes(0,0,"",new Position(0,0)));
         object.pickup(player);
         //When
         object.drop();
@@ -53,8 +58,9 @@ describe('NetworkObject',() => {
     })
     it('currentPosition_changePosition_equal', () => {
         //Given
-        let object:NetworkObject = new NetworkObject(new NetworkManagerMock(),new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
-        let player:NetworkPlayer = new NetworkPlayer(new NetworkPlayerFixedAttributes(0,0,"",new Position(0,0)));
+        let managerMock = new NetworkManagerMock();
+        let object:NetworkObject = new NetworkObject(managerMock,new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
+        let player:NetworkPlayer = new NetworkPlayer(managerMock,new NetworkPlayerFixedAttributes(0,0,"",new Position(0,0)));
         //When
         object.currentPosition = new Position(1,1);
         //Then
