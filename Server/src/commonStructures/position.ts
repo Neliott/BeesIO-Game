@@ -53,6 +53,15 @@ export default class Position {
     }
 
     /**
+     * Subtract the other position to this one
+     * @param other The other position to subtract
+     */
+    public subtract(other: Position) {
+        this.x -= other.x;
+        this.y -= other.y;
+    }
+
+    /**
      * Get a clone of this position (other object)
      * @returns A clone of this position
      */

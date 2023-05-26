@@ -83,7 +83,7 @@ class NetworkManager implements iNetworkManager {
      */
     public sendGlobalMessage(type:ServerEventType,data:any){
         const messageEncoded = this.encodeMessage(type,data);
-        console.log("Sending global message : "+messageEncoded);
+        //console.log("Sending global message : "+messageEncoded);
         this._clientsManager.getClientsList().forEach((wsClient)=>{
             wsClient.send(messageEncoded);
         });

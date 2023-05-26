@@ -22,7 +22,7 @@ export default class NetworkObjectsManager {
     /**
      *  Spawn objects every interval
      */
-    public static SPAWN_OBJECTS_INTERVAL:number = 1.5;
+    public static SPAWN_OBJECTS_INTERVAL:number = 1;
 
     private _networkManager:iNetworkManager;
     private _objets:NetworkObject[] = [];
@@ -134,6 +134,22 @@ export default class NetworkObjectsManager {
     public spawnParticule(type:NetworkObjectType,position:Position, rotation:number) {
         let spawnAttributes:NetworkObjectSpawnAttributes = new NetworkObjectSpawnAttributes(-1,type,position,rotation);
         this._networkManager.sendGlobalMessage(ServerEventType.SPAWN_UNMANAGED,spawnAttributes);
+    }
+
+    /**
+     * Get all the objects currently in the map by type
+     * @param type The type of the objects to get
+     * @returns The list of all the objects currently in the map by type
+     */
+    public getSpawnedObjectsByType(type:NetworkObjectType):NetworkObject[]{
+        let objects:NetworkObject[] = [];
+        let allObjectsArray:NetworkObject[] = this._objets.concat(this._additionnalObjets);
+        for (let i = 0; i < allObjectsArray.length; i++) {
+            if(allObjectsArray[i].spawnAttributes.type === type){
+                objects.push(allObjectsArray[i]);
+            }
+        }
+        return objects;
     }
 
     /**

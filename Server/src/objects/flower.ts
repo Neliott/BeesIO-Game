@@ -28,7 +28,7 @@ export default class Flower extends NetworkObject{
     public override networkTick(): void {
         this._clock -= NetworkManager.TICK_INTERVAL;
         if(this._clock <= 0){
-            this._clock = Random.range(Flower.MIN_SPAWN_TIME,Flower.MAX_SPAWN_TIME);
+            this._clock = Random.rangeFloat(Flower.MIN_SPAWN_TIME,Flower.MAX_SPAWN_TIME);
             this.tryToSpawnPollen();
         }
     }

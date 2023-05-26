@@ -3,12 +3,21 @@
  */
 export default class Random {
     /**
-     * Generates a random number between min and max (inclusive).
+     * Generates a random integer between min and max (inclusive).
      * @param min The minimum value of the random number.
      * @param max The maximum value of the random number.
      * @returns The random number.
      */
-    public static range(min:number,max:number):number{
+    public static rangeInt(min:number,max:number):number{
         return Math.round((Math.random()*(max-min))+min);
+    }
+    /**
+     * Generates a random float number between min and max (inclusive).
+     * @param min The minimum value of the random number.
+     * @param max The maximum value of the random number.
+     * @returns The random number.
+     */
+    public static rangeFloat(min:number,max:number):number{
+        return (Math.random()*(max-min))+min;
     }
 }

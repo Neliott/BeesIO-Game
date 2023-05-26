@@ -7,6 +7,7 @@ import Base from "./base";
 import HexaGrid from "./hexagrid";
 import NetworkObject from "./objects/networkObject";
 import iNetworkManager from "./iNetworkManager";
+import NetworkObjectType from "./commonStructures/networkObjectType";
 
 /**
  * Represents a player in the network
@@ -17,6 +18,11 @@ export default class NetworkPlayer {
      * ONLY PUBLIC FOR TESTING
      */
     public static SPEED : number = 6.5;
+    
+    /**
+     * The maximum distance from the player the client can pick up an object
+     */
+    protected static MAX_PICKUP_DISTANCE : number = 2.5;
 
     private static readonly ZONE_EXCEEDING_TOLERANCE : number = 3;
     /**
@@ -72,13 +78,16 @@ export default class NetworkPlayer {
 
     protected _inputStreamQueue : NetworkPlayerInputState[] = [];
     protected _currentPosition : Position = new Position(0,0);
+    protected _networkManager : iNetworkManager;
 
     /**
      * Creates a new NetworkPlayer
+     * @param networkManager The network manager used to communicate with the clients
      * @param fixedAttributes The initial fixed attributes of the client
      */
-    constructor(fixedAttributes:NetworkPlayerFixedAttributes) {
+    constructor(networkManager:iNetworkManager,fixedAttributes:NetworkPlayerFixedAttributes) {
         this._fixedAttributes = fixedAttributes;
+        this._networkManager = networkManager;
         //Copy the position cause it's a reference type
         this._currentPosition = new Position(fixedAttributes.basePosition.x,fixedAttributes.basePosition.y);
         this._currentSimulationState.position = fixedAttributes.basePosition;
@@ -87,10 +96,9 @@ export default class NetworkPlayer {
 
     /**
      * Create a new base for this player (call after the player has joined the game)
-     * @param networkManager The network manager reference
      */
-    public createBase(networkManager:iNetworkManager){
-        this._base = new Base(networkManager,HexaGrid.wordPositionToHexIndexes(this.fixedAttributes.basePosition),this);
+    public createBase(){
+        this._base = new Base(this._networkManager,HexaGrid.wordPositionToHexIndexes(this.fixedAttributes.basePosition),this);
     }
 
     /**
@@ -120,12 +128,20 @@ export default class NetworkPlayer {
     }
 
     /**
-     * Add a network object to the picked up list
-     * @param networkObject The network object to pickup
+     * Try to pick up an object near the player and return it
+     * @returns The object picked up or null if no object was picked up
      */
-    public pickup(networkObject:NetworkObject) {
-        networkObject.pickup(this);
-        this._pickupNetworkObjects.push(networkObject);
+    public tryToPickup():NetworkObject|null{
+        let nearestObject : NetworkObject|null = null;
+        if(this.pickupNetworkObjects.length == 0)
+            nearestObject = this._networkManager.objectsManager.getNearestObject(this.currentSimulationState.position,[NetworkObjectType.POLLEN,NetworkObjectType.PESTICIDE],false)
+        else
+            nearestObject = this._networkManager.objectsManager.getNearestObject(this.currentSimulationState.position,[this.pickupNetworkObjects[0].spawnAttributes.type],false);
+        if(nearestObject == null) return null;
+        if(nearestObject.owner != null) return null;
+        if(Position.distance(this.currentSimulationState.position,nearestObject.currentPosition) > NetworkPlayer.MAX_PICKUP_DISTANCE) return null;
+        this.pickup(nearestObject);
+        return nearestObject;
     }
 
     /**
@@ -186,13 +202,21 @@ export default class NetworkPlayer {
         }
     }
 
-    /// <summary>
-    /// Get a new position to follow the input
-    /// </summary>
-    /// <param name="input">The input (like a player or a previous node)</param>
-    /// <param name="currentPosition">The current position</param>
-    /// <returns>The new calculated position</returns>
-    /// <remarks>Based on https://processing.org/examples/follow3.html </remarks>
+    /**
+     * Add a network object to the picked up list
+     * @param networkObject The network object to pickup
+     */
+    private pickup(networkObject:NetworkObject) {
+        networkObject.pickup(this);
+        this._pickupNetworkObjects.push(networkObject);
+    }
+
+    /**
+     * Get a new position to follow the input
+     * Remarks: Based on https://processing.org/examples/follow3.html
+     * @param input The input (like a player or a previous node)
+     * @param currentPosition The current position
+     */
     private getNewPosition(input:Position, currentPosition:Position):Position
     {
         let angleInRadians = Math.atan2(input.y-currentPosition.y, input.x-currentPosition.x);

@@ -24,7 +24,7 @@ export default class Pesticide extends NetworkObject{
     private explode()
     {
         let center = HexaGrid.wordPositionToHexIndexes(this.currentPosition);
-        let radius = Random.range(Pesticide.MINIMUM_RADIUS, Pesticide.MAXIMUM_RADIUS);
+        let radius = Random.rangeInt(Pesticide.MINIMUM_RADIUS-0.4, Pesticide.MAXIMUM_RADIUS);
         let allHexsToExplode = HexaGrid.getBigHexagonPositions(center, radius, false);
         for (let i = 0; i < allHexsToExplode.length; i++) {
             this._networkManager.hexaGrid.setHexagonProperty(allHexsToExplode[i], null);
