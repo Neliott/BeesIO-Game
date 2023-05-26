@@ -69,8 +69,7 @@ export default class NetworkObjectsManager {
             types.forEach(type => {
                 if(object.spawnAttributes.type === type){
                     let distance:number = Position.distance(object.currentPosition,position);
-                    console.log(object.spawnAttributes.id+" "+object.isPickedUp+" "+acceptPickedUp+" "+distance+" "+nearestDistance);
-                    if(distance < nearestDistance && (acceptPickedUp || !object.isPickedUp)){ 
+                    if(distance < nearestDistance && (acceptPickedUp || object.owner == null)){ 
                         console.log("New nearest object found : "+object.spawnAttributes.type+" "+distance);
                         nearestDistance = distance;
                         nearestObject = object;

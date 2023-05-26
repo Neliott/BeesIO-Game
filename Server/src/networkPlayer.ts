@@ -11,7 +11,7 @@ import iNetworkManager from "./iNetworkManager";
 /**
  * Represents a player in the network
  */
-class NetworkPlayer {
+export default class NetworkPlayer {
     /**
      * The speed of the player
      * ONLY PUBLIC FOR TESTING
@@ -30,7 +30,7 @@ class NetworkPlayer {
      */
     public static readonly MAX_Y_POSITION : number= (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5) * HexaGrid.MAP_HEIGHT) + NetworkPlayer.ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_HEIGHT;
 
-    private _lastSeen : number = 0;
+    protected _lastSeen : number = 0;
     /**
      * Returns true if the client has been seen in the last CLIENT_TIMEOUT milliseconds
      */
@@ -46,7 +46,7 @@ class NetworkPlayer {
         return this._fixedAttributes;
     }
     
-    private _currentSimulationState : NetworkPlayerSimulationState = new NetworkPlayerSimulationState(); 
+    protected _currentSimulationState : NetworkPlayerSimulationState = new NetworkPlayerSimulationState(); 
     /**
      * Returns the current simulation state of the client
      */
@@ -54,7 +54,7 @@ class NetworkPlayer {
         return this._currentSimulationState;
     }
 
-    private _pickupNetworkObjects : NetworkObject[] = [];
+    protected _pickupNetworkObjects : NetworkObject[] = [];
     /**
      * Get list of network objects picked up by this player
      */
@@ -62,7 +62,7 @@ class NetworkPlayer {
         return this._pickupNetworkObjects;
     }
     
-    private _base! : Base;
+    protected _base! : Base;
     /**
      * Get the base of this player
     */
@@ -70,8 +70,8 @@ class NetworkPlayer {
         return this._base;
     }
 
-    private _inputStreamQueue : NetworkPlayerInputState[] = [];
-    private _currentPosition : Position = new Position(0,0);
+    protected _inputStreamQueue : NetworkPlayerInputState[] = [];
+    protected _currentPosition : Position = new Position(0,0);
 
     /**
      * Creates a new NetworkPlayer
@@ -104,7 +104,7 @@ class NetworkPlayer {
      * Update the state of the player (move it, etc.)
      */
     public networkTick() {
-        this.processInputStreamQueue();
+        this.calculateCurrentSimulationState();
         if(this._pickupNetworkObjects.length > 0) this.updatePickedUpObjectsPosition();
         if(this._base != undefined)
             this._base.networkTick();
@@ -146,7 +146,7 @@ class NetworkPlayer {
         return this._inputStreamQueue.shift();
     }
     
-    private processInputStreamQueue() {
+    protected calculateCurrentSimulationState() {
         let inputStream:NetworkPlayerInputState | undefined;
         while (this._inputStreamQueue.length > 0) {
             inputStream = this.dequeueInputStream();
@@ -159,7 +159,7 @@ class NetworkPlayer {
         this._currentSimulationState.simulationFrame = inputStream!.simulationFrame;
     }
     
-    private restrictPositionInsideMapBounds(position:Position)
+    protected restrictPositionInsideMapBounds(position:Position)
     {
         if (position.x > NetworkPlayer.MAX_X_POSITION)
         {
@@ -201,5 +201,3 @@ class NetworkPlayer {
         return new Position(newX, newY);
     }
 }
-
-export default NetworkPlayer;

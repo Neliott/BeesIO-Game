@@ -1,9 +1,10 @@
 import NetworkObjectSpawnAttributes from "../commonStructures/networkObjectSpawnAttributes";
 import Position from "../commonStructures/position";
 import iNetworkManager from "../iNetworkManager";
+import iTarget from "../iTarget";
 import NetworkPlayer from "../networkPlayer";
 
-export default class NetworkObject{
+export default class NetworkObject implements iTarget{
     private _spawnAttributes : NetworkObjectSpawnAttributes;
     /**
      * Get the spawn attributes of the object
@@ -30,10 +31,10 @@ export default class NetworkObject{
     protected _networkManager:iNetworkManager;
 
     /**
-     * Get if the object is currently picked up
+     * Get if the current owner of the object or null if the object is not owned
      */
-    public get isPickedUp() : boolean {
-        return this._owner !== null;
+    public get owner() : NetworkPlayer|null {
+        return this._owner;
     }
 
     private _hasAlreadyMoved : boolean = false;

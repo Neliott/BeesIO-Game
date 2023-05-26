@@ -13,6 +13,18 @@ export default class Flower extends NetworkObject{
     private _spawnedPollens:(NetworkObject|null)[] = [null,null,null];
     private _clock:number = Flower.MAX_SPAWN_TIME;
 
+    /**
+     * Detect if the flower has valid pollen
+     */
+    public get hasPollen() : boolean {
+        for (let i = 0; i < this._spawnedPollens.length; i++) {
+            if(this._spawnedPollens[i] != null && !this._spawnedPollens[i]?.hasAlreadyMoved){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public override networkTick(): void {
         this._clock -= NetworkManager.TICK_INTERVAL;
         if(this._clock <= 0){

@@ -4,17 +4,27 @@ import HexaGrid from "./hexagrid";
 import NetworkPlayer from "./networkPlayer";
 import iNetworkManager from "./iNetworkManager";
 import ServerEventType from "./commonStructures/serverEventType";
+import iTarget from "./iTarget";
 
 /**
  * Represents a base with hexagons that can be upgraded
  */
-export default class Base{
+export default class Base implements iTarget{
     private static readonly DEFAULT_BASE_SIZE = 2;
 
     /**
      * Get the owner of the base
      */
-    public get owner():NetworkPlayer { return this._owner; }
+    public get owner():NetworkPlayer { 
+        return this._owner; 
+    }
+    
+    /**
+     * Get the current position of the base
+     */
+    public get currentPosition(): Position {
+        return this._owner.fixedAttributes.basePosition;
+    }
 
     private _isDestroyed:boolean = false;
     private _upgradesToApply:number = 0;
