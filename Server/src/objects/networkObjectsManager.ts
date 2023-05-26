@@ -26,6 +26,7 @@ export default class NetworkObjectsManager {
 
     private _networkManager:iNetworkManager;
     private _objets:NetworkObject[] = [];
+    private _additionnalObjets:NetworkObject[] = [];
     private _clock:number = 0;
     private _nextId:number = 0;
     
@@ -42,13 +43,14 @@ export default class NetworkObjectsManager {
      * Update the state of the network objects
      */
     public networkTick() {
-        for (let i = 0; i < this._objets.length; i++) {
-            this._objets[i].networkTick();
+        let allObjectsArray:NetworkObject[] = this._objets.concat(this._additionnalObjets);
+        for (let i = 0; i < allObjectsArray.length; i++) {
+            allObjectsArray[i].networkTick();
         }
         this._clock += NetworkManager.TICK_INTERVAL;
         if(this._clock >= NetworkObjectsManager.SPAWN_OBJECTS_INTERVAL){
             this._clock = 0;
-            if(this._objets.length < NetworkObjectsManager.TARGET_OBJECTS_AMOUNT){
+            if(this._objets.length-NetworkObjectsManager.FLOWERS_AMOUNT < NetworkObjectsManager.TARGET_OBJECTS_AMOUNT){
                 this.spawnRandomPickableObject();
             }
         }
@@ -64,13 +66,13 @@ export default class NetworkObjectsManager {
     public getNearestObject(position:Position,types:NetworkObjectType[],acceptPickedUp:boolean):NetworkObject|null {
         let nearestObject:NetworkObject|null = null;
         let nearestDistance:number = Number.MAX_VALUE;
-        for (let i = 0; i < this._objets.length; i++) {
-            let object:NetworkObject = this._objets[i];
+        let allObjectsArray:NetworkObject[] = this._objets.concat(this._additionnalObjets);
+        for (let i = 0; i < allObjectsArray.length; i++) {
+            let object:NetworkObject = allObjectsArray[i];
             types.forEach(type => {
                 if(object.spawnAttributes.type === type){
                     let distance:number = Position.distance(object.currentPosition,position);
                     if(distance < nearestDistance && (acceptPickedUp || object.owner == null)){ 
-                        console.log("New nearest object found : "+object.spawnAttributes.type+" "+distance);
                         nearestDistance = distance;
                         nearestObject = object;
                     }
@@ -86,8 +88,9 @@ export default class NetworkObjectsManager {
      */
     public getAllObjectsSpawnAttributes():NetworkObjectSpawnAttributes[] {
         let spawnAttributes:NetworkObjectSpawnAttributes[] = [];
-        for (let i = 0; i < this._objets.length; i++) {
-            spawnAttributes.push(this._objets[i].spawnAttributes);
+        let allObjectsArray:NetworkObject[] = this._objets.concat(this._additionnalObjets);
+        for (let i = 0; i < allObjectsArray.length; i++) {
+            spawnAttributes.push(allObjectsArray[i].spawnAttributes);
         }
         return spawnAttributes;
     }
@@ -96,9 +99,11 @@ export default class NetworkObjectsManager {
      * Spawn a NetworkObject on the map
      * @param type The type of the object to spawn
      * @param position The position of the object to spawn
-     * @returns 
+     * @param rotation The rotation of the object to spawn
+     * @param isAdditionnal If the object is additionnal (like in a flower) and will not count in the total amount of objects
+     * @returns The spawned object
      */
-    public spawnObject(type:NetworkObjectType,position:Position, rotation:number):NetworkObject {
+    public spawnObject(type:NetworkObjectType,position:Position, rotation:number, isAdditionnal:boolean=true):NetworkObject {
         let spawnAttributes:NetworkObjectSpawnAttributes = new NetworkObjectSpawnAttributes(this.getNextId(),type,position,rotation);
         let newObject:NetworkObject;
         switch(type){
@@ -115,7 +120,7 @@ export default class NetworkObjectsManager {
                 newObject = new NetworkObject(this._networkManager,spawnAttributes);
                 break;
         }
-        this._objets.push(newObject);
+        isAdditionnal ? this._additionnalObjets.push(newObject) : this._objets.push(newObject);;
         this._networkManager.sendGlobalMessage(ServerEventType.SPAWN,spawnAttributes);
         return newObject;
     }
@@ -140,6 +145,12 @@ export default class NetworkObjectsManager {
         if(index != -1){
             this._objets.splice(index,1);
             this._networkManager.sendGlobalMessage(ServerEventType.DESTROY,object.spawnAttributes.id);
+        }else{
+            index = this._additionnalObjets.indexOf(object);
+            if(index != -1){
+                this._additionnalObjets.splice(index,1);
+                this._networkManager.sendGlobalMessage(ServerEventType.DESTROY,object.spawnAttributes.id);
+            }
         }
     }
     
@@ -152,12 +163,12 @@ export default class NetworkObjectsManager {
         }
         for (let i = 0; i < NetworkObjectsManager.FLOWERS_AMOUNT; i++)
         {
-            this.spawnObject(NetworkObjectType.FLOWER,HexaGrid.getRandomPlaceOnMap(),0);
+            this.spawnObject(NetworkObjectType.FLOWER,HexaGrid.getRandomPlaceOnMap(),0,false);
         }
     }
 
     private spawnRandomPickableObject(){
-        this.spawnObject((Math.random() > 0.6)?NetworkObjectType.POLLEN:NetworkObjectType.PESTICIDE,HexaGrid.getRandomPlaceOnMap(),0);
+        this.spawnObject((Math.random() > 0.6)?NetworkObjectType.POLLEN:NetworkObjectType.PESTICIDE,HexaGrid.getRandomPlaceOnMap(),0,false);
     }
     
     /**
