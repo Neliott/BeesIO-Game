@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace Network
 {
+    /// <summary>
+    /// The class NetworkObjectsManager is used to manage all the objects in the map.
+    /// The spawning of the objects is done here.
+    /// </summary>
     public class NetworkObjectsManager : MonoBehaviour
     {
         private Dictionary<int, NetworkObject> _spawnedObjects = new Dictionary<int, NetworkObject>();

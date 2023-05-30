@@ -4,6 +4,9 @@ using UnityEngine;
 using System;
 using Network;
 
+/// <summary>
+/// The game manager. A singleton of the game managing the different client parts.
+/// </summary>
 [RequireComponent(typeof(HexaGrid))]
 [RequireComponent(typeof(PlayersManager))]
 [RequireComponent(typeof(NetworkObjectsManager))]

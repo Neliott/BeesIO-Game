@@ -5,6 +5,9 @@ using UnityEngine.Events;
 
 namespace Network
 {
+    /// <summary>
+    /// Represents an object serialized in the network environnement that can be picked up and drop by a player
+    /// </summary>
     public class NetworkObject : MonoBehaviour
     {
         private NetworkObjectSpawnAttributes _spawnAttributes;
@@ -29,7 +32,6 @@ namespace Network
 
         [SerializeField] UnityEvent _onPickup;
         [SerializeField] UnityEvent _onDrop;
-
 
         /// <summary>
         /// Setup the new network object with initial spawn attributes
