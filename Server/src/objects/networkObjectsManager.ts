@@ -22,7 +22,12 @@ export default class NetworkObjectsManager {
     /**
      *  Spawn objects every interval
      */
-    public static SPAWN_OBJECTS_INTERVAL:number = 1;
+    public static SPAWN_OBJECTS_INTERVAL:number = 0.4;
+
+    /**
+     * The pesticide drop rate (the rest is pollen) when spawning a random pickable object
+     */
+    private static PESTICIDE_SPAWN_RATE = 0.8;
 
     private _networkManager:iNetworkManager;
     private _objets:NetworkObject[] = [];
@@ -184,7 +189,7 @@ export default class NetworkObjectsManager {
     }
 
     private spawnRandomPickableObject(){
-        this.spawnObject((Math.random() > 0.6)?NetworkObjectType.POLLEN:NetworkObjectType.PESTICIDE,HexaGrid.getRandomPlaceOnMap(),0,false);
+        this.spawnObject((Math.random() > NetworkObjectsManager.PESTICIDE_SPAWN_RATE)?NetworkObjectType.POLLEN:NetworkObjectType.PESTICIDE,HexaGrid.getRandomPlaceOnMap(),0,false);
     }
     
     /**
