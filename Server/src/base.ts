@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import Position from "./commonStructures/position";
 import HexaGrid from "./hexagrid";
-import NetworkPlayer from "./networkPlayer";
+import NetworkPlayer from "./players/networkPlayer";
 import iNetworkManager from "./iNetworkManager";
 import ServerEventType from "./commonStructures/serverEventType";
 import iTarget from "./iTarget";

@@ -2,7 +2,7 @@ import NetworkObjectSpawnAttributes from "../commonStructures/networkObjectSpawn
 import Position from "../commonStructures/position";
 import iNetworkManager from "../iNetworkManager";
 import iTarget from "../iTarget";
-import NetworkPlayer from "../networkPlayer";
+import NetworkPlayer from "../players/networkPlayer";
 
 export default class NetworkObject implements iTarget{
     private _spawnAttributes : NetworkObjectSpawnAttributes;

@@ -1,19 +1,19 @@
-import Base from "./base";
-import NetworkDropAttributes from "./commonStructures/networkDropAttributes";
-import NetworkObjectDropAttributes from "./commonStructures/networkObjectDropAttributes";
-import NetworkObjectType from "./commonStructures/networkObjectType";
-import NetworkOwnedObjectsList from "./commonStructures/networkOwnedObjectsList";
-import NetworkPlayerFixedAttributes from "./commonStructures/networkPlayerFixedAttributes";
-import Position from "./commonStructures/position";
-import Random from "./commonStructures/random";
-import ServerEventType from "./commonStructures/serverEventType";
-import iNetworkManager from "./iNetworkManager";
-import iTarget from "./iTarget";
-import NetworkManager from "./networkManager";
+import Base from "../base";
+import NetworkDropAttributes from "../commonStructures/networkDropAttributes";
+import NetworkObjectDropAttributes from "../commonStructures/networkObjectDropAttributes";
+import NetworkObjectType from "../commonStructures/networkObjectType";
+import NetworkOwnedObjectsList from "../commonStructures/networkOwnedObjectsList";
+import NetworkPlayerFixedAttributes from "../commonStructures/networkPlayerFixedAttributes";
+import Position from "../commonStructures/position";
+import Random from "../commonStructures/random";
+import ServerEventType from "../commonStructures/serverEventType";
+import iNetworkManager from "../iNetworkManager";
+import iTarget from "../iTarget";
+import NetworkManager from "../networkManager";
 import NetworkPlayer from "./networkPlayer";
-import Flower from "./objects/flower";
-import NetworkObject from "./objects/networkObject";
-import Pesticide from "./objects/pesticide";
+import Flower from "../objects/flower";
+import NetworkObject from "../objects/networkObject";
+import Pesticide from "../objects/pesticide";
 
 /**
  * Represents a virtual player in the network but controlled by the server (no input is needed)

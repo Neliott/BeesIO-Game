@@ -2,7 +2,7 @@ import NetworkObjectSpawnAttributes from "../commonStructures/networkObjectSpawn
 import NetworkObjectType from "../commonStructures/networkObjectType";
 import NetworkPlayerFixedAttributes from "../commonStructures/networkPlayerFixedAttributes";
 import Position from "../commonStructures/position";
-import NetworkPlayer from "../networkPlayer";
+import NetworkPlayer from "../players/networkPlayer";
 import NetworkObject from "../objects/networkObject";
 import NetworkManagerMock from "./networkManagerMock";
 

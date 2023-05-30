@@ -4,7 +4,7 @@ import NetworkPlayerFixedAttributes from "../commonStructures/networkPlayerFixed
 import NetworkPlayerInputState from "../commonStructures/networkPlayerInputState";
 import Position from "../commonStructures/position";
 import NetworkManager from "../networkManager";
-import NetworkPlayer from "../networkPlayer";
+import NetworkPlayer from "../players/networkPlayer";
 import NetworkObject from "../objects/networkObject";
 import NetworkManagerMock from "./networkManagerMock";
 import TestHelper from "./testHelper";

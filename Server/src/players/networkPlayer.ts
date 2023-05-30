@@ -1,13 +1,13 @@
-import NetworkPlayerFixedAttributes from "./commonStructures/networkPlayerFixedAttributes";
-import NetworkPlayerInputState from "./commonStructures/networkPlayerInputState";
-import Position from "./commonStructures/position";
-import NetworkPlayerSimulationState from "./commonStructures/networkPlayerSimulationState";
-import NetworkManager from "./networkManager";
-import Base from "./base";
-import HexaGrid from "./hexagrid";
-import NetworkObject from "./objects/networkObject";
-import iNetworkManager from "./iNetworkManager";
-import NetworkObjectType from "./commonStructures/networkObjectType";
+import NetworkPlayerFixedAttributes from "../commonStructures/networkPlayerFixedAttributes";
+import NetworkPlayerInputState from "../commonStructures/networkPlayerInputState";
+import Position from "../commonStructures/position";
+import NetworkPlayerSimulationState from "../commonStructures/networkPlayerSimulationState";
+import NetworkManager from "../networkManager";
+import Base from "../base";
+import HexaGrid from "../hexagrid";
+import NetworkObject from "../objects/networkObject";
+import iNetworkManager from "../iNetworkManager";
+import NetworkObjectType from "../commonStructures/networkObjectType";
 
 /**
  * Represents a player in the network

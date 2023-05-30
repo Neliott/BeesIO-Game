@@ -1,6 +1,6 @@
 import ClientEventType from './commonStructures/clientEventType';
 import ServerEventType from './commonStructures/serverEventType';
-import NetworkPlayersManager from './networkPlayersManager';
+import NetworkPlayersManager from './players/networkPlayersManager';
 import iWebSocketClientSend from './iWebSocketClientSend';
 import HexaGrid from './hexagrid';
 import NetworkObjectsManager from './objects/networkObjectsManager';
