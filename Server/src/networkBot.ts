@@ -104,7 +104,7 @@ export default class NetworkBot extends NetworkPlayer {
         if (this._currentTarget == null) return true;
 
         //The target pickup object has a owner
-        if (this._currentTarget instanceof NetworkObject && this._currentTarget.owner != null && this._currentTarget.owner != this) return true;
+        if (this._currentTarget instanceof NetworkObject && this._currentTarget.owner != null) return true;
 
         //The flower target has no more pollen
         if (this._currentTarget instanceof Flower && this._currentTarget.hasPollen == false) return true;
