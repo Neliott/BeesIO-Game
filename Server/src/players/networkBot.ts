@@ -43,10 +43,7 @@ export default class NetworkBot extends NetworkPlayer {
     protected override calculateCurrentSimulationState(): void {
         if(this.isNeedingANewTarget()){
             this.chooseNewTarget();
-            if(this._currentTarget == null){
-                console.log("No target found for this bot!");
-                return;
-            } 
+            if(this._currentTarget == null) return;
         } 
         this._fixedSimulationStateIndex++;
 
@@ -181,9 +178,6 @@ export default class NetworkBot extends NetworkPlayer {
                     nearestBase = player.base;
                 }
             }
-        }
-        if(nearestBase == null){
-            console.log("No other base found");
         }
         return nearestBase;
     }
