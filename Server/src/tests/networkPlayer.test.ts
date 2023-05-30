@@ -1,11 +1,9 @@
-import NetworkObjectSpawnAttributes from "../commonStructures/networkObjectSpawnAttributes";
 import NetworkObjectType from "../commonStructures/networkObjectType";
 import NetworkPlayerFixedAttributes from "../commonStructures/networkPlayerFixedAttributes";
 import NetworkPlayerInputState from "../commonStructures/networkPlayerInputState";
 import Position from "../commonStructures/position";
 import NetworkManager from "../networkManager";
 import NetworkPlayer from "../players/networkPlayer";
-import NetworkObject from "../objects/networkObject";
 import NetworkManagerMock from "./networkManagerMock";
 import TestHelper from "./testHelper";
 
@@ -78,10 +76,10 @@ describe('NetworkPlayer',() => {
     });
     it('pickup_objectCount_equals', async () => {
         let managerMock = new NetworkManagerMock();
-        let networkPlayer = new NetworkPlayer(managerMock,new NetworkPlayerFixedAttributes(10,11,"test",new Position(0,0)));
-        managerMock.objectsManager.spawnObject(NetworkObjectType.POLLEN,new Position(0,0),0);
+        let networkPlayer = new NetworkPlayer(managerMock,new NetworkPlayerFixedAttributes(10,11,"test",new Position(10000,10000)));
+        let newObject = managerMock.objectsManager.spawnObject(NetworkObjectType.POLLEN,new Position(10000,10000),0);
         let pickupObject = networkPlayer.tryToPickup();
-        expect(pickupObject).toBe(managerMock.objectsManager.getSpawnedObjectsByType(NetworkObjectType.POLLEN)[0])
+        expect(pickupObject?.spawnAttributes.id).toBe(newObject.spawnAttributes.id);
     });
     /*it('pickup_multiple_objectCount_equals', async () => {
         let managerMock = new NetworkManagerMock();

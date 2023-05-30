@@ -2,20 +2,17 @@ import WebSocket = require("ws");
 import Random from "../commonStructures/random";
 import NetworkPlayerFixedAttributes from "../commonStructures/networkPlayerFixedAttributes";
 import NetworkPlayer from "./networkPlayer";
-import Position from "../commonStructures/position";
 import ServerEventType from "../commonStructures/serverEventType";
 import InitialGameState from "../commonStructures/initialGameState";
 import NetworkPlayerInputState from "../commonStructures/networkPlayerInputState";
 import NetworkPlayerGameStateStream from "../commonStructures/networkPlayerGameStateStream";
 import iWebSocketClientSend from "../iWebSocketClientSend";
 import HexaGrid from "../hexagrid";
-import NetworkObject from "../objects/networkObject";
 import NetworkOwnedObjectsList from "../commonStructures/networkOwnedObjectsList";
-import NetworkObjectType from "../commonStructures/networkObjectType";
 import iNetworkManager from "../iNetworkManager";
 import NetworkDropAttributes from "../commonStructures/networkDropAttributes";
 import NetworkObjectDropAttributes from "../commonStructures/networkObjectDropAttributes";
-import NetworkBot from "./networkBot";
+import NetworkBot from "../players/networkBot";
 
 /**
  * Manages the players connected to a network manager

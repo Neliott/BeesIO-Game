@@ -89,7 +89,7 @@ export default class NetworkPlayer {
         this._fixedAttributes = fixedAttributes;
         this._networkManager = networkManager;
         //Copy the position cause it's a reference type
-        this._currentPosition = new Position(fixedAttributes.basePosition.x,fixedAttributes.basePosition.y);
+        this._currentPosition = fixedAttributes.basePosition.clone();
         this._currentSimulationState.position = fixedAttributes.basePosition;
         this.updateLastSeen();
     }
