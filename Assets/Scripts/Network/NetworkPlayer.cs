@@ -192,10 +192,8 @@ namespace Network
         /// </summary>
         public void NetworkTick()
         {
-            transform.position = _lastPositionOnNetworkTick;
             if (IsMine) LocalNetworkTick();
             else ProxyNetworkTick();
-            _lastPositionOnNetworkTick = transform.position;
         }
 
         /// <summary>
@@ -203,6 +201,9 @@ namespace Network
         /// </summary>
         void LocalNetworkTick()
         {
+            //Revert to the last networked position
+            transform.position = _lastPositionOnNetworkTick;
+
             // Reconciliate if there's a message from the server.
             if (_serverSimulationState != null) Reconciliate();
 
@@ -216,6 +217,8 @@ namespace Network
             _inputStateCache[index] = LocalCurrentInputState;
 
             LocalSimulationFrame++;
+
+            _lastPositionOnNetworkTick = transform.position;
         }
 
         /// <summary>
@@ -374,11 +377,7 @@ namespace Network
 
             //  The amount of distance in units that we will allow the client's
             //  prediction to drift from it's position on the server, before a
-            //  correction is necessary. 
-            if (distance > RECONCILIATION_DISTANCE_TOLERANCE)
-            {
-                Debug.Log("Reconciliate : " + distance);
-            }
+            //  correction is necessary.
             return distance > RECONCILIATION_DISTANCE_TOLERANCE;
         }
 

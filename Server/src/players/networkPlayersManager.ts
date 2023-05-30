@@ -1,29 +1,28 @@
 import WebSocket = require("ws");
-import Random from "./commonStructures/random";
-import NetworkPlayerFixedAttributes from "./commonStructures/networkPlayerFixedAttributes";
+import Random from "../commonStructures/random";
+import NetworkPlayerFixedAttributes from "../commonStructures/networkPlayerFixedAttributes";
 import NetworkPlayer from "./networkPlayer";
-import Position from "./commonStructures/position";
-import ServerEventType from "./commonStructures/serverEventType";
-import InitialGameState from "./commonStructures/initialGameState";
-import NetworkPlayerInputState from "./commonStructures/networkPlayerInputState";
-import NetworkPlayerGameStateStream from "./commonStructures/networkPlayerGameStateStream";
-import iWebSocketClientSend from "./iWebSocketClientSend";
-import HexaGrid from "./hexagrid";
-import NetworkObject from "./objects/networkObject";
-import NetworkOwnedObjectsList from "./commonStructures/networkOwnedObjectsList";
-import NetworkObjectType from "./commonStructures/networkObjectType";
-import iNetworkManager from "./iNetworkManager";
-import NetworkDropAttributes from "./commonStructures/networkDropAttributes";
-import NetworkObjectDropAttributes from "./commonStructures/networkObjectDropAttributes";
+import ServerEventType from "../commonStructures/serverEventType";
+import InitialGameState from "../commonStructures/initialGameState";
+import NetworkPlayerInputState from "../commonStructures/networkPlayerInputState";
+import NetworkPlayerGameStateStream from "../commonStructures/networkPlayerGameStateStream";
+import iWebSocketClientSend from "../iWebSocketClientSend";
+import HexaGrid from "../hexagrid";
+import NetworkOwnedObjectsList from "../commonStructures/networkOwnedObjectsList";
+import iNetworkManager from "../iNetworkManager";
+import NetworkDropAttributes from "../commonStructures/networkDropAttributes";
+import NetworkObjectDropAttributes from "../commonStructures/networkObjectDropAttributes";
+import NetworkBot from "../players/networkBot";
 
 /**
  * Manages the players connected to a network manager
  */
-class NetworkPlayersManager {
-    private static readonly MAX_PICKUP_DISTANCE : number = 2.5;
+export default class NetworkPlayersManager {
+    private static readonly TARGET_PLAYERS : number = 20;
 
     private _networkManager : iNetworkManager;
     private _clients : Map<iWebSocketClientSend,NetworkPlayer>;
+    private _bots : NetworkBot[] = [];
     private _nextClientId : number = 0;
 
     /**
@@ -41,6 +40,14 @@ class NetworkPlayersManager {
      */
     public getClientsList():iWebSocketClientSend[] {
         return Array.from(this._clients.keys());
+    }
+
+    /**
+     * Get all the players (physical and virtual)
+     * @returns The players list
+     */
+    public getPlayersList():NetworkPlayer[] {
+        return Array.from(this._clients.values()).concat(this._bots as NetworkPlayer[]);
     }
 
     /**
@@ -63,11 +70,11 @@ class NetworkPlayersManager {
 
         //Create a new client / spawn attributes
         const clientId = this.getNextClientId();
-        const colorHue:number = Math.round(Random.range(0,360));
+        const colorHue:number = Math.round(Random.rangeInt(0,360));
         const networkPlayerFixedAttributes = new NetworkPlayerFixedAttributes(clientId,colorHue,name,HexaGrid.getRandomPlaceOnMap());
         
         //Spawn the new client to the list of clients
-        const newPlayer = new NetworkPlayer(networkPlayerFixedAttributes);
+        const newPlayer = new NetworkPlayer(this._networkManager,networkPlayerFixedAttributes);
         this._clients.set(sender,newPlayer);
 
         //Send the initial complete game state to the client
@@ -77,7 +84,7 @@ class NetworkPlayersManager {
         this._networkManager.sendGlobalMessage(ServerEventType.JOINED,networkPlayerFixedAttributes);
 
         //Create a base for the new player
-        newPlayer.createBase(this._networkManager);
+        newPlayer.createBase();
     }
 
     /**
@@ -137,7 +144,7 @@ class NetworkPlayersManager {
      */
     public removePlayer(player:NetworkPlayer,isGameOver:boolean){
         let sender : iWebSocketClientSend = this.getWebSocketByPlayer(player)!;
-        this.onDrop(sender);
+        this.drop(player);
         const hexagonsToClear = this._networkManager.hexaGrid.getHexagonsOfBase(player.base)!;
         while(hexagonsToClear.length > 0){
             this._networkManager.hexaGrid.setHexagonProperty(hexagonsToClear[0],null);
@@ -145,7 +152,10 @@ class NetworkPlayersManager {
         for(let ownedHexagons of this._networkManager.hexaGrid.getHexagonsOfBase(player.base)!){
             this._networkManager.hexaGrid.setHexagonProperty(ownedHexagons,null);
         }
-        this._clients.delete(sender);
+        if(sender != undefined)
+            this._clients.delete(sender);
+        else
+            this._bots.splice(this._bots.indexOf(player as NetworkBot),1);
         this._networkManager.sendGlobalMessage(isGameOver?ServerEventType.GAME_OVER:ServerEventType.LEFT,player.fixedAttributes.id);
     }
 
@@ -156,16 +166,9 @@ class NetworkPlayersManager {
     public onPickup(sender:iWebSocketClientSend){
         const player = this._clients.get(sender);
         if(player == undefined) return;
-        let nearestObject : NetworkObject|null = null;
-        if(player.pickupNetworkObjects.length == 0)
-            nearestObject = this._networkManager.objectsManager.getNearestObject(player.currentSimulationState.position,[NetworkObjectType.POLLEN,NetworkObjectType.PESTICIDE],false)
-        else
-            nearestObject = this._networkManager.objectsManager.getNearestObject(player.currentSimulationState.position,[player.pickupNetworkObjects[0].spawnAttributes.type],false);
-        if(nearestObject == null) return;
-        if(nearestObject.isPickedUp) return;
-        if(Position.distance(player.currentSimulationState.position,nearestObject.currentPosition) > NetworkPlayersManager.MAX_PICKUP_DISTANCE) return;
-        player.pickup(nearestObject);
-        this._networkManager.sendGlobalMessage(ServerEventType.PICKUP,new NetworkOwnedObjectsList(player.fixedAttributes.id,[nearestObject.spawnAttributes.id]));
+        let pickedUpObject = player.tryToPickup();
+        if(pickedUpObject == null) return;
+        this._networkManager.sendGlobalMessage(ServerEventType.PICKUP,new NetworkOwnedObjectsList(player.fixedAttributes.id,[pickedUpObject.spawnAttributes.id]));
     }
 
     /**
@@ -175,12 +178,7 @@ class NetworkPlayersManager {
     public onDrop(sender:iWebSocketClientSend){
         const player = this._clients.get(sender);
         if(player == undefined || player.pickupNetworkObjects.length == 0) return;
-        let objectsDropped = player.drop();
-        let objectsDroppedAttributes = objectsDropped.map((object)=>{
-            return new NetworkObjectDropAttributes(object.spawnAttributes.position,object.spawnAttributes.id)
-        });
-        let dropAttributes = new NetworkDropAttributes(player.fixedAttributes.id,objectsDroppedAttributes);
-        this._networkManager.sendGlobalMessage(ServerEventType.DROP,dropAttributes);
+        this.drop(player);
     }
 
     /**
@@ -192,9 +190,39 @@ class NetworkPlayersManager {
                 client.networkTick();
             }
         });
-        const clients = this.getGameSimulationStateStream();
-        if(clients.length > 0)
-            this._networkManager.sendGlobalMessage(ServerEventType.GAME_STATE_STREAM,clients);
+        this._bots.forEach((bot)=>{
+            bot.networkTick();
+        });
+        if(NetworkPlayersManager.TARGET_PLAYERS - (this._clients.size+this._bots.length) > 0){
+            this.spawnBot();
+        }
+        this._networkManager.sendGlobalMessage(ServerEventType.GAME_STATE_STREAM,this.getGameSimulationStateStream());
+    }
+
+    private spawnBot(){
+        //Create spawn attributes
+        const clientId = this.getNextClientId();
+        const colorHue:number = Math.round(Random.rangeInt(0,360));
+        const networkPlayerFixedAttributes = new NetworkPlayerFixedAttributes(clientId,colorHue,"Bot",HexaGrid.getRandomPlaceOnMap());
+        
+        //Spawn the new client to the list of clients
+        const newPlayer = new NetworkBot(this._networkManager,networkPlayerFixedAttributes);
+        this._bots.push(newPlayer);
+
+        //Inform all other clients that a new client joined
+        this._networkManager.sendGlobalMessage(ServerEventType.JOINED,networkPlayerFixedAttributes);
+
+        //Create a base for the new player
+        newPlayer.createBase();
+    }
+
+    private drop(player:NetworkPlayer){
+        let objectsDropped = player.drop();
+        let objectsDroppedAttributes = objectsDropped.map((object)=>{
+            return new NetworkObjectDropAttributes(object.spawnAttributes.position,object.spawnAttributes.id)
+        });
+        let dropAttributes = new NetworkDropAttributes(player.fixedAttributes.id,objectsDroppedAttributes);
+        this._networkManager.sendGlobalMessage(ServerEventType.DROP,dropAttributes);
     }
 
     /**
@@ -220,6 +248,9 @@ class NetworkPlayersManager {
         this._clients.forEach((client)=>{
             clientsAttributes.push(client.fixedAttributes);
         });
+        this._bots.forEach((bot)=>{
+            clientsAttributes.push(bot.fixedAttributes);
+        });
         return clientsAttributes;
     }
 
@@ -231,6 +262,9 @@ class NetworkPlayersManager {
         const pickupObjects : NetworkOwnedObjectsList[] = [];
         this._clients.forEach((client)=>{
             pickupObjects.push(new NetworkOwnedObjectsList(client.fixedAttributes.id,client.pickupNetworkObjects.map((pickupObject)=>{return pickupObject.spawnAttributes.id})));
+        });
+        this._bots.forEach((bot)=>{
+            pickupObjects.push(new NetworkOwnedObjectsList(bot.fixedAttributes.id,bot.pickupNetworkObjects.map((pickupObject)=>{return pickupObject.spawnAttributes.id})));
         });
         return pickupObjects;
     }
@@ -244,6 +278,9 @@ class NetworkPlayersManager {
         this._clients.forEach((client)=>{
             simulationStateStream.push(new NetworkPlayerGameStateStream(client.fixedAttributes.id,client.currentSimulationState));
         });
+        this._bots.forEach((bot)=>{
+            simulationStateStream.push(new NetworkPlayerGameStateStream(bot.fixedAttributes.id,bot.currentSimulationState));
+        });
         return simulationStateStream;
     }
 
@@ -255,5 +292,3 @@ class NetworkPlayersManager {
         return this._nextClientId++;
     }
 }
-
-export default NetworkPlayersManager;

@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using static Network.NetworkManager;
 
+/// <summary>
+/// A manager for UI component, pannel and button events.
+/// </summary>
 [RequireComponent(typeof(Scoreboard))]
 public class UIManager : MonoBehaviour
 {

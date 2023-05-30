@@ -6,6 +6,9 @@ using Network;
 using System.Linq;
 using NetworkPlayer = Network.NetworkPlayer;
 
+/// <summary>
+/// A ui component showing the top players (name) by their scores descending.
+/// </summary>
 public class Scoreboard : MonoBehaviour
 {
     [SerializeField] GameObject _scoreboardPannel;

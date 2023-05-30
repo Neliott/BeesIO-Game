@@ -10,6 +10,10 @@ import NetworkObject from "./networkObject";
 import Pesticide from "./pesticide";
 import Pollen from "./pollen";
 
+/**
+ * The class NetworkObjectsManager is used to manage all the objects in the map.
+ * The spawning of the objects is done here.
+ */
 export default class NetworkObjectsManager {
     /**
      *  The target number of objects in the map
@@ -22,7 +26,12 @@ export default class NetworkObjectsManager {
     /**
      *  Spawn objects every interval
      */
-    public static SPAWN_OBJECTS_INTERVAL:number = 1.5;
+    public static SPAWN_OBJECTS_INTERVAL:number = 0.4;
+
+    /**
+     * The pesticide drop rate (the rest is pollen) when spawning a random pickable object
+     */
+    private static PESTICIDE_SPAWN_RATE = 0.8;
 
     private _networkManager:iNetworkManager;
     private _objets:NetworkObject[] = [];
@@ -72,7 +81,7 @@ export default class NetworkObjectsManager {
             types.forEach(type => {
                 if(object.spawnAttributes.type === type){
                     let distance:number = Position.distance(object.currentPosition,position);
-                    if(distance < nearestDistance && (acceptPickedUp || !object.isPickedUp)){ 
+                    if(distance < nearestDistance && (acceptPickedUp || object.owner == null)){ 
                         nearestDistance = distance;
                         nearestObject = object;
                     }
@@ -137,6 +146,22 @@ export default class NetworkObjectsManager {
     }
 
     /**
+     * Get all the objects currently in the map by type
+     * @param type The type of the objects to get
+     * @returns The list of all the objects currently in the map by type
+     */
+    public getSpawnedObjectsByType(type:NetworkObjectType):NetworkObject[]{
+        let objects:NetworkObject[] = [];
+        let allObjectsArray:NetworkObject[] = this._objets.concat(this._additionnalObjets);
+        for (let i = 0; i < allObjectsArray.length; i++) {
+            if(allObjectsArray[i].spawnAttributes.type === type){
+                objects.push(allObjectsArray[i]);
+            }
+        }
+        return objects;
+    }
+
+    /**
      * Remove the given object from the map
      * @param object The object to destroy
      */
@@ -154,6 +179,9 @@ export default class NetworkObjectsManager {
         }
     }
     
+    /**
+     * Spawn all the initial objects on the map (pollen, pesticide and flowers)
+     */
     private startSpawningObject()
     {
         this._clock = 0;
@@ -167,8 +195,11 @@ export default class NetworkObjectsManager {
         }
     }
 
+    /**
+     * Spawn a random pickable object on the map (pollen or pesticide based on the spawn rate)
+     */
     private spawnRandomPickableObject(){
-        this.spawnObject((Math.random() > 0.6)?NetworkObjectType.POLLEN:NetworkObjectType.PESTICIDE,HexaGrid.getRandomPlaceOnMap(),0,false);
+        this.spawnObject((Math.random() > NetworkObjectsManager.PESTICIDE_SPAWN_RATE)?NetworkObjectType.POLLEN:NetworkObjectType.PESTICIDE,HexaGrid.getRandomPlaceOnMap(),0,false);
     }
     
     /**

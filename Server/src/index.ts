@@ -13,7 +13,6 @@ const networkManager = new NetworkManager();
 wss.on('connection', (ws) => {
     console.log("Client connected");
     ws.on('message', (message) => {
-        //console.log("Message received : "+message.toString());
         networkManager.onMessage(ws,message.toString()); 
     });
     ws.on("close", () => {
@@ -25,4 +24,4 @@ wss.on('connection', (ws) => {
     });
 });
 
-console.log("Websocket server started on port "+port);
+console.log("BeesIO server started on port "+port);

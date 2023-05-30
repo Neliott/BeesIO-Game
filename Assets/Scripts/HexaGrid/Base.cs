@@ -1,11 +1,9 @@
 using Network;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
+/// <summary>
+/// The client base (only the text mesh name / the display)
+/// </summary>
 public class Base : MonoBehaviour
 {
     /// <summary>

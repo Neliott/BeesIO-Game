@@ -1,22 +1,28 @@
-import NetworkPlayerFixedAttributes from "./commonStructures/networkPlayerFixedAttributes";
-import NetworkPlayerInputState from "./commonStructures/networkPlayerInputState";
-import Position from "./commonStructures/position";
-import NetworkPlayerSimulationState from "./commonStructures/networkPlayerSimulationState";
-import NetworkManager from "./networkManager";
-import Base from "./base";
-import HexaGrid from "./hexagrid";
-import NetworkObject from "./objects/networkObject";
-import iNetworkManager from "./iNetworkManager";
+import NetworkPlayerFixedAttributes from "../commonStructures/networkPlayerFixedAttributes";
+import NetworkPlayerInputState from "../commonStructures/networkPlayerInputState";
+import Position from "../commonStructures/position";
+import NetworkPlayerSimulationState from "../commonStructures/networkPlayerSimulationState";
+import NetworkManager from "../networkManager";
+import Base from "../base";
+import HexaGrid from "../hexagrid";
+import NetworkObject from "../objects/networkObject";
+import iNetworkManager from "../iNetworkManager";
+import NetworkObjectType from "../commonStructures/networkObjectType";
 
 /**
  * Represents a player in the network
  */
-class NetworkPlayer {
+export default class NetworkPlayer {
     /**
      * The speed of the player
      * ONLY PUBLIC FOR TESTING
      */
     public static SPEED : number = 6.5;
+    
+    /**
+     * The maximum distance from the player the client can pick up an object
+     */
+    protected static MAX_PICKUP_DISTANCE : number = 2.5;
 
     private static readonly ZONE_EXCEEDING_TOLERANCE : number = 3;
     /**
@@ -30,7 +36,6 @@ class NetworkPlayer {
      */
     public static readonly MAX_Y_POSITION : number= (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5) * HexaGrid.MAP_HEIGHT) + NetworkPlayer.ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_HEIGHT;
 
-    private _lastSeen : number = 0;
     /**
      * Returns true if the client has been seen in the last CLIENT_TIMEOUT milliseconds
      */
@@ -46,7 +51,7 @@ class NetworkPlayer {
         return this._fixedAttributes;
     }
     
-    private _currentSimulationState : NetworkPlayerSimulationState = new NetworkPlayerSimulationState(); 
+    protected _currentSimulationState : NetworkPlayerSimulationState = new NetworkPlayerSimulationState(); 
     /**
      * Returns the current simulation state of the client
      */
@@ -54,7 +59,7 @@ class NetworkPlayer {
         return this._currentSimulationState;
     }
 
-    private _pickupNetworkObjects : NetworkObject[] = [];
+    protected _pickupNetworkObjects : NetworkObject[] = [];
     /**
      * Get list of network objects picked up by this player
      */
@@ -62,7 +67,7 @@ class NetworkPlayer {
         return this._pickupNetworkObjects;
     }
     
-    private _base! : Base;
+    protected _base! : Base;
     /**
      * Get the base of this player
     */
@@ -70,27 +75,42 @@ class NetworkPlayer {
         return this._base;
     }
 
-    private _inputStreamQueue : NetworkPlayerInputState[] = [];
-    private _currentPosition : Position = new Position(0,0);
+    /**
+     * The last time the client has been seen (numer containing the date)
+     */
+    protected _lastSeen : number = 0;
+    /**
+     * The input stream queue (from a client). All the input streams are processed on the next tick.
+     */
+    protected _inputStreamQueue : NetworkPlayerInputState[] = [];
+    /**
+     * The current position of the client
+     */
+    protected _currentPosition : Position = new Position(0,0);
+    /**
+     * The network manager used to communicate with the clients
+     */
+    protected _networkManager : iNetworkManager;
 
     /**
      * Creates a new NetworkPlayer
+     * @param networkManager The network manager used to communicate with the clients
      * @param fixedAttributes The initial fixed attributes of the client
      */
-    constructor(fixedAttributes:NetworkPlayerFixedAttributes) {
+    constructor(networkManager:iNetworkManager,fixedAttributes:NetworkPlayerFixedAttributes) {
         this._fixedAttributes = fixedAttributes;
+        this._networkManager = networkManager;
         //Copy the position cause it's a reference type
-        this._currentPosition = new Position(fixedAttributes.basePosition.x,fixedAttributes.basePosition.y);
+        this._currentPosition = fixedAttributes.basePosition.clone();
         this._currentSimulationState.position = fixedAttributes.basePosition;
         this.updateLastSeen();
     }
 
     /**
      * Create a new base for this player (call after the player has joined the game)
-     * @param networkManager The network manager reference
      */
-    public createBase(networkManager:iNetworkManager){
-        this._base = new Base(networkManager,HexaGrid.wordPositionToHexIndexes(this.fixedAttributes.basePosition),this);
+    public createBase(){
+        this._base = new Base(this._networkManager,HexaGrid.wordPositionToHexIndexes(this.fixedAttributes.basePosition),this);
     }
 
     /**
@@ -104,7 +124,7 @@ class NetworkPlayer {
      * Update the state of the player (move it, etc.)
      */
     public networkTick() {
-        this.processInputStreamQueue();
+        this.calculateCurrentSimulationState();
         if(this._pickupNetworkObjects.length > 0) this.updatePickedUpObjectsPosition();
         if(this._base != undefined)
             this._base.networkTick();
@@ -120,12 +140,20 @@ class NetworkPlayer {
     }
 
     /**
-     * Add a network object to the picked up list
-     * @param networkObject The network object to pickup
+     * Try to pick up an object near the player and return it
+     * @returns The object picked up or null if no object was picked up
      */
-    public pickup(networkObject:NetworkObject) {
-        networkObject.pickup(this);
-        this._pickupNetworkObjects.push(networkObject);
+    public tryToPickup():NetworkObject|null{
+        let nearestObject : NetworkObject|null = null;
+        if(this.pickupNetworkObjects.length == 0)
+            nearestObject = this._networkManager.objectsManager.getNearestObject(this.currentSimulationState.position,[NetworkObjectType.POLLEN,NetworkObjectType.PESTICIDE],false)
+        else
+            nearestObject = this._networkManager.objectsManager.getNearestObject(this.currentSimulationState.position,[this.pickupNetworkObjects[0].spawnAttributes.type],false);
+        if(nearestObject == null) return null;
+        if(nearestObject.owner != null) return null;
+        if(Position.distance(this.currentSimulationState.position,nearestObject.currentPosition) > NetworkPlayer.MAX_PICKUP_DISTANCE) return null;
+        this.pickup(nearestObject);
+        return nearestObject;
     }
 
     /**
@@ -146,7 +174,10 @@ class NetworkPlayer {
         return this._inputStreamQueue.shift();
     }
     
-    private processInputStreamQueue() {
+    /**
+     * Dequeue all the input streams and calculate the current simulation state
+     */
+    protected calculateCurrentSimulationState() {
         let inputStream:NetworkPlayerInputState | undefined;
         while (this._inputStreamQueue.length > 0) {
             inputStream = this.dequeueInputStream();
@@ -159,7 +190,11 @@ class NetworkPlayer {
         this._currentSimulationState.simulationFrame = inputStream!.simulationFrame;
     }
     
-    private restrictPositionInsideMapBounds(position:Position)
+    /**
+     * Restrict the position inside the map bounds
+     * @param position The position to restrict (reference type)
+     */
+    protected restrictPositionInsideMapBounds(position:Position)
     {
         if (position.x > NetworkPlayer.MAX_X_POSITION)
         {
@@ -186,13 +221,21 @@ class NetworkPlayer {
         }
     }
 
-    /// <summary>
-    /// Get a new position to follow the input
-    /// </summary>
-    /// <param name="input">The input (like a player or a previous node)</param>
-    /// <param name="currentPosition">The current position</param>
-    /// <returns>The new calculated position</returns>
-    /// <remarks>Based on https://processing.org/examples/follow3.html </remarks>
+    /**
+     * Add a network object to the picked up list
+     * @param networkObject The network object to pickup
+     */
+    private pickup(networkObject:NetworkObject) {
+        networkObject.pickup(this);
+        this._pickupNetworkObjects.push(networkObject);
+    }
+
+    /**
+     * Get a new position to follow the input
+     * Remarks: Based on https://processing.org/examples/follow3.html
+     * @param input The input (like a player or a previous node)
+     * @param currentPosition The current position
+     */
     private getNewPosition(input:Position, currentPosition:Position):Position
     {
         let angleInRadians = Math.atan2(input.y-currentPosition.y, input.x-currentPosition.x);
@@ -201,5 +244,3 @@ class NetworkPlayer {
         return new Position(newX, newY);
     }
 }
-
-export default NetworkPlayer;

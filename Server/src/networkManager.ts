@@ -1,6 +1,6 @@
 import ClientEventType from './commonStructures/clientEventType';
 import ServerEventType from './commonStructures/serverEventType';
-import NetworkPlayersManager from './networkPlayersManager';
+import NetworkPlayersManager from './players/networkPlayersManager';
 import iWebSocketClientSend from './iWebSocketClientSend';
 import HexaGrid from './hexagrid';
 import NetworkObjectsManager from './objects/networkObjectsManager';
@@ -9,7 +9,7 @@ import iNetworkManager from './iNetworkManager';
 /**
  * This manager is used to manage the network (serialize the game state, send it to the clients, receive the inputs, etc.) and the different services managing the game state
  */
-class NetworkManager implements iNetworkManager {
+export default class NetworkManager implements iNetworkManager {
     /**
      * The time in milliseconds before a client is considered disconnected
      * This is not readonly because it can be changed for the tests
@@ -72,7 +72,6 @@ class NetworkManager implements iNetworkManager {
      * @param data The additional data of the message
      */
     public sendMessage(target:iWebSocketClientSend,type:ServerEventType,data:any){
-        //console.log("Sending message : "+this.encodeMessage(type,data));
         target.send(this.encodeMessage(type,data));
     }
 
@@ -83,7 +82,6 @@ class NetworkManager implements iNetworkManager {
      */
     public sendGlobalMessage(type:ServerEventType,data:any){
         const messageEncoded = this.encodeMessage(type,data);
-        console.log("Sending global message : "+messageEncoded);
         this._clientsManager.getClientsList().forEach((wsClient)=>{
             wsClient.send(messageEncoded);
         });
@@ -137,5 +135,3 @@ class NetworkManager implements iNetworkManager {
         return type.valueOf()+"|"+JSON.stringify(data);
     }
 }
-
-export default NetworkManager;

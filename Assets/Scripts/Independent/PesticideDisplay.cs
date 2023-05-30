@@ -1,11 +1,13 @@
 using UnityEngine;
 
+/// <summary>
+/// The pesticide display (show the countdown visually)
+/// </summary>
 public class PesticideDisplay : MonoBehaviour
 {
     const float SECONDS_BEFORE_EXPLOSION = 10;
 
-    [SerializeField]
-    TextMesh _explosionCountDown;
+    [SerializeField] TextMesh _explosionCountDown;
 
     float _clockBeforeExplosion = SECONDS_BEFORE_EXPLOSION;
     float _clockBeforeExplosionRound = SECONDS_BEFORE_EXPLOSION;

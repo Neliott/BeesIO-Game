@@ -2,7 +2,7 @@ import HexagonPropertyChanged from "./commonStructures/hexagonPropertyChanged";
 import ServerEventType from "./commonStructures/serverEventType";
 import HexaGrid from "./hexagrid";
 import iWebSocketClientSend from "./iWebSocketClientSend";
-import NetworkPlayersManager from "./networkPlayersManager";
+import NetworkPlayersManager from "./players/networkPlayersManager";
 import NetworkObjectsManager from "./objects/networkObjectsManager";
 
 /**

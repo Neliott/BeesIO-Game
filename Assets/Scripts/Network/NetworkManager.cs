@@ -110,7 +110,7 @@ namespace Network
         /// </summary>
         public void Connect()
         {
-            Debug.LogWarning("Connecting");
+            Debug.Log("Connecting");
 #if UNITY_WEBGL && !UNITY_EDITOR
             _transport.Connect(_prodServerUrl);
 #else
@@ -138,7 +138,7 @@ namespace Network
         private void Reconnect()
         {
             State = NetworkState.RECONNECTING;
-            Debug.LogWarning("Connection to server lost! Trying to reconnect.");
+            Debug.Log("Connection to server lost! Trying to reconnect.");
             if (!_transport.IsConnected)
             {
                 _transport.Disconnect();
@@ -193,7 +193,6 @@ namespace Network
 
         private void SendEvent(ClientEventType type, object data)
         {
-            Debug.Log("Sending " + ((int)type) + "|" + JsonConvert.SerializeObject(data));
             if (_transport.IsConnected)
                 _transport.Send(((int)type) + "|" + JsonConvert.SerializeObject(data));
         }
@@ -201,7 +200,6 @@ namespace Network
 #region Transport Callbacks
         private void _transport_OnOpen()
         {
-            Debug.LogWarning("Connection open");
             if (State == NetworkState.RECONNECTING && _lastPlayerIdOwned != null) Rejoin();
             else Join(GameManager.Instance.UIManager.GetName());
         }
@@ -212,7 +210,7 @@ namespace Network
             if (State == NetworkState.CONNECTED) Reconnect();
             else if (State != NetworkState.DISCONNECTING) GameManager.Instance.UIManager.ShowNetworkError();
             State = NetworkState.NOT_CONNECTED;
-            Debug.LogWarning("Connection closed");
+            Debug.Log("Connection closed");
         }
 
         private void _transport_OnError(string errorMessage)
@@ -222,7 +220,6 @@ namespace Network
 
         private void _transport_OnMessage(string message)
         {
-            Debug.Log("Connection message : " + message);
             int index = message.IndexOf('|');
             ServerEventType type = (ServerEventType)int.Parse(message.Substring(0, index));
             string json = message.Substring(index + 1);
@@ -275,13 +272,12 @@ namespace Network
 #region Server event applications
         private void ApplyJoined(NetworkPlayerFixedAttributes clientFixedAttributes)
         {
-            Debug.LogWarning("New player joined : "+clientFixedAttributes.name);
             GameManager.Instance.Players.SpawnPlayer(clientFixedAttributes);
         }
 
         private void ApplyInitialGameState(InitialGameState initialGameState)
         {
-            Debug.LogWarning("Connected to a room!");
+            Debug.Log("Connected to a room!");
             State = NetworkState.CONNECTED;
             
             foreach (var playerAttribute in initialGameState.otherClientsInitialAttributes)
@@ -342,8 +338,6 @@ namespace Network
             {
                 if (GameManager.Instance.Players.NetworkedClients.ContainsKey(NetworkPlayerSimulationState.id))
                     GameManager.Instance.Players.NetworkedClients[NetworkPlayerSimulationState.id].OnSimulationReceived(NetworkPlayerSimulationState.simulationState);
-                else
-                    Debug.LogWarning("A simulation state was sent with innexisting local player replication");
             }
         }
 

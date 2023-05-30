@@ -70,7 +70,6 @@ public class PlayersManager : MonoBehaviour
     {
         if (_networkedClients.ContainsKey(networkPlayerAttributes.id))
         {
-            Debug.LogWarning("The networked client (" + networkPlayerAttributes.id + ") has already spawned!");
             _networkedClients[networkPlayerAttributes.id].NetworkSetup(networkPlayerAttributes);
         }
         else
@@ -110,7 +109,6 @@ public class PlayersManager : MonoBehaviour
 
     private void FinalizePlayerSetup()
     {
-        Debug.LogWarning("Player spawned and initialized!");
         _myClientInstance = _networkedClients[_currentPlayerIdOwned.Value];
         _myClientInstance.AdditionnalNetworkSetupForOwnedClient(_simulationStateStartIndex);
         _playerTracker.TrackedObject = _myClientInstance.transform;

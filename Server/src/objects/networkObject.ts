@@ -1,9 +1,14 @@
 import NetworkObjectSpawnAttributes from "../commonStructures/networkObjectSpawnAttributes";
 import Position from "../commonStructures/position";
 import iNetworkManager from "../iNetworkManager";
-import NetworkPlayer from "../networkPlayer";
+import iTarget from "../iTarget";
+import NetworkPlayer from "../players/networkPlayer";
 
-export default class NetworkObject{
+/**
+ * Represents an object serialized in the network environnement 
+ * that can be picked up and drop by a player
+ */
+export default class NetworkObject implements iTarget{
     private _spawnAttributes : NetworkObjectSpawnAttributes;
     /**
      * Get the spawn attributes of the object
@@ -26,14 +31,11 @@ export default class NetworkObject{
         this._currentPosition = v;
     }
 
-    protected _owner : NetworkPlayer|null = null;
-    protected _networkManager:iNetworkManager;
-
     /**
-     * Get if the object is currently picked up
+     * Get if the current owner of the object or null if the object is not owned
      */
-    public get isPickedUp() : boolean {
-        return this._owner !== null;
+    public get owner() : NetworkPlayer|null {
+        return this._owner;
     }
 
     private _hasAlreadyMoved : boolean = false;
@@ -44,6 +46,16 @@ export default class NetworkObject{
     public get hasAlreadyMoved() : boolean {
         return this._hasAlreadyMoved;
     }
+
+    /**
+     * Get the owner of the object or null if the object is not owned
+     */
+    protected _owner : NetworkPlayer|null = null;
+    
+    /**
+     * Get the network manager used to communicate with the clients
+     */
+    protected _networkManager:iNetworkManager;
     
     
     /**
@@ -78,6 +90,10 @@ export default class NetworkObject{
         this._spawnAttributes.position = this._currentPosition;
     }
 
+    /**
+     * Called when the object is destroyed. 
+     * This will remove the object from the all the known lists
+     */
     protected destroy(){
         this._networkManager.objectsManager.applyDestroyObject(this);
         if(this._owner !== null){

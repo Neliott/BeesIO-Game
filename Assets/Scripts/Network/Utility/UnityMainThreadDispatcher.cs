@@ -62,7 +62,6 @@ public class UnityMainThreadDispatcher : MonoBehaviour
     {
         if (_instance == null)
         {
-            Debug.Log("UnityMainThreadDispatcher initialized.");
             _instance = this;
             DontDestroyOnLoad(gameObject);
         }

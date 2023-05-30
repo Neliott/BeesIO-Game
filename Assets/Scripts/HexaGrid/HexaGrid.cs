@@ -1,9 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
-using Random = UnityEngine.Random;
 
+/// <summary>
+/// The hexagrid (used to generate a grid of hexagons, attribute bases and different math functions to get hexagons)
+/// </summary>
 public class HexaGrid : MonoBehaviour
 {
     /// <summary>

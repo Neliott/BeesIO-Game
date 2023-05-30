@@ -40,8 +40,8 @@ export default class HexaGrid{
      */
     public static getRandomPlaceOnMap():Position
     {
-        const randomXWithBounds = Math.round(Random.range(HexaGrid.MAP_SAFE_GRID_OFFSET_X, HexaGrid.MAP_WIDTH * HexaGrid.MAP_SAFE_GRID_PERCENTAGE));
-        const randomYWithBounds = Math.round(Random.range(HexaGrid.MAP_SAFE_GRID_OFFSET_Y, HexaGrid.MAP_HEIGHT * HexaGrid.MAP_SAFE_GRID_PERCENTAGE));
+        const randomXWithBounds = Random.rangeInt(HexaGrid.MAP_SAFE_GRID_OFFSET_X, HexaGrid.MAP_WIDTH * HexaGrid.MAP_SAFE_GRID_PERCENTAGE);
+        const randomYWithBounds = Random.rangeInt(HexaGrid.MAP_SAFE_GRID_OFFSET_Y, HexaGrid.MAP_HEIGHT * HexaGrid.MAP_SAFE_GRID_PERCENTAGE);
         return HexaGrid.hexIndexesToWorldPosition(new Position(randomXWithBounds, randomYWithBounds));
     }
 
