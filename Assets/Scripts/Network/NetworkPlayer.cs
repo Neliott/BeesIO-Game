@@ -377,11 +377,7 @@ namespace Network
 
             //  The amount of distance in units that we will allow the client's
             //  prediction to drift from it's position on the server, before a
-            //  correction is necessary. 
-            if (distance > RECONCILIATION_DISTANCE_TOLERANCE)
-            {
-                Debug.Log("Reconciliate : " + distance);
-            }
+            //  correction is necessary.
             return distance > RECONCILIATION_DISTANCE_TOLERANCE;
         }
 
