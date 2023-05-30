@@ -20,9 +20,9 @@ describe('NetworkObject',() => {
         let object:NetworkObject = new NetworkObject(managerMock,new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
         let player:NetworkPlayer = new NetworkPlayer(managerMock,new NetworkPlayerFixedAttributes(0,0,"",new Position(0,0)));
         //When
-        /*object.pickup(player);
+        object.pickup(player);
         //Then
-        expect(object.hasAlreadyMoved).toBe(true);*/
+        expect(object.hasAlreadyMoved).toBe(true);
     })
     it('pickup_owner_equal', () => {
         //Given
@@ -60,7 +60,6 @@ describe('NetworkObject',() => {
         //Given
         let managerMock = new NetworkManagerMock();
         let object:NetworkObject = new NetworkObject(managerMock,new NetworkObjectSpawnAttributes(0,NetworkObjectType.POLLEN,new Position(0,0),0));
-        let player:NetworkPlayer = new NetworkPlayer(managerMock,new NetworkPlayerFixedAttributes(0,0,"",new Position(0,0)));
         //When
         object.currentPosition = new Position(1,1);
         //Then
