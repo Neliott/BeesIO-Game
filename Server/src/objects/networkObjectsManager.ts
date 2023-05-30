@@ -10,6 +10,10 @@ import NetworkObject from "./networkObject";
 import Pesticide from "./pesticide";
 import Pollen from "./pollen";
 
+/**
+ * The class NetworkObjectsManager is used to manage all the objects in the map.
+ * The spawning of the objects is done here.
+ */
 export default class NetworkObjectsManager {
     /**
      *  The target number of objects in the map
@@ -175,6 +179,9 @@ export default class NetworkObjectsManager {
         }
     }
     
+    /**
+     * Spawn all the initial objects on the map (pollen, pesticide and flowers)
+     */
     private startSpawningObject()
     {
         this._clock = 0;
@@ -188,6 +195,9 @@ export default class NetworkObjectsManager {
         }
     }
 
+    /**
+     * Spawn a random pickable object on the map (pollen or pesticide based on the spawn rate)
+     */
     private spawnRandomPickableObject(){
         this.spawnObject((Math.random() > NetworkObjectsManager.PESTICIDE_SPAWN_RATE)?NetworkObjectType.POLLEN:NetworkObjectType.PESTICIDE,HexaGrid.getRandomPlaceOnMap(),0,false);
     }

@@ -4,10 +4,26 @@ import Random from "../commonStructures/random";
 import NetworkManager from "../networkManager";
 import NetworkObject from "./networkObject";
 
+/**
+ * A flower is an object that can spawn pollen in the map at a random interval
+ * at predefined positions.
+ */
 export default class Flower extends NetworkObject{
+    /**
+     * The spawn positions of the pollen
+     */
     public static readonly FLOWER_SPAWN_POSITIONS:Position[] = [new Position(0,0.5),new Position(-0.4,-0.25),new Position(0.4,-0.25)];
+    /**
+     * The spawn rotations of the pollen
+     */
     public static readonly FLOWER_SPAWN_ROTATIONS:number[] = [0,18,-18];
+    /**
+     * The maximum time in seconds between two pollen spawns
+     */
     public static MAX_SPAWN_TIME = 15;
+    /**
+     * The minimum time in seconds between two pollen spawns
+     */
     public static MIN_SPAWN_TIME = 5;
     
     private _spawnedPollens:(NetworkObject|null)[] = [null,null,null];
@@ -25,6 +41,9 @@ export default class Flower extends NetworkObject{
         return false;
     }
 
+    /**
+     * Spawn pollen if needed
+     */
     public override networkTick(): void {
         this._clock -= NetworkManager.TICK_INTERVAL;
         if(this._clock <= 0){

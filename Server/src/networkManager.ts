@@ -9,7 +9,7 @@ import iNetworkManager from './iNetworkManager';
 /**
  * This manager is used to manage the network (serialize the game state, send it to the clients, receive the inputs, etc.) and the different services managing the game state
  */
-class NetworkManager implements iNetworkManager {
+export default class NetworkManager implements iNetworkManager {
     /**
      * The time in milliseconds before a client is considered disconnected
      * This is not readonly because it can be changed for the tests
@@ -135,5 +135,3 @@ class NetworkManager implements iNetworkManager {
         return type.valueOf()+"|"+JSON.stringify(data);
     }
 }
-
-export default NetworkManager;

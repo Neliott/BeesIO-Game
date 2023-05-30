@@ -17,7 +17,7 @@ import NetworkBot from "../players/networkBot";
 /**
  * Manages the players connected to a network manager
  */
-class NetworkPlayersManager {
+export default class NetworkPlayersManager {
     private static readonly TARGET_PLAYERS : number = 20;
 
     private _networkManager : iNetworkManager;
@@ -292,5 +292,3 @@ class NetworkPlayersManager {
         return this._nextClientId++;
     }
 }
-
-export default NetworkPlayersManager;

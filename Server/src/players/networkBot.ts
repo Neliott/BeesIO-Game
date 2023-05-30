@@ -40,6 +40,10 @@ export default class NetworkBot extends NetworkPlayer {
         this._risk = Random.rangeFloat(0.3, 0.8);
     }
 
+    /**
+     * Calculate the current simulation state of the bot automatically.
+     * This method is used to tick all the bot actions.
+     */
     protected override calculateCurrentSimulationState(): void {
         if(this.isNeedingANewTarget()){
             this.chooseNewTarget();
@@ -57,6 +61,10 @@ export default class NetworkBot extends NetworkPlayer {
             this._networkManager.sendGlobalMessage(ServerEventType.PICKUP,new NetworkOwnedObjectsList(this.fixedAttributes.id,[pickedUpObject.spawnAttributes.id]));
     }
 
+    /**
+     * Drop all the objects picked up by the bot. Send a global message to the clients caused by the robot.
+     * @returns The list of objects dropped
+     */
     public override drop(): NetworkObject[] {
         let objectsDropped = super.drop();
         let objectsDroppedAttributes = objectsDropped.map((object)=>{

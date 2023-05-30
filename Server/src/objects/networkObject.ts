@@ -4,6 +4,10 @@ import iNetworkManager from "../iNetworkManager";
 import iTarget from "../iTarget";
 import NetworkPlayer from "../players/networkPlayer";
 
+/**
+ * Represents an object serialized in the network environnement 
+ * that can be picked up and drop by a player
+ */
 export default class NetworkObject implements iTarget{
     private _spawnAttributes : NetworkObjectSpawnAttributes;
     /**
@@ -27,9 +31,6 @@ export default class NetworkObject implements iTarget{
         this._currentPosition = v;
     }
 
-    protected _owner : NetworkPlayer|null = null;
-    protected _networkManager:iNetworkManager;
-
     /**
      * Get if the current owner of the object or null if the object is not owned
      */
@@ -45,6 +46,16 @@ export default class NetworkObject implements iTarget{
     public get hasAlreadyMoved() : boolean {
         return this._hasAlreadyMoved;
     }
+
+    /**
+     * Get the owner of the object or null if the object is not owned
+     */
+    protected _owner : NetworkPlayer|null = null;
+    
+    /**
+     * Get the network manager used to communicate with the clients
+     */
+    protected _networkManager:iNetworkManager;
     
     
     /**
@@ -79,6 +90,10 @@ export default class NetworkObject implements iTarget{
         this._spawnAttributes.position = this._currentPosition;
     }
 
+    /**
+     * Called when the object is destroyed. 
+     * This will remove the object from the all the known lists
+     */
     protected destroy(){
         this._networkManager.objectsManager.applyDestroyObject(this);
         if(this._owner !== null){

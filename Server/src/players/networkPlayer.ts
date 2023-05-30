@@ -36,7 +36,6 @@ export default class NetworkPlayer {
      */
     public static readonly MAX_Y_POSITION : number= (((HexaGrid.MAP_SAFE_GRID_PERCENTAGE - 0.5) * HexaGrid.MAP_HEIGHT) + NetworkPlayer.ZONE_EXCEEDING_TOLERANCE) * HexaGrid.SPACING_HEIGHT;
 
-    protected _lastSeen : number = 0;
     /**
      * Returns true if the client has been seen in the last CLIENT_TIMEOUT milliseconds
      */
@@ -76,8 +75,21 @@ export default class NetworkPlayer {
         return this._base;
     }
 
+    /**
+     * The last time the client has been seen (numer containing the date)
+     */
+    protected _lastSeen : number = 0;
+    /**
+     * The input stream queue (from a client). All the input streams are processed on the next tick.
+     */
     protected _inputStreamQueue : NetworkPlayerInputState[] = [];
+    /**
+     * The current position of the client
+     */
     protected _currentPosition : Position = new Position(0,0);
+    /**
+     * The network manager used to communicate with the clients
+     */
     protected _networkManager : iNetworkManager;
 
     /**
@@ -162,6 +174,9 @@ export default class NetworkPlayer {
         return this._inputStreamQueue.shift();
     }
     
+    /**
+     * Dequeue all the input streams and calculate the current simulation state
+     */
     protected calculateCurrentSimulationState() {
         let inputStream:NetworkPlayerInputState | undefined;
         while (this._inputStreamQueue.length > 0) {
@@ -175,6 +190,10 @@ export default class NetworkPlayer {
         this._currentSimulationState.simulationFrame = inputStream!.simulationFrame;
     }
     
+    /**
+     * Restrict the position inside the map bounds
+     * @param position The position to restrict (reference type)
+     */
     protected restrictPositionInsideMapBounds(position:Position)
     {
         if (position.x > NetworkPlayer.MAX_X_POSITION)
