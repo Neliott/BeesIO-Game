@@ -125,9 +125,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1453689148162919450}
-  - component: {fileID: 781457650271498576}
-  - component: {fileID: 1556042550802215251}
-  - component: {fileID: 4565370055653265204}
+  - component: {fileID: 4083879031900954678}
   - component: {fileID: 9059037555347128698}
   - component: {fileID: 5306911599895313917}
   m_Layer: 0
@@ -153,7 +151,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &781457650271498576
+--- !u!114 &4083879031900954678
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,35 +160,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1453689148162919451}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 221c2f8fc916238489aa776ac911a69f, type: 3}
+  m_Script: {fileID: 11500000, guid: fc1bf83b00fa793428d82581e1c1cc61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _basePrefab: {fileID: 8042596957692475618, guid: 2b1d359ff51270444845ef3b3f792bf5, type: 3}
   _coloredRenderer: {fileID: 1632954444628165932}
---- !u!114 &1556042550802215251
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1453689148162919451}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: acd52f59be624b94cb72a688579c660c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &4565370055653265204
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1453689148162919451}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0492f35ec9a84724c83d4443f7d9a260, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  _basePrefab: {fileID: 8042596957692475620, guid: 2b1d359ff51270444845ef3b3f792bf5, type: 3}
 --- !u!50 &9059037555347128698
 Rigidbody2D:
   serializedVersion: 4

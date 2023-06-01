@@ -2,9 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
+using Network;
 using System.Linq;
+using NetworkPlayer = Network.NetworkPlayer;
 
+/// <summary>
+/// A ui component showing the top players (name) by their scores descending.
+/// </summary>
 public class Scoreboard : MonoBehaviour
 {
     [SerializeField] GameObject _scoreboardPannel;
@@ -31,17 +35,16 @@ public class Scoreboard : MonoBehaviour
     public void UpdateScores()
     {
         if (!_isDisplayed) return;
-
         //Order players by score
-        List<Player> playersOredered = GameManager.Instance.Players.Players.OrderByDescending(player => player.Base.Score).ToList();
+        List<NetworkPlayer> playersOredered = GameManager.Instance.Players.NetworkedClients.Values.OrderByDescending(player => GameManager.Instance.HexaGrid.GetHexagonsOfBase(player.Base).Count).ToList();
 
         //Display scores
         for (int i = 0; i < _names.Length; i++)
         {
             if (i < playersOredered.Count)
             {
-                _names[i].text = playersOredered[i].Base.Name;
-                _scores[i].text = playersOredered[i].Base.Score + " pts";
+                _names[i].text = playersOredered[i].FixedAttributes.name;
+                _scores[i].text = GameManager.Instance.HexaGrid.GetHexagonsOfBase(playersOredered[i].Base).Count + " pts";
             }
             else
             {

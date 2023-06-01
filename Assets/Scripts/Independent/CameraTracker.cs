@@ -1,11 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// A camera tracking a single object smoothly
+/// </summary>
 public class CameraTracker : MonoBehaviour
 {
-    [SerializeField]
-    float _smoothSpeed;
+    [SerializeField] float _smoothSpeed;
 
     Transform _trackedObject;
 
