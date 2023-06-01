@@ -203,7 +203,7 @@ export default class NetworkPlayersManager {
         //Create spawn attributes
         const clientId = this.getNextClientId();
         const colorHue:number = Math.round(Random.rangeInt(0,360));
-        const networkPlayerFixedAttributes = new NetworkPlayerFixedAttributes(clientId,colorHue,"Bot",HexaGrid.getRandomPlaceOnMap());
+        const networkPlayerFixedAttributes = new NetworkPlayerFixedAttributes(clientId,colorHue,"Bot"+Random.rangeInt(100,900),HexaGrid.getRandomPlaceOnMap());
         
         //Spawn the new client to the list of clients
         const newPlayer = new NetworkBot(this._networkManager,networkPlayerFixedAttributes);
