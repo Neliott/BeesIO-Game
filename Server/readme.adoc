@@ -25,3 +25,11 @@ npm run start
 ```bash
 npm run dev
 ```
+## Test with jest
+```bash
+npm test
+```
+## Show tests code coverage
+```bash
+npm run coverage
+```
