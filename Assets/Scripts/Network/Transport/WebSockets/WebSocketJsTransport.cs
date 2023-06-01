@@ -76,6 +76,7 @@ namespace Network.Transport
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
             WSClose();
+            _instance.OnClose?.Invoke();
             _instance = null;
 #else
             throw new Exception("This WebSocket service is only available for WebGL!");
